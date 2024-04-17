@@ -1,0 +1,155 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  providerAccountId String
+  access_token      String?
+  expires_at        Int?
+  id_token          String?
+  provider          String
+  refresh_token     String?
+  scope             String?
+  session_state     String?
+  token_type        String?
+  type              String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  accounts      Account[]
+  Profile       Profile[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Song {
+  id          String     @id @default(cuid())
+  title       String
+  price       Float
+  image       String?
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  audio       String?
+  preview       String?
+  favorites   Favorite[]
+  orders      Order[]
+  albums      Album[]    @relation("AlbumToSong")
+  artists     Artist[]   @relation("ArtistToSong")
+  genres      Genre[]    @relation("GenreToSong")
+  playlists   Playlist[] @relation("PlaylistToSong")
+}
+
+model Artist {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  follows   Follow[]
+  profile   Profile[]
+  albums    Album[]   @relation("AlbumToArtist")
+  genres    Genre[]   @relation("ArtistToGenre")
+  songs     Song[]    @relation("ArtistToSong")
+}
+
+model Genre {
+  id      String   @id @default(cuid())
+  label   String   @unique
+  albums  Album[]  @relation("AlbumToGenre")
+  artists Artist[] @relation("ArtistToGenre")
+  songs   Song[]   @relation("GenreToSong")
+}
+
+model Album {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  artists   Artist[] @relation("AlbumToArtist")
+  genres    Genre[]  @relation("AlbumToGenre")
+  songs     Song[]   @relation("AlbumToSong")
+}
+
+model Playlist {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  songs     Song[]   @relation("PlaylistToSong")
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  songId    String
+  profileId String
+  profil    Profile  @relation(fields: [profileId], references: [id])
+  song      Song     @relation(fields: [songId], references: [id])
+}
+
+model Profile {
+  id         String     @id @default(cuid())
+  customerId String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  userId     String
+  artistId   String?
+  artistMode Boolean    @default(false)
+  locale     String     @default("fr")
+  favorites  Favorite[]
+  follows    Follow[]
+  orders     Order[]
+  artist     Artist?    @relation(fields: [artistId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+}
+
+model Favorite {
+  id        String  @id @default(cuid())
+  songId    String
+  profileId String
+  profil    Profile @relation(fields: [profileId], references: [id])
+  song      Song    @relation(fields: [songId], references: [id])
+}
+
+model Follow {
+  id        String  @id @default(cuid())
+  artistId  String
+  profileId String
+  artist    Artist  @relation(fields: [artistId], references: [id])
+  profil    Profile @relation(fields: [profileId], references: [id])
+}

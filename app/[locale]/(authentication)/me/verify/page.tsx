@@ -1,0 +1,77 @@
+"use client";
+import Button from "@/components/ui/Button/Button";
+import Input from "@/components/ui/Form/Input/Input";
+import apiClient from "@/libs/api";
+import { redirect } from "@/navigation";
+import { useEffect, useState } from "react";
+
+function VerifyPage() {
+  const [{ email, callbackUrl }, setEmailAndUrl] = useState({
+    email: "",
+    callbackUrl: ""
+  });
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (typeof localStorage === "undefined") return;
+
+    setEmailAndUrl({
+      email: encodeURIComponent(localStorage.getItem("email")),
+      callbackUrl: localStorage.getItem("callbackUrl")
+    });
+  }, []);
+
+  const getUrl = (token: string) => {
+    return `/auth/callback/email?callbackUrl=${callbackUrl}&token=${token}&email=${email}`;
+  };
+
+  return (
+    <div>
+      <section>
+        <h1>OK</h1>
+
+        <Input
+          onChange={(evt: any) => {
+            const token = evt.target.value;
+            if (token?.length === 6) {
+              apiClient.get(getUrl(token)).then((response) => {
+                localStorage.removeItem("email");
+                if (
+                  response?.headers?.["x-middleware-rewrite"]?.includes(
+                    callbackUrl
+                  )
+                ) {
+                  return (document.location.href = callbackUrl);
+                }
+
+                localStorage.removeItem("callbackUrl");
+
+
+
+                setError("Email or token invalid");
+                return (document.location.href = callbackUrl || "/fr/me/welcome");
+              });
+            }
+          }}
+          label="token"
+          type="text"
+          minLength={6}
+          maxLength={6}
+          required
+          name="token"
+        />
+
+        {!error ? null : (
+          <>
+            <div className=" alert alert-error">{error}</div>
+          </>
+        )}
+
+        <Button>Valider</Button>
+
+        <p>Cliquez sur le lien pour valider !!</p>
+      </section>
+    </div>
+  );
+}
+
+export default VerifyPage;
