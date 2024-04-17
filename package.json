@@ -1,6 +1,6 @@
 {
   "name": "piveteauit-sf-boilerplate",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "setup": "pnpm i && prisma db pull && prisma generate",
