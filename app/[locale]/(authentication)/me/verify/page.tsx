@@ -33,23 +33,26 @@ function VerifyPage() {
           onChange={(evt: any) => {
             const token = evt.target.value;
             if (token?.length === 6) {
-              apiClient.get(getUrl(token)).then((response) => {
-                localStorage.removeItem("email");
-                if (
-                  response?.headers?.["x-middleware-rewrite"]?.includes(
-                    callbackUrl
-                  )
-                ) {
-                  return (document.location.href = callbackUrl);
-                }
+              apiClient
+                .get(getUrl(token))
+                .then((response) => {
+                  localStorage.removeItem("email");
+                  if (
+                    response?.headers?.["x-middleware-rewrite"]?.includes(
+                      callbackUrl
+                    )
+                  ) {
+                    return (document.location.href = callbackUrl);
+                  }
 
-                localStorage.removeItem("callbackUrl");
+                  localStorage.removeItem("callbackUrl");
 
-
-
-                setError("Email or token invalid");
-                return (document.location.href = callbackUrl || "/fr/me/welcome");
-              });
+                  return (document.location.href =
+                    callbackUrl || "/fr/me/welcome");
+                })
+                .catch((error) => {
+                  setError("Email or token invalid");
+                });
             }
           }}
           label="token"
