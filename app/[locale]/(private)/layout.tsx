@@ -14,11 +14,11 @@ export default async function LayoutPrivate({
 }: {
   children: ReactNode;
 }) {
-  // const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  // if (!session) {
-  //   redirect(config.auth.loginUrl);
-  // }
+  if (!session) {
+    redirect(config.auth.loginUrl);
+  }
 
   return <>{children}</>;
 }

@@ -23,7 +23,9 @@ const nextConfig = {
       "images.unsplash.com",
       "logos-world.net",
       "picsum.photos",
-      "s3.fr-par.scw.cloud"
+      "s3.fr-par.scw.cloud",
+      "cloud.ovh.net",
+      "numero.s3.gra.io.cloud.ovh.net"
     ]
   },
 

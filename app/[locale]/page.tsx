@@ -82,14 +82,16 @@ export default async function Page({ params }: any) {
 
                 <div className="text-white flex flex-col">
                   <span>{s.title}</span>
-                  <span className="text-xs opacity-75">Par {s.artists?.[0]?.name}</span>
+                  <span className="text-xs opacity-75">
+                    Par {s.artists?.[0]?.name}
+                  </span>
                 </div>
               </Link>
             ))}
           </div>
         </section>
 
-        <section className="p-8 w-screen pb-20">
+        {/* <section className="p-8 w-screen pb-20">
           <h3 className="text-xl"> Connaissez-vous ? </h3>
 
           <div className="flex gap-2 py-4 overflow-x-scroll w-96">
@@ -112,7 +114,7 @@ export default async function Page({ params }: any) {
               <span>{songs?.[0]?.artists?.[0]?.name}</span>
             </Link>
           </div>
-        </section>
+        </section> */}
 
         {/* <div className="flex-[2] h-full w-full relative">
           <Link href={"/"}>

@@ -1,11 +1,11 @@
 import aws from "aws-sdk";
 
 export const s3Config = {
-  id: "int.app.num4.art",
-  endPoint: "https://s3.fr-par.scw.cloud",
-  accessKey: "SCWN0KV0DFZG9NH0CSYS",
-  secretKey: "86f93849-f824-48a7-a080-35ec2fac5ea8",
-  region: "fr-par"
+  id: "numero",
+  endPoint: "https://s3.gra.io.cloud.ovh.net",
+  accessKey: "b19ec7383a4e4e3aa4eb5759d962c7c6",
+  secretKey: "7fa4e7fd1b6340dc92ee029c21757dd7",
+  region: "GRA"
 }
 
 

@@ -53,7 +53,8 @@ function Player() {
 
   useEffect(() => {
     console.log(currentList)
-    const song = Number(searchParams.get("song"));
+    const song = searchParams.get("song");
+    console.log(song, currentList);
     if (typeof song === "string" && song) {
       setCurrentPlaying(currentList?.find(s => s.id === song))
     }
