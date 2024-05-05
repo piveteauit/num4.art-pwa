@@ -55,9 +55,7 @@ function Player() {
   }, []);
 
   useEffect(() => {
-    console.log(currentList);
     const song = searchParams.get("song");
-    console.log(song, currentList);
     if (typeof song === "string" && song) {
       setCurrentPlaying(currentList?.find((s) => s.id === song));
     }
@@ -83,7 +81,6 @@ function Player() {
 
   const playerHeight = !isPlayerScreen ? "h-0 hidden" : "h-6";
 
-  console.log(currentList);
   return (
     <>
       {!isPlayerScreen ? null : (

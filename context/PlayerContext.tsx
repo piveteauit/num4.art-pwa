@@ -42,7 +42,6 @@ const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   const fetchSongs = () => {
     getAllSongs()
       .then((s) => {
-        console.log(s, data?.user?.id);
         setCurrentList(
           s.map((song) => {
             return {
@@ -73,6 +72,23 @@ const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setReady(true);
   }, [data, currentList, ready]);
+
+  useEffect(() => {
+    if (!currentList.length || currentPlaying) return;
+    setCurrentPlaying(
+      currentList.find((s) => s.id === localStorage.getItem("songId")) ||
+        currentList[0]
+    );
+  }, [currentList]);
+
+  useEffect(() => {
+    try {
+      if (currentPlaying?.id)
+        localStorage.setItem("songId", currentPlaying?.id);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentPlaying]);
 
   return (
     <PlayerContext.Provider
