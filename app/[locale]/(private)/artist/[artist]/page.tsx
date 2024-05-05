@@ -75,7 +75,7 @@ export default async function Artist({ params: { artist } }: any) {
         </Link>
       </section>
 
-      <div className="min-h-full -mb-[60px] rounded-t-3xl bg-base ">
+      <div className="h-full min-h-[55dvh] -mb-[60px] rounded-t-3xl bg-base ">
         <section className="flex  justify-between  p-4">
           <div className="flex flex-col">
             <div>
@@ -110,14 +110,14 @@ export default async function Artist({ params: { artist } }: any) {
                 key={`${id}-2`}
                 className="flex w-full p-1 gap-8"
               >
-                <div className="relative w-[50px] h-[50px]]">
+                <span className="relative w-[50px] h-[50px]]">
                   <Image
                     className="max-h-[50px] object-cover"
                     layout={"fill"}
                     alt={`Jaquette ${title}`}
                     src={image}
                   />
-                </div>
+                </span>
                 <div className="flex flex-col">
                   <h4 className="font-semibold text-xl">{title}</h4>
                   <Link

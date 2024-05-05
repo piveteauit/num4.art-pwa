@@ -3,6 +3,7 @@ import Button from "@/components/ui/Button/Button";
 import { followArtist, unfollowArtist } from "@/libs/server/user.action";
 import { Follow } from "@prisma/client";
 import { useEffect, useState } from "react";
+import { revalidateArtist } from "./revalidate.action";
 
 export function FollowButton({
   userId,
@@ -27,11 +28,13 @@ export function FollowButton({
   const handleFollow = async () => {
     if (!following) {
       setFollowing(true);
-      return await followArtist(userId, artistId);
+      await followArtist(userId, artistId);
+      return revalidateArtist(artistId);
     }
 
     setFollowing(false);
-    return await unfollowArtist(follow.id);
+    await unfollowArtist(follow.id);
+    return revalidateArtist(artistId);
   };
 
   if (!isClient) return null;

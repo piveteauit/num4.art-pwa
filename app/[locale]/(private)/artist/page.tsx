@@ -54,18 +54,21 @@ export default async function Artist() {
               href={{ pathname: "/player", query: { song: k } }}
               className="flex w-full p-1 gap-8"
             >
-              <div className="relative w-[50px] h-[50px]]">
+              <span className="relative w-[50px] h-[50px]]">
                 <Image
                   className="max-h-[50px] object-cover"
                   layout={"fill"}
                   alt={`Jaquette ${title}`}
                   src={image}
                 />
-              </div>
+              </span>
               <div className="flex flex-col">
                 <h4 className="font-semibold text-xl">{title}</h4>
                 <Link
-                  href={{ pathname: "/artist/[artist]", params: { artist: artists?.[0]?.name } }}
+                  href={{
+                    pathname: "/artist/[artist]",
+                    params: { artist: artists?.[0]?.name }
+                  }}
                   className="opacity-60"
                 >
                   {artists?.[0]?.name}

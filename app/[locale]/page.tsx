@@ -77,14 +77,14 @@ export default async function Page({ params }: any) {
                 className="bg-base-100 bg-opacity-5 p-3 rounded-2xl overflow-hidden min-h-[180px] min-w-[160px]"
                 key={`song-${s.id}-${i}`}
               >
-                <div className="relative h-44 w-[140px] m-auto rounded-2xl overflow-hidden">
+                <span className="relative h-44 w-[140px] m-auto rounded-2xl overflow-hidden">
                   <Image
                     className="object-cover rounded-2xl"
                     alt="jaquette musique"
                     src={s?.image || ""}
                     layout="fill"
                   />
-                </div>
+                </span>
 
                 <div className="text-white flex flex-col">
                   <span>{s.title}</span>

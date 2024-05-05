@@ -54,14 +54,14 @@ export default async function Library() {
                 key={`${id}--${title}--2`}
                 className="flex w-full p-1 gap-8"
               >
-                <div className="relative w-[50px] h-[50px]]">
+                <span className="relative w-[50px] h-[50px]]">
                   <Image
                     className="max-h-[50px] object-cover"
                     layout={"fill"}
                     alt={`Jaquette ${title}`}
                     src={image}
                   />
-                </div>
+                </span>
                 <div className="flex flex-col">
                   <h4 className="font-semibold text-xl">{title}</h4>
                   <Link
