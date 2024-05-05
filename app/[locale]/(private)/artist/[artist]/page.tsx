@@ -3,6 +3,9 @@ import { Link } from "@/navigation";
 import Image from "next/image";
 
 import prisma from "@/libs/prisma";
+import { getServerSession } from "@/libs/next-auth";
+import { FollowButton } from "./FollowButton";
+import { Follow } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -16,27 +19,50 @@ const options = [
 ];
 export default async function Artist({ params: { artist } }: any) {
   artist = decodeURIComponent(artist);
+  const { user } = await getServerSession();
 
-  const artistFromDb = await prisma.artist.findUnique({ where: { id: artist } })
-  const songs = await prisma.song
-    .findMany({
-      where: {
-        artists: {
-          some: {
-            id: artist
+  const artistFromDb = await prisma.artist.findUnique({
+    where: { id: artist },
+    include: {
+      profile: true,
+      follows: {
+        select: {
+          id: true,
+          profil: {
+            select: {
+              userId: true
+            }
           }
         }
-      },
-
-      include: {
-        artists: true
       }
-    })
+    }
+  });
+  const songs = await prisma.song.findMany({
+    where: {
+      artists: {
+        some: {
+          id: artist
+        }
+      }
+    },
+
+    include: {
+      artists: true
+    }
+  });
+
+  const follow = artistFromDb?.follows?.find(
+    (f) => f.profil.userId === user.id
+  );
+
+  console.log("artist", follow);
 
   return (
     <main className="w-screen h-screen overflow-hidden py-8 pb-24 absolute top-0 left-0 bg-[url('/musics/artist-nai.jpg')] pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed">
       <section className="max-w-xl mx-auto flex justify-between fixed w-full right-0 px-8 top-0 py-4 items-center">
-        <h1 className="text-xl md:text-4xl font-medium">{artistFromDb?.name}</h1>
+        <h1 className="text-xl md:text-4xl font-medium">
+          {artistFromDb?.name}
+        </h1>
         <Link href={"/dashboard"}>
           <Image
             alt="Settings icon"
@@ -53,28 +79,31 @@ export default async function Artist({ params: { artist } }: any) {
         <section className="flex  justify-between  p-4">
           <div className="flex flex-col">
             <div>
-              <span className="font-bold text-xl">3</span>{" "}
+              <span className="font-bold text-xl"> {songs?.length} </span>{" "}
               <span className="opacity-60">produits</span>
             </div>
             <div>
-              <span className="font-bold text-xl">1982</span>{" "}
+              <span className="font-bold text-xl">
+                {" "}
+                {artistFromDb.follows?.length}{" "}
+              </span>{" "}
               <span className="opacity-60">abonnés</span>
             </div>
           </div>
 
           <div>
-            <Button
-              color="primary"
-              className="rounded-full text-lg px-7 font-medium"
-              size="xs"
-            >
-              Suivre
-            </Button>
+            <FollowButton
+              {...{
+                userId: user?.id,
+                artistId: artistFromDb?.id,
+                follow: follow as any
+              }}
+            />
           </div>
         </section>
 
         <section className="flex flex-col gap-1 px-2 py-5">
-          {[...songs, ...songs].map(({ artists, title, image, id }, k: number) => {
+          {songs.map(({ artists, title, image, id }, k: number) => {
             return (
               <Link
                 href={{ pathname: "/player", query: { song: id } }}
@@ -92,7 +121,10 @@ export default async function Artist({ params: { artist } }: any) {
                 <div className="flex flex-col">
                   <h4 className="font-semibold text-xl">{title}</h4>
                   <Link
-                    href={{ pathname: "/artist/[artist]", params: { artist: artists?.[0]?.id } }}
+                    href={{
+                      pathname: "/artist/[artist]",
+                      params: { artist: artists?.[0]?.id }
+                    }}
                     className="opacity-60"
                   >
                     {artists?.[0]?.name}

@@ -78,4 +78,33 @@ export async function unlikeSong(favoriteId: string) {
   // 
  }
 
+export async function followArtist(userId: string, artistId: string) {
+  const profile = await prisma.profile.findFirst({ where: { user: { id: userId } } });
+
+  return await prisma.follow.create({
+    data: { 
+      artist: {
+        connect: {
+          id: artistId
+        },
+      },
+      profil: {
+        connect: {
+          id: profile.id
+        }
+      }
+    },
+  });
+  // 
+}
+ 
+export async function unfollowArtist(followId: string) {
+  return await prisma.follow.delete({
+    where: { id: followId }
+  });
+  // 
+ }
+
+
+
 export async function getProfile() { }
