@@ -5,6 +5,8 @@ import Button from "../ui/Button/Button";
 import { usePathname } from "@/navigation";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { likeSong, unlikeSong } from "@/libs/server/user.action";
 
 function getTimeArr(time: number) {
   let hour = 0,
@@ -45,6 +47,7 @@ function Player() {
   const audioRef = useRef<ReactHTMLElement<HTMLAudioElement> | any>();
   const path = usePathname();
   const searchParams = useSearchParams();
+  const { data } = useSession();
 
   useEffect(() => {
     if (!currentPlaying) setCurrentPlaying(currentList[0]);
@@ -52,11 +55,11 @@ function Player() {
   }, []);
 
   useEffect(() => {
-    console.log(currentList)
+    console.log(currentList);
     const song = searchParams.get("song");
     console.log(song, currentList);
     if (typeof song === "string" && song) {
-      setCurrentPlaying(currentList?.find(s => s.id === song))
+      setCurrentPlaying(currentList?.find((s) => s.id === song));
     }
   }, [searchParams]);
 
@@ -80,6 +83,7 @@ function Player() {
 
   const playerHeight = !isPlayerScreen ? "h-0 hidden" : "h-6";
 
+  console.log(currentList);
   return (
     <>
       {!isPlayerScreen ? null : (
@@ -217,6 +221,11 @@ function Player() {
             const newList = [...currentList];
             newList[currentList.indexOf(currentPlaying)].liked =
               !currentList[currentList.indexOf(currentPlaying)].liked;
+
+            if (newList[currentList.indexOf(currentPlaying)].liked)
+              likeSong(data?.user?.id, currentPlaying.id);
+            else unlikeSong(currentPlaying.id);
+
             setCurrentList(newList);
           }}
         >

@@ -1,7 +1,8 @@
 "use client";
 
 import { getAllSongs } from "@/libs/server/song.action";
-import { createContext, useContext, useState } from "react";
+import { useSession } from "next-auth/react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface PlayerContextProps {
   currentPlaying?: string | null | any;
@@ -34,13 +35,44 @@ const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentPlaying, setCurrentPlaying] = useState(
     defaultProps.currentPlaying
   );
+  const { data } = useSession();
   const [currentList, setCurrentList] = useState([]);
+  const [ready, setReady] = useState(false);
 
   const fetchSongs = () => {
     getAllSongs()
-      .then(setCurrentList)
-      .catch(console.error)
-  }
+      .then((s) => {
+        console.log(s, data?.user?.id);
+        setCurrentList(
+          s.map((song) => {
+            return {
+              ...song,
+              liked: song.favorites.some(
+                (f) => f.profil.userId === data?.user?.id
+              )
+            };
+          })
+        );
+      })
+      .catch(console.error);
+  };
+
+  useEffect(() => {
+    if (!data?.user?.id || !currentList.length || ready) return;
+
+    setCurrentList(
+      currentList.map((song) => {
+        return {
+          ...song,
+          liked: song.favorites.some(
+            (f: any) => f.profil.userId === data?.user?.id
+          )
+        };
+      })
+    );
+
+    setReady(true);
+  }, [data, currentList, ready]);
 
   return (
     <PlayerContext.Provider

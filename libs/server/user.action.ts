@@ -51,4 +51,31 @@ export async function setCurrentMode({
   });
 }
 
+export async function likeSong(userId: string, songId: string) {
+  const profile = await prisma.profile.findFirst({ where: { user: { id: userId } } });
+
+  return await prisma.favorite.create({
+    data: { 
+      song: {
+        connect: {
+          id: songId
+        },
+      },
+      profil: {
+        connect: {
+          id: profile.id
+        }
+      }
+    },
+  });
+  // 
+}
+ 
+export async function unlikeSong(favoriteId: string) {
+  return await prisma.favorite.delete({
+    where: { id: favoriteId }
+  });
+  // 
+ }
+
 export async function getProfile() { }

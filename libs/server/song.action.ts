@@ -29,7 +29,21 @@ export async function addSong({ title, price, genres, albums, description, image
 
 export async function getAllSongs() {
   return await prisma
-    .song.findMany({})
+    .song.findMany({
+      include: {
+        albums: true,
+        artists: true,
+        favorites: {
+          select: {
+            profil: {
+              select: {
+                userId: true
+              }
+            }
+          }
+        }
+      }
+    })
 }
 
 export async function getProfile() { }

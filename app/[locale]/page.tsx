@@ -3,6 +3,7 @@ import CategoryFilter from "@/components/ui/CategoryFilter";
 import Image from "next/image";
 import { Link } from "@/navigation";
 import prisma from "@/libs/prisma";
+import { Artist, Profile } from "@prisma/client";
 
 export const generateMetadata = getGenerateMetadata("home");
 
@@ -26,17 +27,22 @@ export default async function Page({ params }: any) {
     orderBy: {
       createdAt: "desc"
     }
-  })
-  // if (!session) redirect("/me/signin");
-  // const artists = songs?.reduce((acc, cur) => {
+  });
+  const artists = Object.values(
+    await songs.reduce((acc: any, s) => {
+      //@ts-ignore
+      s.artists[0].image = s.artists[0].image || s.image;
+      acc[s.artists[0].id] = s.artists[0];
 
-  // }, [])
+      return acc;
+    }, {})
+  );
 
-  console.log("songs", songs)
+  console.log("songs", songs);
 
   return (
     <>
-      <main className="flex flex-col h-screen w-screen items-center p-10">
+      <main className="flex flex-col h-screen w-screen items-center py-10 md:p-10">
         <section className="max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
           <h1 className="text-xl md:text-4xl font-medium">Market place</h1>
 
@@ -91,30 +97,33 @@ export default async function Page({ params }: any) {
           </div>
         </section>
 
-        {/* <section className="p-8 w-screen pb-20">
+        <section className="p-8 w-screen pb-20">
           <h3 className="text-xl"> Connaissez-vous ? </h3>
 
-          <div className="flex gap-2 py-4 overflow-x-scroll w-96">
-            <Link
-              className="flex justify-center text-center  gap-2 flex-col"
-              href={{
-                pathname: "/artist/[artist]",
-                params: { artist: songs?.[0]?.artists?.[0]?.id }
-              }}
-            >
-              <Image
-                layout="responsive"
-                height={100}
-                width={100}
-                alt="Artiste avatar N A I"
-                className="avatar rounded-full !w-[100px] !h-[100px] object-cover overflow-hidden"
-                // @ts-ignore
-                src={songs?.[0]?.artists?.[0]?.image || "/musics/artist-nai.jpg"}
-              />
-              <span>{songs?.[0]?.artists?.[0]?.name}</span>
-            </Link>
+          <div className="flex gap-2 py-4 overflow-x-scroll flex-grow">
+            {artists.map((artist: Artist & { profile: Profile }, i) => (
+              <Link
+                key={`home-artist-${i}-${artist.id}`}
+                className="flex justify-center text-center  items-center gap-2 flex-col min-w-[100px]"
+                href={{
+                  pathname: "/artist/[artist]",
+                  params: { artist: artist?.id }
+                }}
+              >
+                <Image
+                  layout="responsive"
+                  height={100}
+                  width={100}
+                  alt="Artiste avatar N A I"
+                  className="avatar rounded-full !w-[100px] !h-[100px] object-cover overflow-hidden"
+                  // @ts-ignore
+                  src={artist?.image || "/musics/artist-nai.jpg"}
+                />
+                <span>{artist?.name}</span>
+              </Link>
+            ))}
           </div>
-        </section> */}
+        </section>
 
         {/* <div className="flex-[2] h-full w-full relative">
           <Link href={"/"}>

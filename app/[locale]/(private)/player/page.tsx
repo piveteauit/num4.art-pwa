@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // See https://shipfa.st/docs/tutorials/private-page
 export default async function Dashboard() {
   return (
-    <main className="w-screen h-screen overflow-hidden p-8 pb-24 absolute top-0 left-0">
+    <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 absolute top-0 left-0">
       <section className="max-w-xl mx-auto space-y-8">
         <h1 className="text-3xl md:text-4xl font-extrabold">Lecteur</h1>
       </section>

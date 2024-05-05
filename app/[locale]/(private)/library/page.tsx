@@ -25,7 +25,7 @@ export default async function Library() {
     "song", songs
   )
   return (
-    <main className="w-screen h-screen overflow-hidden p-8 pb-24 absolute top-0 left-0">
+    <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24 absolute top-0 left-0">
       <section className="max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base items-center">
         <h1 className="text-xl md:text-4xl font-medium">Bibliothèque</h1>
         <Link href={"/dashboard"}>
@@ -41,12 +41,10 @@ export default async function Library() {
       </section>
 
       <section className="flex flex-col gap-1 px-2 overflow-y-scroll max-h-[calc(100vh_-_120px)]">
-
         <div className="flex flex-col">
           <h2 className="text-xl mt-20 mb-2">Trier par </h2>
           <LibraryFilter options={options} />
         </div>
-
 
         <div className="flex flex-col gap-2">
           {songs.map(({ artists, title, image, id }, k: number) => {
@@ -67,7 +65,10 @@ export default async function Library() {
                 <div className="flex flex-col">
                   <h4 className="font-semibold text-xl">{title}</h4>
                   <Link
-                    href={{ pathname: "/artist/[artist]", params: { artist: artists?.[0]?.name } }}
+                    href={{
+                      pathname: "/artist/[artist]",
+                      params: { artist: artists?.[0]?.name }
+                    }}
                     className="opacity-60"
                   >
                     {artists?.[0]?.name}
