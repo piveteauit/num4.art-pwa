@@ -81,6 +81,13 @@ function Player() {
 
   const playerHeight = !isPlayerScreen ? "h-0 hidden" : "h-6";
 
+  if (currentPlaying)
+    currentPlaying.liked =
+      currentPlaying.liked ||
+      currentPlaying?.favorites?.some(
+        (f: any) => f?.profil?.userId === data?.user?.id
+      );
+
   return (
     <>
       {!isPlayerScreen ? null : (
@@ -117,23 +124,29 @@ function Player() {
               audioRef.current.currentTime = Number(value);
             }}
             type="range"
-            max={audioRef?.current?.duration}
+            max={
+              audioRef?.current?.duration
+                ? audioRef?.current?.duration
+                : undefined
+            }
             value={currentTime}
             className="absolute w-full h-full bg-[red] -top-3"
           />
 
           <div className="flex flex-row justify-between">
             <span>{getTimeArr(currentTime).reverse()}</span>
-            <span>{getTimeArr(audioRef?.current?.duration).reverse()}</span>
+            {audioRef?.current?.duration ? (
+              <span>{getTimeArr(audioRef?.current?.duration).reverse()}</span>
+            ) : null}
           </div>
         </div>
 
-        {!currentPlaying?.audio ? null : (
+        {!currentPlaying?.audio && !currentPlaying?.preview ? null : (
           <audio
             onTimeUpdate={(evt) =>
               setCurrentTime(evt?.currentTarget?.currentTime)
             }
-            autoPlay={!paused}
+            autoPlay={!paused || !audioRef?.current?.duration}
             src={currentPlaying?.preview || currentPlaying?.audio}
             ref={audioRef}
           />
@@ -215,15 +228,19 @@ function Player() {
         <Button
           className="!text-white border-none rounded-full min-h-0 w-10 h-10  relative !bg-[transparent]"
           onClick={() => {
-            const newList = [...currentList];
-            newList[currentList.indexOf(currentPlaying)].liked =
-              !currentList[currentList.indexOf(currentPlaying)].liked;
+            try {
+              const newList = [...currentList];
+              newList[currentList.indexOf(currentPlaying)].liked =
+                !currentList[currentList.indexOf(currentPlaying)].liked;
 
-            if (newList[currentList.indexOf(currentPlaying)].liked)
-              likeSong(data?.user?.id, currentPlaying.id);
-            else unlikeSong(currentPlaying.id);
+              if (newList[currentList.indexOf(currentPlaying)].liked)
+                likeSong(data?.user?.id, currentPlaying.id);
+              else unlikeSong(currentPlaying.id);
 
-            setCurrentList(newList);
+              setCurrentList(newList);
+            } catch (error) {
+              console.error("Error in Player.tsx", error);
+            }
           }}
         >
           <Image

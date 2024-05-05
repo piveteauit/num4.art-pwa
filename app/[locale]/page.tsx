@@ -42,7 +42,7 @@ export default async function Page({ params }: any) {
 
   return (
     <>
-      <main className="flex flex-col h-screen w-screen items-center py-10 md:p-10">
+      <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10">
         <section className="max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
           <h1 className="text-xl md:text-4xl font-medium">Market place</h1>
 
@@ -58,7 +58,7 @@ export default async function Page({ params }: any) {
           </Link>
         </section>
 
-        <section className="mt-20 p-8 w-screen">
+        <section className="mt-20 p-2 w-screen">
           <span>Catégories</span>
 
           {/* <div className="flex gap-2">
@@ -67,7 +67,7 @@ export default async function Page({ params }: any) {
 
           <h3 className="text-xl my-8"> Sortie récente </h3>
 
-          <div className="flex gap-2 overflow-x-scroll w-96">
+          <div className="flex gap-2 overflow-x-scroll w-96 pr-4">
             {songs.map((s, i) => (
               <Link
                 href={{
@@ -77,7 +77,7 @@ export default async function Page({ params }: any) {
                 className="bg-base-100 bg-opacity-5 p-3 rounded-2xl overflow-hidden min-h-[180px] min-w-[160px]"
                 key={`song-${s.id}-${i}`}
               >
-                <span className="relative h-44 w-[140px] m-auto rounded-2xl overflow-hidden">
+                <span className="block relative h-44 w-[140px] m-auto rounded-2xl overflow-hidden">
                   <Image
                     className="object-cover rounded-2xl"
                     alt="jaquette musique"
@@ -97,10 +97,10 @@ export default async function Page({ params }: any) {
           </div>
         </section>
 
-        <section className="p-8 w-screen pb-20">
+        <section className="p-2 w-screen pb-20">
           <h3 className="text-xl"> Connaissez-vous ? </h3>
 
-          <div className="flex gap-2 py-4 overflow-x-scroll flex-grow">
+          <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
             {artists.map((artist: Artist & { profile: Profile }, i) => (
               <Link
                 key={`home-artist-${i}-${artist.id}`}
