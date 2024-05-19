@@ -56,7 +56,6 @@ const CrispChat = (): null => {
 // 4. Tooltip: Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content=""
 // 5. CrispChat: Set Crisp customer chat support (see above)
 const ClientLayout = ({ children }: { children: ReactNode }) => {
-
   return (
     <>
       <SessionProvider>

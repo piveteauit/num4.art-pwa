@@ -107,4 +107,19 @@ export async function unfollowArtist(followId: string) {
 
 
 
-export async function getProfile() { }
+export async function getProfile(userId: string) {
+  return await prisma.profile.findFirst({
+    where: {
+      user: {
+        id: userId
+      }
+    },
+    include: {
+      artist: true,
+      user: true,
+      orders: true,
+      
+    },
+
+  })
+ }

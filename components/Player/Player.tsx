@@ -1,12 +1,14 @@
 "use client";
 import { usePlayer } from "@/context/PlayerContext";
-import React, { ReactHTMLElement, useEffect, useRef } from "react";
+import React, { ReactHTMLElement, useEffect, useRef, useState } from "react";
 import Button from "../ui/Button/Button";
 import { usePathname } from "@/navigation";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { likeSong, unlikeSong } from "@/libs/server/user.action";
+import { getProfile, likeSong, unlikeSong } from "@/libs/server/user.action";
+import ButtonCheckout from "../ui/sf/ButtonCheckout";
+import toast from "react-hot-toast";
 
 function getTimeArr(time: number) {
   let hour = 0,
@@ -48,6 +50,11 @@ function Player() {
   const path = usePathname();
   const searchParams = useSearchParams();
   const { data } = useSession();
+  const [userProfile, setUserProfile] = useState(null);
+
+  useEffect(() => {
+    getProfile(data?.user?.id).then(setUserProfile).catch(console.error);
+  }, [data?.user?.id]);
 
   useEffect(() => {
     if (!currentPlaying) setCurrentPlaying(currentList[0]);
@@ -68,7 +75,17 @@ function Player() {
     }
   }, [paused]);
 
+  const hasSong = userProfile?.orders?.find(
+    (o: any) => o.songId === currentPlaying?.id
+  );
   useEffect(() => {
+    if (!hasSong && currentTime >= 20) {
+      setPaused(true);
+      audioRef.current.currentTime = 0;
+      setCurrentTime(0);
+      toast.success("Extrait terminé", {});
+    }
+
     if (currentTime === Number(audioRef.current?.duration)) {
       const songIndex = currentList?.indexOf(currentPlaying);
       setCurrentPlaying(
@@ -90,6 +107,82 @@ function Player() {
 
   return (
     <>
+      {hasSong || !isPlayerScreen ? null : (
+        <div className="absolute rounded-t-3xl flex flex-col shadow-inner shadow-primary/50 pb-16 justify-around gap-4 z-50 px-10 bg-base bottom-0 left-0 w-full h-1/2 min-h-[200px]">
+          <div className="flex items-center">
+            <div className="relative h-20 w-20 rounded-full m-auto overflow-hidden">
+              <Image
+                className="object-cover rounded-2xl"
+                alt="jaquette musique"
+                src={currentPlaying?.image || ""}
+                layout="fill"
+              />
+            </div>
+            <div>
+              <h3 className="text-xl text-left text-white relative z-10">
+                {currentPlaying?.title}
+              </h3>
+              <h4 className="text-sm text-left -mb-5 text-white relative z-10">
+                Par {currentPlaying?.artists?.[0]?.name || "N/A"}
+              </h4>
+            </div>
+          </div>
+
+          <div className="flex items-center text-left">
+            <h5 className="font-semibold text-base/80 text-sm">
+              {" "}
+              {"Description : "}{" "}
+            </h5>
+            <p>{currentPlaying?.description || ""}</p>
+          </div>
+          <div className="flex flex-row-reverse justify-between items-center gap-2">
+            <div>
+              <Button
+                onClick={() => {
+                  setCurrentTime(0);
+                  setPaused((p) => !p);
+
+                  setTimeout(() => {
+                    audioRef.current.currentTime = 0;
+                    setPaused(true);
+
+                    toast.success("Extrait terminé", {});
+                  }, 20_000);
+                }}
+                className="btn-accent relative border-2"
+              >
+                <span
+                  className="bg-primary absolute top-0 left-0 h-full z-10 overflow-hidden rounded-md"
+                  style={{ width: `${(currentTime / 20) * 100}%` }}
+                >
+                  <span className="text-white relative z-50 text-nowrap flex justify-center items-center"></span>
+                </span>
+                <span className="text-primary-content relative z-50">
+                  {"Ecouter l'extrait"}
+                </span>
+              </Button>
+            </div>
+            <div>
+              <ButtonCheckout
+                songId={currentPlaying?.id}
+                profileId={userProfile?.id}
+                label={
+                  <span className="text-center">
+                    {"Débloquer pour "}
+                    <span className="font-bold pt-2">
+                      {currentPlaying?.price}
+
+                      <sup className="font-normal ml-1">{"€"}</sup>
+                    </span>
+                  </span>
+                }
+                priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {!isPlayerScreen ? null : (
         <div
           style={{ backgroundImage: `url(${currentPlaying?.image})` }}

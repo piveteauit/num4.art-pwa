@@ -85,7 +85,7 @@ export default async function Artist({ params: { artist } }: any) {
             <div>
               <span className="font-bold text-xl">
                 {" "}
-                {artistFromDb.follows?.length}{" "}
+                {artistFromDb?.follows?.length}{" "}
               </span>{" "}
               <span className="opacity-60">abonnés</span>
             </div>

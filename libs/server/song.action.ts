@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/libs/prisma";
+import { revalidatePath } from "next/cache";
 
 
 export async function addSong({ title, price, genres, albums, description, image, audio, preview, artists }: any) {
@@ -25,6 +26,26 @@ export async function addSong({ title, price, genres, albums, description, image
         price
       }
     })
+}
+
+export async function buySong({ songId, profileId }: any) {
+  const result = await prisma
+    .order.create({
+      data: {
+        profil: {
+          connect: {
+            id: profileId
+          }
+        },
+        song: {
+          connect: {
+            id: songId
+          }
+        }
+      }
+    })  
+  
+  return result
 }
 
 export async function getAllSongs() {

@@ -2,6 +2,7 @@ import LibraryFilter from "@/components/ui/LibraryFilter";
 import { Link } from "@/navigation";
 import Image from "next/image";
 import prisma from "@/libs/prisma";
+import { getServerSession } from "@/libs/next-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -14,16 +15,28 @@ const options = [
   { name: "Favoris" }
 ];
 export default async function Library() {
-  const songs = await prisma.song
-    .findMany({
-      include: {
-        artists: true
+  const session = await getServerSession();
+  const orders = await prisma.order.findMany({
+    where: {
+      profil: {
+        id: session?.user?.profile?.id
       }
-    })
+    },
+    select: {
+      songId: true
+    }
+  });
+  const songs = await prisma.song.findMany({
+    where: {
+      id: {
+        in: orders.map((o) => o.songId)
+      }
+    },
+    include: {
+      artists: true
+    }
+  });
 
-  console.log(
-    "song", songs
-  )
   return (
     <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24 absolute top-0 left-0">
       <section className="max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base items-center">
