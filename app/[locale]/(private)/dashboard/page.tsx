@@ -5,6 +5,7 @@ import { getServerSession } from "@/libs/next-auth";
 import { Link, redirect } from "@/navigation";
 import { PrismaClient } from "@prisma/client";
 import Image from "next/image";
+import Avatar from "./Avater";
 
 export const dynamic = "force-dynamic";
 
@@ -35,18 +36,10 @@ export default async function Dashboard() {
     redirect("/me/welcome");
   }
 
-  console.log(user);
-
   return (
     <main className="min-h-screen pb-24">
       <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center">
-        <div className="avatar rounded-full border-2 border-primary p-5 overflow-hidden w-[60px] h-[60px]">
-          <Image
-            alt={`Avatar ${user?.name || user?.email?.split("@")[0]}`}
-            fill
-            src={user?.image || "/assets/images/logos/logo.png"}
-          />
-        </div>
+        <Avatar user={user} />
 
         <div className="text-center">
           <h4 className="font-medium text-xl">{`@${user?.profile?.artist?.name || user?.name || user?.email?.split("@")[0]}`}</h4>

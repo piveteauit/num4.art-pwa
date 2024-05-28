@@ -14,7 +14,7 @@ function Welcome() {
   }, []);
 
   return (
-    <section className="w-full">
+    <section className="w-full flex flex-col gap-8 justify-center max-w-xs">
       <Input
         type="text"
         autoComplete="username"
