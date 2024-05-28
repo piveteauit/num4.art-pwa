@@ -25,10 +25,11 @@ function VerifyPage() {
   };
 
   return (
-    <div>
-      <section>
-        <h1>OK</h1>
-
+    <div className="flex flex-col justify-center items-center h-screen">
+      <section className="mx-auto max-w-xs self-center flex flex-col gap-8">
+        <span>
+          {" Entrez le code de vérification que vous avez reçu par email"}
+        </span>
         <Input
           onChange={(evt: any) => {
             const token = evt.target.value;
@@ -55,7 +56,7 @@ function VerifyPage() {
                 });
             }
           }}
-          label="token"
+          // label="token"
           type="text"
           minLength={6}
           maxLength={6}
@@ -70,8 +71,6 @@ function VerifyPage() {
         )}
 
         <Button>Valider</Button>
-
-        <p>Cliquez sur le lien pour valider !!</p>
       </section>
     </div>
   );
