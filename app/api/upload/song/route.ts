@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
-const runtime = "nodejs"
+export const runtime = "nodejs"
 
 
 export async function POST(req: NextRequest & { file: any }, res: NextResponse) {
