@@ -173,7 +173,7 @@ function SongForm({ user }: any) {
             !!loadingMessage ||
             !values?.price ||
             !values?.title ||
-            !values?.genre?.length ||
+            (!values?.genre?.length && !genre?.length) ||
             !values?.image ||
             !values?.audio ||
             !!status
