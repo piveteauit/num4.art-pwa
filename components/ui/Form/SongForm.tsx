@@ -27,6 +27,7 @@ function SongForm({ user }: any) {
   const [status, setStatus] = useState("");
   const [values, setValues] = useState(defaultValues);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [genre, setGenre] = useState("");
 
   const onSubmit = async () => {
     setStatus("Upload du son...");
@@ -62,8 +63,8 @@ function SongForm({ user }: any) {
 
       preview: data?.preview?.url,
 
-      artists: [user?.profile?.artist?.id],
-      genres: []
+      artists: user?.profile?.artist?.id ? [user?.profile?.artist?.id] : [],
+      genres: genre ? [genre] : []
     });
 
     setStatus("Terminé");
@@ -148,10 +149,22 @@ function SongForm({ user }: any) {
             <option value={"0"} disabled selected={!values?.genre?.length}>
               {"Sélectionner un genre"}
             </option>
-            <option value={"1"}> {"Rap"}</option>
-            <option value={"2"}> {"Rock"}</option>
-            <option value={"3"}> {"Techno"}</option>
-            <option value={"4"}> {"House"}</option>
+            <option onClick={() => setGenre("1")} value={"1"}>
+              {" "}
+              {"Rap"}
+            </option>
+            <option onClick={() => setGenre("2")} value={"2"}>
+              {" "}
+              {"Rock"}
+            </option>
+            <option onClick={() => setGenre("3")} value={"3"}>
+              {" "}
+              {"Techno"}
+            </option>
+            <option onClick={() => setGenre("4")} value={"4"}>
+              {" "}
+              {"House"}
+            </option>
           </select>
         </div>
 
