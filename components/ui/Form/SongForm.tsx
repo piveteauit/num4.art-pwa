@@ -27,7 +27,7 @@ function SongForm({ user }: any) {
   const [status, setStatus] = useState("");
   const [values, setValues] = useState(defaultValues);
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [genre, setGenre] = useState("");
+  const [genre, setGenre] = useState([]);
 
   const onSubmit = async () => {
     setStatus("Upload du son...");
@@ -64,7 +64,7 @@ function SongForm({ user }: any) {
       preview: data?.preview?.url,
 
       artists: user?.profile?.artist?.id ? [user?.profile?.artist?.id] : [],
-      genres: genre ? [genre] : []
+      genres: genre
     });
 
     setStatus("Terminé");
@@ -144,24 +144,24 @@ function SongForm({ user }: any) {
         <div className="my-4 border-2 flex flex-col gap-4 border-primary p-2 rounded-lg">
           <select
             className="select select-primary bg-base  border-0 outline-0 focus:border-0 focus:outline-0 border-b-2 w-full max-w-xs"
-            onChange={() => setValues({ ...values, genre: ["1"] })}
+            onChange={() => setValues({ ...values })}
           >
             <option value={"0"} disabled selected={!values?.genre?.length}>
               {"Sélectionner un genre"}
             </option>
-            <option onClick={() => setGenre("1")} value={"1"}>
+            <option onClick={() => setGenre(["1"])} value={"1"}>
               {" "}
               {"Rap"}
             </option>
-            <option onClick={() => setGenre("2")} value={"2"}>
+            <option onClick={() => setGenre(["2"])} value={"2"}>
               {" "}
               {"Rock"}
             </option>
-            <option onClick={() => setGenre("3")} value={"3"}>
+            <option onClick={() => setGenre(["3"])} value={"3"}>
               {" "}
               {"Techno"}
             </option>
-            <option onClick={() => setGenre("4")} value={"4"}>
+            <option onClick={() => setGenre(["4"])} value={"4"}>
               {" "}
               {"House"}
             </option>
