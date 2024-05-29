@@ -97,7 +97,7 @@ export default async function Page({ params }: any) {
           </div>
         </section>
 
-        <section className="p-2 w-screen pb-20">
+        <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20">
           <h3 className="text-xl"> Connaissez-vous ? </h3>
 
           <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
