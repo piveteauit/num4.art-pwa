@@ -2,14 +2,10 @@ import { s3, s3Config } from "@/libs/s3";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from 'next/server';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "50mb",
-    },
-    responseLimit: false,
-  },
-};
+export const dynamic = 'force-dynamic';
+export const runtime = "edge";
+export const maxDuration = 5;
+
 
 export async function POST(req: NextRequest & { file: any }, res: NextResponse) {
   try {
