@@ -3,8 +3,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
-export const runtime = "edge";
-export const maxDuration = 5;
+export const maxDuration = 15;
 
 
 export async function POST(req: NextRequest & { file: any }, res: NextResponse) {
