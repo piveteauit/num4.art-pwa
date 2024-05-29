@@ -27,7 +27,7 @@ function SongForm({ user }: any) {
   const [status, setStatus] = useState("");
   const [values, setValues] = useState(defaultValues);
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [genre, setGenre] = useState([]);
+  const [genre, setGenre] = useState(["1"]);
 
   const onSubmit = async () => {
     setStatus("Upload du son...");
