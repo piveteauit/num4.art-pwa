@@ -8,7 +8,6 @@ import apiClient from "@/libs/api";
 import { addSong } from "@/libs/server/song.action";
 import ReactStudio from "react-studio-js";
 import { usePlayer } from "@/context/PlayerContext";
-import { uploadLargeFileToS3 } from "@/libs/uploadFile";
 
 const defaultValues: any = {
   price: 0,
@@ -31,13 +30,13 @@ function SongForm({ user }: any) {
   const [genre, setGenre] = useState(["1"]);
 
   useEffect(() => {
-    if (!values.audio) return;
-    (async function () {
-      const result = await uploadLargeFileToS3({
-        Key: `songs/${user?.profile?.id}/${values.audio.name}`,
-        Body: values.audio
-      });
-    })();
+    // if (!values.audio) return;
+    // (async function () {
+    //   const result = await uploadFileAction({
+    //     audio: values.audio
+    //   });
+    //   console.log(result);
+    // })();
   }, [values.audio]);
 
   const onSubmit = async () => {
@@ -49,13 +48,6 @@ function SongForm({ user }: any) {
     formData.append("preview", values.audio);
     formData.append("image", values.image);
     formData.append("prefix", `songs/${user?.profile?.id}`);
-
-    const result = await uploadLargeFileToS3({
-      Key: `songs/${user?.profile?.id}/${values.audio.name}`,
-      Body: values.audio
-    });
-
-    console.log(result);
 
     const { data } = await apiClient.post("/upload/song", formData, {
       headers: {
