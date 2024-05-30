@@ -18,3 +18,5 @@ export const s3 = new aws.S3({
     secretAccessKey: s3Config.secretKey,
   },
 })
+
+

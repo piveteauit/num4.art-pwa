@@ -28,11 +28,12 @@ export default async function Page({ params }: any) {
       createdAt: "desc"
     }
   });
+
   const artists = Object.values(
     await songs.reduce((acc: any, s) => {
       //@ts-ignore
-      s.artists[0].image = s.artists[0].image || s.image;
-      acc[s.artists[0].id] = s.artists[0];
+      if (s.artists[0]) s.artists[0].image = s.artists?.[0]?.image || s?.image;
+      if (s.artists[0]) acc[s.artists[0].id] = s.artists[0];
 
       return acc;
     }, {})
