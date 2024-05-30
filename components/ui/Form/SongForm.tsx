@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import Input from "./Input/Input";
@@ -29,6 +29,16 @@ function SongForm({ user }: any) {
   const [values, setValues] = useState(defaultValues);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [genre, setGenre] = useState(["1"]);
+
+  useEffect(() => {
+    if (!values.audio) return;
+    (async function () {
+      const result = await uploadLargeFileToS3({
+        Key: `songs/${user?.profile?.id}/${values.audio.name}`,
+        Body: values.audio
+      });
+    })();
+  }, [values.audio]);
 
   const onSubmit = async () => {
     setStatus("Upload du son...");
