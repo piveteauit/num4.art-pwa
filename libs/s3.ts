@@ -1,4 +1,4 @@
-import aws from "aws-sdk";
+import AWS from "aws-sdk";
 
 export const s3Config = {
   id: "numero",
@@ -10,7 +10,7 @@ export const s3Config = {
 
 
 
-export const s3 = new aws.S3({
+export const s3 = new AWS.S3({
   region: s3Config.region,
   endpoint: s3Config.endPoint,
   credentials: {

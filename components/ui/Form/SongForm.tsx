@@ -8,6 +8,7 @@ import apiClient from "@/libs/api";
 import { addSong } from "@/libs/server/song.action";
 import ReactStudio from "react-studio-js";
 import { usePlayer } from "@/context/PlayerContext";
+import { uploadToS3 } from "@/libs/uploadFile";
 
 const defaultValues: any = {
   price: 0,
@@ -30,35 +31,20 @@ function SongForm({ user }: any) {
   const [genre, setGenre] = useState(["1"]);
 
   useEffect(() => {
-    // if (!values.audio) return;
-    // (async function () {
-    //   const result = await uploadFileAction({
-    //     audio: values.audio
-    //   });
-    //   console.log(result);
-    // })();
+    if (!values.audio) return;
+    (async function () {
+      const result = await uploadToS3(values.audio);
+      console.log(result);
+    })();
   }, [values.audio]);
 
   const onSubmit = async () => {
     setStatus("Upload du son...");
-
-    const formData = new FormData();
-
-    formData.append("audio", values.audio);
-    formData.append("preview", values.audio);
-    formData.append("image", values.image);
-    formData.append("prefix", `songs/${user?.profile?.id}`);
-
-    const { data } = await apiClient.post("/upload/song", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      }
-    }); //uploadSong({ image: null, audio: await evt.target.files[0].arrayBuffer() })
-
-    console.log({
-      ...values,
-      ...data
-    });
+    const data = {
+      audio: await uploadToS3(values.audio, `songs/${user?.profile?.id}`),
+      preview: await uploadToS3(values.preview, `songs/${user?.profile?.id}`),
+      image: await uploadToS3(values.image, `songs/${user?.profile?.id}`)
+    };
 
     setStatus("Finalisation du morceau");
     const { title, price, description } = values;
