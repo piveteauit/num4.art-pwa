@@ -23,6 +23,8 @@ const s3 = new AWS.S3({
 
 
 export async function createPresignedUploadUrl(fileName: string, fileType: string) {
+  console.log("Ok before cors");
+
   await s3.putBucketCors({
     Bucket: s3Config.id,
     CORSConfiguration: {
@@ -38,6 +40,8 @@ export async function createPresignedUploadUrl(fileName: string, fileType: strin
     },
   }).promise();
 
+  console.log("Ok cors ok");
+
   const params = {
     Bucket: s3Config.id,
     Key: fileName,
@@ -46,11 +50,16 @@ export async function createPresignedUploadUrl(fileName: string, fileType: strin
   };
   const preSignedUrl = await s3.getSignedUrlPromise("putObject", params);
 
-  await s3.putObjectAcl({
+  console.log("Ok presigned in server");
+  
+  console.log("Ok acl just need return "); 
+  return preSignedUrl;
+}
+
+export async function updateFileVisibility(Key: string) {
+  return await s3.putObjectAcl({
     Bucket: s3Config.id,
-    Key: fileName,
+    Key,
     ACL: "public-read"
   }).promise();
-  
-  return preSignedUrl;
 }

@@ -15,6 +15,14 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: "/api/storage/:path*",
+        destination: `${process.env?.AWS_S3_BUCKET_PUBLIC_ENDPOINT || "https://numero.s3.gra.io.cloud.ovh.net"}/:path*`
+      }
+    ];
+  },
 
   images: {
     domains: [

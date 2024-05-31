@@ -1,12 +1,9 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import Input from "./Input/Input";
-// import { uploadSong } from "@/libs/s3";
-import apiClient from "@/libs/api";
 import { addSong } from "@/libs/server/song.action";
-import ReactStudio from "react-studio-js";
 import { usePlayer } from "@/context/PlayerContext";
 import { uploadToS3 } from "@/libs/uploadFile";
 
