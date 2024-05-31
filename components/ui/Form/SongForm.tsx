@@ -30,14 +30,6 @@ function SongForm({ user }: any) {
   const [loadingMessage, setLoadingMessage] = useState("");
   const [genre, setGenre] = useState(["1"]);
 
-  useEffect(() => {
-    if (!values.audio) return;
-    (async function () {
-      const result = await uploadToS3(values.audio);
-      console.log(result);
-    })();
-  }, [values.audio]);
-
   const onSubmit = async () => {
     setStatus("Upload du son...");
     const data = {
