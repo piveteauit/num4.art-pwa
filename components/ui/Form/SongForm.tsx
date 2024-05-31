@@ -30,9 +30,12 @@ function SongForm({ user }: any) {
   const onSubmit = async () => {
     setStatus("Upload du son...");
     const data = {
-      audio: await uploadToS3(values.audio, `songs/${user?.profile?.id}`),
-      preview: await uploadToS3(values.preview, `songs/${user?.profile?.id}`),
-      image: await uploadToS3(values.image, `songs/${user?.profile?.id}`)
+      audio: await uploadToS3(values.audio, `songs/full-${user?.profile?.id}`),
+      preview: await uploadToS3(
+        values.preview,
+        `songs/preview-${user?.profile?.id}`
+      ),
+      image: await uploadToS3(values.image, `songs/cover-${user?.profile?.id}`)
     };
 
     setStatus("Finalisation du morceau");
