@@ -20,7 +20,11 @@ export default async function Page({ params }: any) {
     include: {
       artists: {
         include: {
-          profile: true
+          profile: {
+            include: {
+              user: true
+            }
+          }
         }
       }
     },
@@ -32,7 +36,10 @@ export default async function Page({ params }: any) {
   const artists = Object.values(
     await songs.reduce((acc: any, s) => {
       //@ts-ignore
-      if (s.artists[0]) s.artists[0].image = s.artists?.[0]?.image || s?.image;
+      if (s.artists[0])
+        //@ts-ignore
+        s.artists[0].image =
+          s.artists?.[0]?.profile?.[0]?.user?.image || s?.image;
       if (s.artists[0]) acc[s.artists[0].id] = s.artists[0];
 
       return acc;
