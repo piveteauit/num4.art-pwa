@@ -24,7 +24,11 @@ export default async function Artist({ params: { artist } }: any) {
   const artistFromDb = await prisma.artist.findUnique({
     where: { id: artist },
     include: {
-      profile: true,
+      profile: {
+        include: {
+          user: true
+        }
+      },
       follows: {
         select: {
           id: true,
@@ -58,7 +62,12 @@ export default async function Artist({ params: { artist } }: any) {
   console.log("artist", follow);
 
   return (
-    <main className="w-screen h-screen overflow-hidden py-8 pb-24 absolute top-0 left-0 bg-[url('/musics/artist-nai.jpg')] pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed">
+    <main
+      style={{
+        backgroundImage: `url(${artistFromDb?.profile?.[0]?.user?.image || "/musics/artist-nai.jpg"})`
+      }}
+      className="w-screen h-screen overflow-hidden py-8 pb-24 absolute top-0 left-0  pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed"
+    >
       <section className="max-w-xl mx-auto flex justify-between fixed w-full right-0 px-8 top-0 py-4 items-center">
         <h1 className="text-xl md:text-4xl font-medium">
           {artistFromDb?.name}
