@@ -38,13 +38,13 @@ export const authOptions: NextAuthOptionsExtended = {
         })
       },
       generateVerificationToken: () => {
-        return new Promise((resolve) => {
-          resolve("442024")
-        })
-        // return `${Array(6)
-        //   .fill(() => Math.floor(Math.random() * 10))
-        //   .map((f) => f())
-        //   .join("")}`;
+        // return new Promise((resolve) => {
+        //   resolve("442024")
+        // })
+        return `${Array(6)
+          .fill(() => Math.floor(Math.random() * 10))
+          .map((f) => f())
+          .join("")}`;
       },
 
       server,
