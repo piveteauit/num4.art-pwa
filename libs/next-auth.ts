@@ -50,20 +50,20 @@ export const authOptions: NextAuthOptionsExtended = {
       server,
       from: "noreply@num4.art" //server.auth.user,
     }),
-    GoogleProvider({
-      // Follow the "Login with Google" tutorial to get your credentials
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-      async profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.given_name ? profile.given_name : profile.name,
-          email: profile.email,
-          image: profile.picture,
-          createdAt: new Date()
-        };
-      }
-    })
+    // GoogleProvider({
+    //   // Follow the "Login with Google" tutorial to get your credentials
+    //   clientId: process.env.GOOGLE_ID,
+    //   clientSecret: process.env.GOOGLE_SECRET,
+    //   async profile(profile) {
+    //     return {
+    //       id: profile.sub,
+    //       name: profile.given_name ? profile.given_name : profile.name,
+    //       email: profile.email,
+    //       image: profile.picture,
+    //       createdAt: new Date()
+    //     };
+    //   }
+    // })
   ],
   // New users will be saved in Database (MongoDB Atlas). Each user (model) has some fields like name, email, image, etc..
   // Requires a MongoDB database. Set MONOGODB_URI env variable.
