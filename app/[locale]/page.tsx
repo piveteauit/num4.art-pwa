@@ -1,9 +1,10 @@
 import { getGenerateMetadata } from "@/generateMetadata";
 import CategoryFilter from "@/components/ui/CategoryFilter";
 import Image from "next/image";
-import { Link } from "@/navigation";
+import { Link, redirect } from "@/navigation";
 import prisma from "@/libs/prisma";
 import { Artist, Profile } from "@prisma/client";
+import { getServerSession } from "@/libs/next-auth";
 
 export const generateMetadata = getGenerateMetadata("home");
 
@@ -16,6 +17,11 @@ const categories = [
 ];
 
 export default async function Page({ params }: any) {
+
+  const session = await getServerSession();
+
+  if (!session) return redirect("/me/signin");
+
   const songs = await prisma.song.findMany({
     include: {
       artists: {
