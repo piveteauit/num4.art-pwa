@@ -10,7 +10,7 @@ export const server = {
   secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
   auth: {
     user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
-    pass: process?.env?.MAIL_AUTH_PASS || ""
+    pass: process?.env?.MAIL_AUTH_PASS
   }
 };
 type SendEmailParams = {
