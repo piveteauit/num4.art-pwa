@@ -39,20 +39,20 @@ export default async function Page({ params }: any) {
     }
   });
 
-  const artists = Object.values(
-    await songs.reduce((acc: any, s) => {
-      //@ts-ignore
-      if (s.artists[0])
-        //@ts-ignore
-        s.artists[0].image =
-          s.artists?.[0]?.profile?.[0]?.user?.image || s?.image;
-      if (s.artists[0]) acc[s.artists[0].id] = s.artists[0];
-
-      return acc;
-    }, {})
-  );
-
-  console.log("songs", songs);
+  const artists = (
+    await prisma.artist.findMany({
+      include: {
+        profile: {
+          include: {
+            user: true
+          }
+        }
+      }
+    })
+  ).map((a) => ({
+    ...a,
+    image: a?.profile?.[0]?.user?.image || "/assets/images/logos/apple-icon.png"
+  }));  
 
   return (
     <>
@@ -115,7 +115,7 @@ export default async function Page({ params }: any) {
           <h3 className="text-xl"> Connaissez-vous ? </h3>
 
           <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
-            {artists.map((artist: Artist & { profile: Profile }, i) => (
+            {artists.map((artist, i) => (
               <Link
                 key={`home-artist-${i}-${artist.id}`}
                 className="flex justify-center text-center  items-center gap-2 flex-col min-w-[100px]"
