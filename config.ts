@@ -1,6 +1,15 @@
 import themes from "daisyui/src/theming/themes.js";
 import { ConfigProps } from "./types/config";
 
+export const server = {
+  host: "smtp-relay.brevo.com" ,//process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
+  port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
+  secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
+  auth: {
+    user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
+    pass: process?.env?.MAIL_AUTH_PASS
+  }
+};
 const config = {
   // REQUIRED
   appName: "Numéro 4",

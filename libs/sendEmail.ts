@@ -1,18 +1,10 @@
 "use server";
-import config from "@/config";
+import config, { server }  from "@/config";
 import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { JSXElementConstructor, ReactElement } from "react";
 
-export const server = {
-  host: "smtp-relay.brevo.com" ,//process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
-  port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
-  secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
-  auth: {
-    user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
-    pass: process?.env?.MAIL_AUTH_PASS
-  }
-};
+
 type SendEmailParams = {
   /**
    *

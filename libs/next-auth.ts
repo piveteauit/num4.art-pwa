@@ -7,9 +7,11 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 
-import config from "@/config";
+import config, { server } from "@/config";
 import prisma from "@/libs/prisma";
-import { sendEmail, server } from "./sendEmail";
+import { sendEmail } from "./sendEmail";
+
+
 
 interface NextAuthOptionsExtended extends NextAuthOptions {
   adapter?: any;
