@@ -9,21 +9,13 @@ import EmailProvider from "next-auth/providers/email";
 
 import config from "@/config";
 import prisma from "@/libs/prisma";
-import { sendEmail } from "./sendEmail";
+import { sendEmail, server } from "./sendEmail";
 
 interface NextAuthOptionsExtended extends NextAuthOptions {
   adapter?: any;
 }
 
-const server = {
-  host: "smtp-relay.brevo.com" ,//process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
-  port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
-  secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
-  auth: {
-    user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
-    pass: "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-dpsaDvgVZt5MA8hy",//process?.env?.MAIL_AUTH_PASS || "noreply.mrk.2023"
-  }
-};
+
 
 
 export const authOptions: NextAuthOptionsExtended = {

@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { JSXElementConstructor, ReactElement } from "react";
 
-const server = {
+export const server = {
   host: "smtp-relay.brevo.com" ,//process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
   port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
   secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
