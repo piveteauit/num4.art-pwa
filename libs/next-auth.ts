@@ -9,20 +9,22 @@ import EmailProvider from "next-auth/providers/email";
 
 import config from "@/config";
 import prisma from "@/libs/prisma";
+import { sendEmail } from "./sendEmail";
 
 interface NextAuthOptionsExtended extends NextAuthOptions {
   adapter?: any;
 }
 
 const server = {
-  host: process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
-  port: Number(process?.env?.MAIL_AUTH_PORT || "465"),
-  secure: process?.env?.MAIL_AUTH_SECURE == "true",
+  host: "smtp-relay.brevo.com" ,//process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
+  port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
+  secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
   auth: {
-    user: process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
-    pass: process?.env?.MAIL_AUTH_PASS || "noreply.mrk.2023"
+    user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
+    pass: "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-dpsaDvgVZt5MA8hy",//process?.env?.MAIL_AUTH_PASS || "noreply.mrk.2023"
   }
 };
+
 
 export const authOptions: NextAuthOptionsExtended = {
   // Set any random key in .env.local
@@ -32,17 +34,24 @@ export const authOptions: NextAuthOptionsExtended = {
     // Follow the "Login with Email" tutorial to set up your email server
     // Requires a MongoDB database. Set MONOGODB_URI env variable.
     EmailProvider({
-      sendVerificationRequest: (params) => {
-        return new Promise((resolve) => {
-          resolve()
+
+      sendVerificationRequest: async (params) => {
+        await sendEmail({
+          from: "noreply@num4.art",
+          to: params.identifier,
+          subject: "Sign in to Num4",
+          html: `<h1>Sign in</h1><p>Use the code below to sign in:</p><p>${params.token}</p>`,
         })
       },
-      generateVerificationToken: () => {
+
+      generateVerificationToken: async () => {
         return new Promise((resolve) => {
-          resolve("442024" || `${Array(6)
+          const token = `${Array(6)
           .fill(() => Math.floor(Math.random() * 10))
           .map((f) => f())
-          .join("")}`)
+          .join("")}`
+          console.log("token", token)
+          resolve(token)
         });
       },
 

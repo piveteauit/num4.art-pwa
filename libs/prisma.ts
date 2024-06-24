@@ -6,4 +6,15 @@ declare global {
 
 // const models = global?.prisma ? global.prisma : new PrismaClient();
 
-export default global?.prisma ? global.prisma : new PrismaClient();
+const globalPrisma = global?.prisma ? global.prisma : new PrismaClient()
+
+globalPrisma.$use(async (params, next) => {
+  if (params.action === "create" && params.model === "VerificationToken") { 
+    await globalPrisma.verificationToken.deleteMany({
+      where: { identifier: params.args.data.identifier}
+    })
+  }
+  return await next(params);
+})
+
+export default globalPrisma;
