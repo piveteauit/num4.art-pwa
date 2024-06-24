@@ -10,7 +10,7 @@ const server = {
   secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
   auth: {
     user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
-    pass: "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-dpsaDvgVZt5MA8hy",//process?.env?.MAIL_AUTH_PASS || "noreply.mrk.2023"
+    pass: process?.env?.MAIL_AUTH_PASS || ""
   }
 };
 type SendEmailParams = {
