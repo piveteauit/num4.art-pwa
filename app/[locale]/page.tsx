@@ -17,7 +17,6 @@ const categories = [
 ];
 
 export default async function Page({ params }: any) {
-
   const session = await getServerSession();
 
   if (!session) return redirect("/me/signin");
@@ -52,13 +51,22 @@ export default async function Page({ params }: any) {
   ).map((a) => ({
     ...a,
     image: a?.profile?.[0]?.user?.image || "/assets/images/logos/apple-icon.png"
-  }));  
+  }));
 
   return (
     <>
       <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10">
         <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
-          <h1 className="text-xl md:text-4xl font-medium">Market place</h1>
+          <Link href={"/"}>
+            <Image
+              alt="Logo"
+              src={"/assets/images/logos/Logo_num4_V2_blanc.png"} 
+              width={150} 
+              height={50} 
+              className="object-contain"
+              layout="fixed"
+            />
+          </Link>
 
           <Link className="z-50" href={"/dashboard"}>
             <Image
@@ -130,7 +138,6 @@ export default async function Page({ params }: any) {
                   width={100}
                   alt="Artiste avatar N A I"
                   className="avatar rounded-full !w-[100px] !h-[100px] object-cover overflow-hidden"
-                  // @ts-ignore
                   src={artist?.image || "/musics/artist-nai.jpg"}
                 />
                 <span>{artist?.name}</span>
@@ -138,21 +145,6 @@ export default async function Page({ params }: any) {
             ))}
           </div>
         </section>
-
-        {/* <div className="flex-[2] h-full w-full relative">
-          <Link href={"/"}>
-            <Image
-              className="m-auto max-w-56 object-contain"
-              alt="Logo n°4"
-              layout="fill"
-              src={"/assets/images/logos/logo.png"}
-            />
-          </Link>
-        </div>
-
-        <div className="flex-[1] w-full p-5 max-w-sm">
-          <Login />
-        </div> */}
       </main>
     </>
   );

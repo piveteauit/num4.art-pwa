@@ -25,7 +25,7 @@ function VerifyPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen bg-custom-black">
       <section className="mx-auto max-w-xs self-center flex flex-col gap-8">
         <span>
           {" Entrez le code de vérification que vous avez reçu par email"}
@@ -62,15 +62,16 @@ function VerifyPage() {
           maxLength={6}
           required
           name="token"
+          
         />
 
         {!error ? null : (
           <>
-            <div className=" alert alert-error">{error}</div>
+            <div className=" alert alert-error">{error} </div>
           </>
         )}
 
-        <Button>Valider</Button>
+        <Button> <span style={{ color: '#191919' }}>Valider</span> </Button>
       </section>
     </div>
   );

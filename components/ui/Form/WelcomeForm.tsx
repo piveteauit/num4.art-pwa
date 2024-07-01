@@ -14,7 +14,7 @@ function Welcome() {
   }, []);
 
   return (
-    <section className="w-full flex flex-col gap-8 justify-center max-w-xs">
+    <section className="w-full flex flex-col gap-8 justify-center max-w-xs" >
       <Input
         type="text"
         autoComplete="username"
@@ -22,6 +22,7 @@ function Welcome() {
         value={artistName}
         label="Nom d'artiste (si artiste)"
         onChange={({ target: { value } }: any) => setArtistName(value)}
+        
       />
 
       <Button
@@ -32,9 +33,10 @@ function Welcome() {
           // onSubmit({ artist: artistName, id: user?.id })
         }}
       >
-        Valider
+        <span style={{ color: '#191919' }}>Valider</span>
       </Button>
-    </section>
+      
+    </section >
   );
 }
 

@@ -19,28 +19,28 @@ export default async function Page({ params, searchParams }: any) {
 
   return (
     <>
-      <main className="flex flex-col h-screen w-screen items-center p-10">
-        <div className="flex-[2] h-full w-full relative">
-          <Link href={"/"}>
-            <Image
-              className="m-auto max-w-56 object-contain"
-              alt="Logo n°4"
-              layout="fill"
-              src={"/assets/images/logos/logo.png"}
-            />
-          </Link>
-        </div>
+    <main className="flex flex-col h-screen w-screen items-center p-10 bg-custom-black">
+      <div className="flex-[2] h-full w-full relative">
+        <Link href={"/"}>
+          <Image
+            className="m-auto max-w-56 object-contain"
+            alt="Logo n°4"
+            layout="fill"
+            src={"/assets/images/logos/Logo_num4_V2_blanc.png"}
+          />
+        </Link>
+      </div>
 
-        <div
-          className={`${!searchParams?.error ? "hidden" : ""} alert w-min alert-error`}
-        >
-          {searchParams?.error}
-        </div>
+      <div
+        className={`${!searchParams?.error ? "hidden" : ""} alert w-min alert-error`}
+      >
+        {searchParams?.error}
+      </div>
 
-        <div className="flex-[1] w-full p-5 max-w-sm">
-          <Login providers={providers} />
-        </div>
-      </main>
-    </>
+      <div className="flex-[1] w-full p-5 max-w-sm">
+        <Login providers={providers} />
+      </div>
+    </main>
+  </>
   );
 }

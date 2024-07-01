@@ -52,6 +52,7 @@
     "react-tooltip": "^5.21.1",
     "sharp": "^0.33.2",
     "stripe": "^13.2.0",
+    "ts-node": "^10.9.2",
     "zod": "^3.22.2"
   },
   "devDependencies": {

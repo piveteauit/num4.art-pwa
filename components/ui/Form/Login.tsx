@@ -42,12 +42,14 @@ function Login({ providers }: { providers: ProviderLight[] }) {
               className={`w-full ${i ? "bg-secondary border-none" : ""}`}
               onClick={() => handleSignin(provider)}
             >
-              <span>Sign in with : {provider.name}</span>
+              <span className="text-black">Sign in with: {provider.name}</span>
               <img src={provider?.style?.logo} />
             </Button>
 
             <div
-              className={`flex items-center my-3 ${providersArr?.length - 1 > providersArr?.indexOf(provider) ? "" : "hidden"}`}
+              className={`flex items-center my-3 ${
+                providersArr?.length - 1 > providersArr?.indexOf(provider) ? "" : "hidden"
+              }`}
             >
               <hr className="my-2 flex-1" />
               <span className="mx-2"> OU </span>

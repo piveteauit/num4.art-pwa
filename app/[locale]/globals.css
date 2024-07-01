@@ -22,3 +22,7 @@ progress::-webkit-progress-value {
     @apply !capitalize;
   }
 }
+/* styles/global.css */
+.bg-custom-black {
+  background-color: #191919;
+}
