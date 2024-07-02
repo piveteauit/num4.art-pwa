@@ -14,11 +14,11 @@ function Input(props: InputProps | TextAreaProps) {
   const { label } = props;
 
   return (
-    <div className="flex flex-col text-primary">
-      {props?.type !== "checkbox" ? <label> {label} </label> : null}
+    <div className="flex flex-col text-white">
+      {props?.type !== "checkbox" ? <label>{label}</label> : null}
       {props?.type === "textarea" ? (
         <textarea
-          className="p-3 bg-secondary border-primary border-opacity-50 border-2 rounded-lg"
+          className="p-3 bg-secondary border-white border-opacity-50 border-2 rounded-lg" 
           {...props}
         />
       ) : props?.type === "checkbox" ? (
@@ -34,7 +34,7 @@ function Input(props: InputProps | TextAreaProps) {
         </div>
       ) : (
         <input
-          className="p-3 bg-secondary border-2 border-primary border-opacity-50 rounded-lg"
+          className="p-3 bg-secondary border-2 border-white border-opacity-50 rounded-lg"
           {...props}
         />
       )}

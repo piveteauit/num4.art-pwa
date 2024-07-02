@@ -19,7 +19,7 @@ const categories = [
 export default async function Page({ params }: any) {
   const session = await getServerSession();
 
-  if (!session) return redirect("/me/signin");
+  //if (!session) return redirect("/me/signin");
 
   const songs = await prisma.song.findMany({
     include: {

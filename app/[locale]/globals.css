@@ -26,3 +26,9 @@ progress::-webkit-progress-value {
 .bg-custom-black {
   background-color: #191919;
 }
+.bg-custom-white {
+  background-color: #FFFFFF;
+}
+.white-icon {
+  fill: white;
+}

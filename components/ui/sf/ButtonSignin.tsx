@@ -11,7 +11,7 @@ import config from "@/config";
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({
   text = "Get started",
-  extraStyle
+  extraStyle 
 }: {
   text?: string;
   extraStyle?: string;
@@ -43,7 +43,7 @@ const ButtonSignin = ({
             height={24}
           />
         ) : (
-          <span className="w-6 h-6 bg-base-300 flex justify-center items-center rounded-full shrink-0">
+          <span className="w-6 h-6 bg-base-300 flex justify-center items-center rounded-full shrink-0 ">
             {session.user?.name?.charAt(0) || session.user?.email?.charAt(0)}
           </span>
         )}

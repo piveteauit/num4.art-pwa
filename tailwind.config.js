@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundColor: {
-        base: "rgb(65,65,65)"
+        base: "rgb(19,19,19)"
       },
       backgroundImage: {
         gradient:

@@ -56,7 +56,7 @@ function Register() {
       />
 
       <div className="flex flex-col gap-1 p-10 pt-5">
-        <Button type="submit">Inscription</Button>
+        <Button type="submit">Inscription </Button>
 
         <Button
           type="button"

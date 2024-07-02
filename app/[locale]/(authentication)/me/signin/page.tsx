@@ -32,12 +32,12 @@ export default async function Page({ params, searchParams }: any) {
       </div>
 
       <div
-        className={`${!searchParams?.error ? "hidden" : ""} alert w-min alert-error`}
+        className={`${!searchParams?.error ? "hidden" : ""} alert w-min alert-error `}
       >
         {searchParams?.error}
       </div>
 
-      <div className="flex-[1] w-full p-5 max-w-sm">
+      <div className="flex-[1] w-full p-5 max-w-sm ">
         <Login providers={providers} />
       </div>
     </main>
