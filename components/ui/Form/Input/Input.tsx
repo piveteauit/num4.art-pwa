@@ -18,7 +18,7 @@ function Input(props: InputProps | TextAreaProps) {
       {props?.type !== "checkbox" ? <label>{label}</label> : null}
       {props?.type === "textarea" ? (
         <textarea
-          className="p-3 bg-secondary border-white border-opacity-50 border-2 rounded-lg" 
+          className="p-3 bg-secondary border-white border-opacity-50 border-2 rounded-lg text-black" 
           {...props}
         />
       ) : props?.type === "checkbox" ? (
@@ -26,15 +26,15 @@ function Input(props: InputProps | TextAreaProps) {
           <label className="label cursor-pointer">
             <input
               type="checkbox"
-              className="checkbox checkbox-accent w-6 h-6"
+              className="checkbox checkbox-accent w-6 h-6 text-black"
               {...props}
             />
-            <span className="label-text">{label}</span>
+            <span className="label-text text-black">{label}</span>
           </label>
         </div>
       ) : (
         <input
-          className="p-3 bg-secondary border-2 border-white border-opacity-50 rounded-lg"
+          className="p-3 bg-secondary border-2 border-white border-opacity-50 rounded-lg text-black"
           {...props}
         />
       )}

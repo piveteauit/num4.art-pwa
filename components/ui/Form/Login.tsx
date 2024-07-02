@@ -3,7 +3,6 @@ import { signIn } from "next-auth/react";
 import Button from "../Button/Button";
 import Input from "./Input/Input";
 import { useState } from "react";
-import { Link } from "@/navigation";
 import { Provider } from "next-auth/providers";
 
 interface ProviderLight {
@@ -26,7 +25,7 @@ function Login({ providers }: { providers: ProviderLight[] }) {
   const providersArr = Object.values(providers);
 
   return (
-    <section className="w-full">
+    <section className="w-full text-white">
       <Input
         type="email"
         autoComplete="email"
@@ -34,7 +33,7 @@ function Login({ providers }: { providers: ProviderLight[] }) {
         value={email}
         label="email"
         onChange={({ target: { value } }: any) => setEmail(value)}
-        style={{ backgroundColor: '#FFFFFF', color: '#FFFFFF' }}
+        style={{ backgroundColor: '#FFFFFF', color: '#000000' }} // Texte en noir
       />
       {providersArr.map((provider, i) => {
         return (
@@ -50,12 +49,11 @@ function Login({ providers }: { providers: ProviderLight[] }) {
 
             <div
               className={`flex items-center my-3 ${
-                providersArr?.length - 1 > providersArr?.indexOf(provider) ? "" : "hidden"
-                
+                providersArr.length - 1 > providersArr.indexOf(provider) ? "" : "hidden"
               }`}
             >
               <hr className="my-2 flex-1" />
-              <span className="mx-2" > OU </span>
+              <span className="mx-2"> OU </span>
               <hr className="my-2 flex-1" />
             </div>
           </div>
