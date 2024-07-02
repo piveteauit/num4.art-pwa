@@ -19,7 +19,7 @@ const categories = [
 export default async function Page({ params }: any) {
   const session = await getServerSession();
 
-  //if (!session) return redirect("/me/signin");
+  if (!session) return redirect("/me/signin");
 
   const songs = await prisma.song.findMany({
     include: {
@@ -111,7 +111,7 @@ export default async function Page({ params }: any) {
                 <div className="text-white flex flex-col">
                   <span>{s.title}</span>
                   <span className="text-xs opacity-75">
-                    Par {s.artists?.[0]?.name}
+                    {s.artists?.[0]?.name}
                   </span>
                 </div>
               </Link>

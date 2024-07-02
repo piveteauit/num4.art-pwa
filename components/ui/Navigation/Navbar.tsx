@@ -6,7 +6,7 @@ function Navbar() {
   const session = useSession();
   const pathname = usePathname();
 
-  //if (session?.status !== "authenticated") return null;
+  if (session?.status !== "authenticated") return null;
 
   return (
     <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999]">

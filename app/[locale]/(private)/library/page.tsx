@@ -40,7 +40,7 @@ export default async function Library() {
   return (
     <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24 absolute top-0 left-0">
       <section className="max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base items-center">
-        <h1 className="text-xl md:text-4xl font-medium">Bibliothèque</h1>
+        <h1 className="text-xl md:text-4xl font-medium">collection</h1>
         <Link href={"/dashboard"}>
           <Image
             alt="Settings icon"
