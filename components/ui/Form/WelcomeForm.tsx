@@ -31,8 +31,9 @@ function Welcome() {
           });
           // onSubmit({ artist: artistName, id: user?.id })
         }}
+         className="bg-custom-black border border-white text-white p-2 rounded"
       >
-        <span style={{ color: '#191919' }}>Valider</span>
+        <span style={{ color: '#FFFFF' }}>Valider</span>
       </Button>
       
     </section >

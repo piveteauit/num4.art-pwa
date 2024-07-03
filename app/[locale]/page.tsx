@@ -50,7 +50,7 @@ export default async function Page({ params }: any) {
     })
   ).map((a) => ({
     ...a,
-    image: a?.profile?.[0]?.user?.image || "/assets/images/logos/apple-icon.png"
+    image: a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
   }));
 
   return (

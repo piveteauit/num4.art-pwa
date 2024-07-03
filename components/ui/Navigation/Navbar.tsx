@@ -6,7 +6,7 @@ function Navbar() {
   const session = useSession();
   const pathname = usePathname();
 
-  if (session?.status !== "authenticated") return null;
+ if (session?.status !== "authenticated") return null;
 
   return (
     <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999]">
@@ -29,7 +29,7 @@ function Navbar() {
           alt="Icon Home"
           src={require(
             pathname === "/player"
-              ? "@/public/assets/images/icons/bouton-jouer-_2_.svg"
+              ? "@/public/assets/images/icons/home.svg"
               : "@/public/assets/images/icons/bouton-jouer-_2_.svg"
           )}
         />

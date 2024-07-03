@@ -71,7 +71,7 @@ function VerifyPage() {
           </>
         )}
 
-        <Button> <span style={{ color: '#191919' }}>Valider</span> </Button>
+        <Button    className="bg-custom-black border border-white text-white p-2 rounded"> <span style={{ color: '#FFFFFF' }}>Valider</span> </Button>
       </section>
     </div>
   );

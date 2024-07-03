@@ -92,6 +92,13 @@ function SongForm({ user }: any) {
               setValues({ ...values, price: Number(target.value) })
             }
           />
+           <Input
+            label="ISRC"
+            type="text"
+            onChange={({ target }) =>
+              setValues({ ...values, ISRC:target.value })
+            }
+          />
 
           <Input
             onChange={({ target }) =>

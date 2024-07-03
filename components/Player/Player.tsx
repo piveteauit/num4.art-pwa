@@ -123,7 +123,7 @@ function Player() {
                 {currentPlaying?.title}
               </h3>
               <h4 className="text-sm text-left -mb-5 text-white relative z-10">
-                Par {currentPlaying?.artists?.[0]?.name || "N/A"}
+                 {currentPlaying?.artists?.[0]?.name || "N/A"}
               </h4>
             </div>
           </div>
@@ -168,7 +168,6 @@ function Player() {
                 profileId={userProfile?.id}
                 label={
                   <span className="text-center">
-                    {"Débloquer pour "}
                     <span className="font-bold pt-2">
                       {currentPlaying?.price}
 

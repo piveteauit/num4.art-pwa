@@ -50,7 +50,7 @@ const ButtonCheckout = ({
 
   return (
     <button
-      className="btn btn-primary btn-block group"
+      className="btn btn-white btn-block group"
       onClick={() => handlePayment()}
     >
       {isLoading ? (
