@@ -2,7 +2,7 @@ import Button, { ButtonProps } from "./Button";
 
 function ButtonFilter(props: ButtonProps) {
   const { className, active } = props;
-  const bgClass = active ? "" : "bg-base border-white";
+  const bgClass = active ? "" : "bg-white border-white";
   return (
     <Button
       {...props}

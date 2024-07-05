@@ -14,7 +14,7 @@ function Button(props: ButtonProps) {
   return (
     <button
       {...props}
-      className={`btn ${size ? "btn-" + size : ""} ${color ? "disabled:opacity-60 disabled:bg-" + color : "disabled:bg-primary disabled:opacity-60"} ${color ? "btn-" + color : "btn-white"} text-white ${props?.className}`}
+      className={`btn ${size ? "btn-" + size : ""} ${color ? "disabled:opacity-60 disabled:bg-" + color : "disabled:bg-primary disabled:opacity-60"} ${color ? "btn-" + color : "btn-white"} text-custom ${props?.className}`}
     >
       {children}
     </button>
@@ -30,7 +30,10 @@ export const ButtonChangeMode = ({
 
   return (
     <Button
-      {...props}
+    {...props}
+    color="white" // Ajouté la couleur blanche en tant que propriété
+    className={`text-white hover:bg-gray-100 hover:text-black focus:outline-none text-sm px-4 py-1 ${props.className}`}
+    
       onClick={async (evt) => {
         await setCurrentMode({ id, artistMode });
         router.push({ pathname: "/dashboard", query: { artistMode } });

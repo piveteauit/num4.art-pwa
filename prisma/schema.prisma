@@ -59,7 +59,7 @@ model Song {
   id          String     @id @default(cuid())
   title       String
   price       Float
-  ISRC        String
+  ISRC        String @unique
   image       String?
   description String?
   createdAt   DateTime   @default(now())

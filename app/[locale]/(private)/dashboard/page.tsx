@@ -38,7 +38,7 @@ export default async function Dashboard() {
 
   return (
     <main className="min-h-screen pb-24">
-      <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center">
+      <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center bg-black">
         <Avatar user={user} />
 
         <div className="text-center" >
@@ -49,7 +49,7 @@ export default async function Dashboard() {
         </div>
       </section>
 
-      <section className="z-2 bg-base-100 p-5  bg-opacity-25 fixed h-[60%] pb-[60px] top-[40%] flex flex-col rounded-t-3xl w-full  items-center" >
+      <section className="z-2 bg-black p-5  bg-opacity-25 fixed h-[60%] pb-[60px] top-[40%] flex flex-col rounded-t-3xl w-full  items-center" >
         <SongForm user={user} />
 
         <div className="text-lg font-medium w-full max-w-[300px] flex justify-between" >
@@ -60,7 +60,7 @@ export default async function Dashboard() {
             className="btn btn-outline m-0 py-0  h-auto min-h-0"
             size="xs"
           >
-            {user?.profile?.artistMode ? "Mode artiste" : "Mode auditeur"}
+            {user?.profile?.artistMode ? "Mode auditeur" : "Mode artiste"}
           </ButtonChangeMode>
         </div>
 

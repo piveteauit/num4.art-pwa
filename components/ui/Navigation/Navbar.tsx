@@ -29,7 +29,7 @@ function Navbar() {
           alt="Icon Home"
           src={require(
             pathname === "/player"
-              ? "@/public/assets/images/icons/home.svg"
+              ? "@/public/assets/images/icons/bouton-jouer-active.svg"
               : "@/public/assets/images/icons/bouton-jouer-_2_.svg"
           )}
         />

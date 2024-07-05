@@ -39,13 +39,14 @@ function SongForm({ user }: any) {
     };
 
     setStatus("Finalisation du morceau");
-    const { title, price, description } = values;
+    const { title, price, ISRC, description } = values;
     //title, price, genres, albums, description, image, audio, artists
     const newSong = await addSong({
       title,
       price,
+      ISRC,
       description,
-
+      
       image: data?.image?.url,
       audio: data?.audio?.url,
 
@@ -66,17 +67,17 @@ function SongForm({ user }: any) {
 
   return (
     <div className={`${user?.profile?.artistMode ? "" : "invisible"}`}>
-      <div className="w-full text-center mb-5">
+      <div className="w-full text-center mb-5" >
         <Button
           onClick={() => setIsModalOpen(true)}
-          className={`${user?.profile?.artistMode ? "" : "hidden"}`}
+          className={`${user?.profile?.artistMode ? "text-black" : "hidden"}`}
         >
           {"Publier un titre"}
         </Button>
       </div>
 
       <Modal {...{ isModalOpen, setIsModalOpen, title: "Ajouter une musique" }}>
-        <div className="my-4 border-2 flex flex-col gap-4 border-primary p-2 rounded-lg">
+        <div className="my-4 border-1 flex flex-col gap-4 border-primary p-2 rounded-lg">
           <Input
             label="Titre"
             type="text"
@@ -109,7 +110,7 @@ function SongForm({ user }: any) {
           />
         </div>
 
-        <div className="my-4 border-2 flex flex-col gap-4 border-primary p-2 rounded-lg">
+        <div className="my-4 border-1 flex flex-col gap-4 border-primary p-2 rounded-lg">
           <Input
             label="Son"
             type="file"
@@ -136,9 +137,9 @@ function SongForm({ user }: any) {
           />
         </div>
 
-        <div className="my-4 border-2 flex flex-col gap-4 border-primary p-2 rounded-lg">
+        <div className="my-4 border-1 flex flex-col gap-4 border-primary p-2 rounded-lg">
           <select
-            className="select select-primary bg-base  border-0 outline-0 focus:border-0 focus:outline-0 border-b-2 w-full max-w-xs"
+            className="select select-primary bg-white text-black  border-0 outline-0 focus:border-0 focus:outline-0 border-b-1 w-full max-w-xs"
             onChange={() => setValues({ ...values })}
           >
             <option value={"0"} disabled selected={!values?.genre?.length}>
@@ -174,7 +175,7 @@ function SongForm({ user }: any) {
             !!status
           }
           onClick={onSubmit}
-          className="w-full my-3"
+          className="w-full my-3 "
         >
           {status || "Valider"}
         </Button>
