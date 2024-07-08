@@ -85,32 +85,32 @@ export default async function Page({ params }: any) {
 
           {/* <div className="flex gap-2">
             <CategoryFilter songs={songs} categories={categories} />
-          </div> */}
+          </div> rounded-none rounded-sm rounded rounded-md rounded-lg  rounded-xl rounded-2xl rounded-3xl rounded-full*/}
 
           <h3 className="text-xl my-8"> Sortie récente </h3>
 
-          <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-wrap lg:justify-center lg:mx-auto">
+          <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-wrap lg:justify-center lg:mx-auto ">
             {songs.map((s, i) => (
               <Link
                 href={{
                   pathname: "/player",
                   query: { song: s.id }
                 }}
-                className="bg-base-100 bg-opacity-5 p-3 rounded-2xl overflow-hidden min-h-[180px] min-w-[160px] lg:w-[180px]"
                 key={`song-${s.id}-${i}`}
               >
-                <span className="block relative h-44 w-[140px] m-auto rounded-2xl overflow-hidden">
+                <span className="block relative h-44 w-[140px] m-auto rounded-md overflow-hidden min-h-[180px] min-w-[180px]">
+                  
                   <Image
-                    className="object-cover rounded-2xl"
+                    className="object-cover rounded-2l"
                     alt="jaquette musique"
                     src={s?.image || ""}
                     layout="fill"
                   />
                 </span>
 
-                <div className="text-white flex flex-col">
+                <div className="flex flex-col items-start text-white mt-2">
                   <span>{s.title}</span>
-                  <span className="text-xs opacity-75">
+                  <span className=" text-xs opacity-75">
                     {s.artists?.[0]?.name}
                   </span>
                 </div>

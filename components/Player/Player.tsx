@@ -108,7 +108,7 @@ function Player() {
   return (
     <>
       {hasSong || !isPlayerScreen ? null : (
-        <div className="absolute rounded-t-3xl flex flex-col shadow-inner shadow-primary/50 pb-16 justify-around gap-4 z-50 px-10 bg-base bottom-0 left-0 w-full h-1/2 min-h-[200px]">
+        <div className="absolute rounded-t-3xl flex flex-col shadow-inner shadow-white/50 pb-16 justify-around gap-4 z-50 px-10 bg-base bottom-0 left-0 w-full h-1/2 min-h-[200px]">
           <div className="flex items-center">
             <div className="relative h-20 w-20 rounded-full m-auto overflow-hidden">
               <Image
@@ -158,7 +158,7 @@ function Player() {
                   <span className="text-white relative z-50 text-nowrap flex justify-center items-center"></span>
                 </span>
                 <span className="text-primary-content relative z-50">
-                  {"Ecouter l'extrait"}
+                  {"Écouter l'extrait"}
                 </span>
               </Button>
             </div>
