@@ -38,8 +38,8 @@ export default async function Library() {
   });
 
   return (
-<main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24 absolute top-0 left-0">
-  <div className="flex justify-between items-center w-full absolute top-0 px-8 py-4 bg-base">
+<main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24">
+  <div className="flex justify-between items-center w-full absolute top-0 px-8 py-4 bg-base absolute top-0 left-0">
     <h1 className="text-xl md:text-4xl font-medium">collection</h1>
     <Link href={"/dashboard"} className="ml-4"> {/* Adjust the margin-left (ml-4) as needed */}
       <Image
