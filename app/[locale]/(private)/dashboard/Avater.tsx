@@ -40,7 +40,7 @@ export default function Avatar({ user }: any) {
   console.log(session.data?.user?.image);
 
   return (
-    <label className="avatar hover:cursor-pointer rounded-full border-2 border-primary p-5 overflow-hidden w-[60px] h-[60px] hover:bg-black/60 transition-all duration-300">
+    <label className="avatar hover:cursor-pointer rounded-full border-2 border-white p-5 overflow-hidden w-[100px] h-[100px] hover:bg-black/60 transition-all duration-300">
       {ld ? (
         <span className="loading loading-spinner loading-md" />
       ) : (
