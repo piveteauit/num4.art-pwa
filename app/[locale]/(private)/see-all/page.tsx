@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Link } from '@/navigation';
 import Image from 'next/image';
@@ -41,7 +40,7 @@ export default async function Page() {
   return (
     <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20 mx-auto">
       <h3 className="text-xl mb-4">Tous les morceaux</h3>
-      <div className="grid grid-cols-2 gap-4 justify-center">
+      <div className="grid grid-cols-2 gap-4 justify-center lg:grid-cols-4">
         {songs.map((s, i) => (
           <Link
             href={{
@@ -70,5 +69,3 @@ export default async function Page() {
     </section>
   );
 };
-
-

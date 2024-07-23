@@ -44,7 +44,7 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
           </Link>
         </div>
 
-        <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-wrap lg:justify-center lg:mx-auto">
+        <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-nowrap lg:justify-start lg:mx-auto">
           {filteredSongs.map((s, i) => (
             <Link
               href={{

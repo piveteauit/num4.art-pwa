@@ -52,7 +52,7 @@ function Player() {
   const { data } = useSession();
   const [userProfile, setUserProfile] = useState(null);
   const [artistProfile, setArtistProfile] = useState(null);
-
+  console.log(paused)
   useEffect(() => {
     getProfile(data?.user?.id).then(setUserProfile).catch(console.error);
   }, [data?.user?.id]);
@@ -71,6 +71,8 @@ function Player() {
 
   useEffect(() => {
     if (audioRef.current) {
+      console.log(paused)
+      console.log(currentTime);
       if (paused) audioRef.current.pause();
       if (!paused) audioRef.current.play();
     }
@@ -80,14 +82,16 @@ function Player() {
     (o: any) => o.songId === currentPlaying?.id
   );
   useEffect(() => {
-    if (!hasSong && currentTime >= 20) {
+    
+    if (!hasSong && currentTime >= 20 ) {
       setPaused(true);
       audioRef.current.currentTime = 0;
       setCurrentTime(0);
+      console.log("first condition met");
       toast.success("Extrait terminé", {});
     }
-
     if (currentTime === Number(audioRef.current?.duration)) {
+      console.log("second condition met");
       const songIndex = currentList?.indexOf(currentPlaying);
       setCurrentPlaying(
         currentList[songIndex < currentList?.length - 1 ? songIndex + 1 : 0]
@@ -146,6 +150,7 @@ function Player() {
             <div>
               <Button
                 onClick={() => {
+                  console.log("clicked");
                   setCurrentTime(0);
                   setPaused((p) => !p);
 
@@ -245,7 +250,7 @@ function Player() {
             onTimeUpdate={(evt) =>
               setCurrentTime(evt?.currentTarget?.currentTime)
             }
-            autoPlay={!paused || !audioRef?.current?.duration}
+            autoPlay={false}
             src={currentPlaying?.preview || currentPlaying?.audio}
             ref={audioRef}
           />
