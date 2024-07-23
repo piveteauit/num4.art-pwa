@@ -22,6 +22,7 @@ export default async function Dashboard() {
   }
 
   const { user } = session;
+  //console.log("user",user);
 
   try {
     user.profile = await prisma.profile.findFirstOrThrow({
@@ -29,13 +30,13 @@ export default async function Dashboard() {
         userId: user?.id
       },
       include: {
-        artist: true
+        artist: true,
+        user: true
       }
     });
   } catch (e) {
     redirect("/me/welcome");
   }
-
   return (
     <main className="min-h-screen pb-24">
   <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center bg-custom-black">

@@ -16,6 +16,7 @@ export const pathnames = {
   "/me/welcome": "/me/welcome",
   "/me/signout": "/me/signout",
   "/me/signup": "/me/signup",
+   
 
   "/dashboard": {
     en: "/my-account",
@@ -40,6 +41,11 @@ export const pathnames = {
   "/artist/[artist]": {
     en: "/artist/[artist]",
     fr: "/artiste/[artist]"
+  },
+
+  "/see-all": {
+    en: "/see-all",
+    fr: "/voir-tout"
   }
 
   // // Dynamic params are supported via square brackets

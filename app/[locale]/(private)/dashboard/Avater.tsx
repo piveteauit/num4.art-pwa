@@ -8,12 +8,12 @@ import { useState } from "react";
 export default function Avatar({ user }: any) {
   const [ld, setLd] = useState(false);
   const session = useSession();
-  const [avater, setAvater] = useState<any>(session?.data?.user?.image);
+  const [avater, setAvater] = useState<any>(user?.profile?.user?.image);
   const updatePdp = async (image: File) => {
     const formData = new FormData();
     setLd(true);
 
-    formData.append("avatar", image);
+    formData.append(" ", image);
 
     const { data } = await apiClient.post(
       `/upload?userId=${user?.id}&prefix=${user?.id}`,
@@ -37,7 +37,11 @@ export default function Avatar({ user }: any) {
     setLd(false);
   };
 
-  console.log(session.data?.user?.image);
+ // console.log("image session",session.data?.user?.image);
+  //console.log("avater",avater);
+if(!avater){ setAvater(session?.data?.user?.image);}
+//console.log("session",session);
+//console.log("user",user);
 
   return (
     <label className="avatar hover:cursor-pointer rounded-full border-2 border-white p-5 overflow-hidden w-[100px] h-[100px] hover:bg-black/60 transition-all duration-300">
@@ -49,7 +53,6 @@ export default function Avatar({ user }: any) {
           fill
           src={
             avater ||
-            session.data?.user?.image ||
             "/assets/images/logos/logo.png"
           }
         />

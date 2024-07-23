@@ -6,7 +6,7 @@ import { usePathname } from "@/navigation";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { getProfile, likeSong, unlikeSong } from "@/libs/server/user.action";
+import { getProfile, likeSong, unlikeSong,getArtistProfile } from "@/libs/server/user.action";
 import ButtonCheckout from "../ui/sf/ButtonCheckout";
 import toast from "react-hot-toast";
 
@@ -51,6 +51,7 @@ function Player() {
   const searchParams = useSearchParams();
   const { data } = useSession();
   const [userProfile, setUserProfile] = useState(null);
+  const [artistProfile, setArtistProfile] = useState(null);
 
   useEffect(() => {
     getProfile(data?.user?.id).then(setUserProfile).catch(console.error);
@@ -93,7 +94,12 @@ function Player() {
       );
     }
   }, [currentTime]);
-
+  useEffect(() => {
+  if(!currentPlaying?.artists?.[0]?.id){
+    console.error("No artist id found in currentPlaying");
+  }
+    getArtistProfile(currentPlaying?.artists?.[0]?.id).then(setArtistProfile).catch(console.error);
+  }, [currentPlaying?.artists?.[0]?.id])
   const isPlayerScreen = path === "/player";
 
   const playerHeight = !isPlayerScreen ? "h-0 hidden" : "h-6";
@@ -105,6 +111,7 @@ function Player() {
         (f: any) => f?.profil?.userId === data?.user?.id
       );
 
+
   return (
     <>
       {hasSong || !isPlayerScreen ? null : (
@@ -114,7 +121,7 @@ function Player() {
               <Image
                 className="object-cover rounded-2xl"
                 alt="jaquette musique"
-                src={currentPlaying?.image || ""}
+                src={artistProfile?.profile?.[0]?.user?.image || ""}
                 layout="fill"
               />
             </div>

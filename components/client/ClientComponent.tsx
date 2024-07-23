@@ -33,11 +33,16 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
   return (
     <>
       <section className="mt-10 p-2 w-screen lg:max-w-5xl lg:text-center">
-      <SearchBar onSearch={setSearchTerm} />
+        <SearchBar onSearch={setSearchTerm} />
         <span>Catégories</span>
-
-
-        <h3 className="text-xl my-8"> Sortie récente </h3>
+        <div className="flex justify-between items-center my-8">
+          <h3 className="text-xl">Sortie récente</h3>
+          <Link href={{ 
+            pathname: "/see-all" 
+            }} className="text-white-500 hover:underline">
+            Voir tout
+          </Link>
+        </div>
 
         <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-wrap lg:justify-center lg:mx-auto">
           {filteredSongs.map((s, i) => (
@@ -67,7 +72,7 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
       </section>
 
       <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20">
-        <h3 className="text-xl"> Connaissez-vous ? </h3>
+        <h3 className="text-xl">Connaissez-vous ?</h3>
 
         <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
           {initialArtists.map((artist, i) => (
