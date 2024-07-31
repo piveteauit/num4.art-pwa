@@ -10,31 +10,38 @@ export default function Avatar({ user }: any) {
   const session = useSession();
   const [avater, setAvater] = useState<any>(user?.profile?.user?.image);
   const updatePdp = async (image: File) => {
+
     const formData = new FormData();
     setLd(true);
 
     formData.append(" ", image);
 
-    const { data } = await apiClient.post(
-      `/upload?userId=${user?.id}&prefix=${user?.id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
+    try {
+      const { data } = await apiClient.post(
+        `/upload?userId=${user?.id}&prefix=${user?.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         }
-      }
-    );
+      );
 
-    await session.update({
-      data: {
-        user: {
-          ...user,
-          image: data.avatar.url
+      await session.update({
+        data: {
+          user: {
+            ...user,
+            image: data.avatar.url
+          }
         }
-      }
-    });
-    setAvater(data.avatar.url);
-    setLd(false);
+      });
+      setAvater(data.avatar.url);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Erreur lors de l'upload de l'image. Veuillez réessayer.");
+    } finally {
+      setLd(false);
+    }
   };
 
  // console.log("image session",session.data?.user?.image);
@@ -61,7 +68,7 @@ if(!avater){ setAvater(session?.data?.user?.image);}
         label=""
         type="file"
         className="hidden"
-        accept="image/*"
+        accept="image/png, image/jpeg, image/jpg"
         onChange={(evt) => updatePdp(evt.target.files[0])}
       />
     </label>

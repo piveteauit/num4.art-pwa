@@ -101,6 +101,7 @@ function Player() {
   useEffect(() => {
   if(!currentPlaying?.artists?.[0]?.id){
     console.error("No artist id found in currentPlaying");
+    return;
   }
     getArtistProfile(currentPlaying?.artists?.[0]?.id).then(setArtistProfile).catch(console.error);
   }, [currentPlaying?.artists?.[0]?.id])

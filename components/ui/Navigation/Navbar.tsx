@@ -1,12 +1,27 @@
 import { Link, usePathname } from "@/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 function Navbar() {
   const session = useSession();
   const pathname = usePathname();
+  const [isMobile, setIsMobile] = useState(false);
 
- if (session?.status !== "authenticated") return null;
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  if (session?.status !== "authenticated" || !isMobile) return null;
 
   return (
     <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999]">
