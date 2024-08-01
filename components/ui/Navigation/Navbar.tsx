@@ -6,25 +6,12 @@ import { useEffect, useState } from "react";
 function Navbar() {
   const session = useSession();
   const pathname = usePathname();
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  if (session?.status !== "authenticated" || !isMobile) return null;
+  if (session?.status !== "authenticated") return null;
 
   return (
-    <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999]">
+    <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999] lg:hidden">
       <Link href={"/"}>
         <Image
           layout="fill"
