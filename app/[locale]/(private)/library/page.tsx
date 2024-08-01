@@ -40,8 +40,8 @@ export default async function Library() {
   return (
 <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24">
   <div className="flex justify-between items-center w-full absolute top-0 px-8 py-4 bg-base absolute top-0 left-0">
-    <h1 className="text-xl md:text-4xl font-medium">collection</h1>
-    <Link href={"/dashboard"} className="ml-4"> {/* Adjust the margin-left (ml-4) as needed */}
+    <h1 className="text-3xl md:text-5xl font-medium text-left ml-0">collection</h1>
+    <Link href={"/dashboard"} className="ml-4 "> 
       <Image
         alt="Settings icon"
         src={"/assets/images/icons/settings.svg"}
@@ -91,7 +91,7 @@ export default async function Library() {
         );
       })}
     </div>
-  </section>
-</main>
+    </section>
+  </main>
   );
 }

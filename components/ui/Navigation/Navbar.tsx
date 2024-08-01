@@ -1,15 +1,17 @@
 import { Link, usePathname } from "@/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 function Navbar() {
   const session = useSession();
   const pathname = usePathname();
 
- if (session?.status !== "authenticated") return null;
+
+  if (session?.status !== "authenticated") return null;
 
   return (
-    <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999]">
+    <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999] lg:hidden">
       <Link href={"/"}>
         <Image
           layout="fill"

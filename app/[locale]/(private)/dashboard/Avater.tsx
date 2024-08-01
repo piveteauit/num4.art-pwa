@@ -8,39 +8,50 @@ import { useState } from "react";
 export default function Avatar({ user }: any) {
   const [ld, setLd] = useState(false);
   const session = useSession();
-  const [avater, setAvater] = useState<any>(session?.data?.user?.image);
+  const [avater, setAvater] = useState<any>(user?.profile?.user?.image);
   const updatePdp = async (image: File) => {
+
     const formData = new FormData();
     setLd(true);
 
-    formData.append("avatar", image);
+    formData.append(" ", image);
 
-    const { data } = await apiClient.post(
-      `/upload?userId=${user?.id}&prefix=${user?.id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data"
+    try {
+      const { data } = await apiClient.post(
+        `/upload?userId=${user?.id}&prefix=${user?.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         }
-      }
-    );
+      );
 
-    await session.update({
-      data: {
-        user: {
-          ...user,
-          image: data.avatar.url
+      await session.update({
+        data: {
+          user: {
+            ...user,
+            image: data.avatar.url
+          }
         }
-      }
-    });
-    setAvater(data.avatar.url);
-    setLd(false);
+      });
+      setAvater(data.avatar.url);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Erreur lors de l'upload de l'image. Veuillez réessayer.");
+    } finally {
+      setLd(false);
+    }
   };
 
-  console.log(session.data?.user?.image);
+ // console.log("image session",session.data?.user?.image);
+  //console.log("avater",avater);
+if(!avater){ setAvater(session?.data?.user?.image);}
+//console.log("session",session);
+//console.log("user",user);
 
   return (
-    <label className="avatar hover:cursor-pointer rounded-full border-2 border-primary p-5 overflow-hidden w-[60px] h-[60px] hover:bg-black/60 transition-all duration-300">
+    <label className="avatar hover:cursor-pointer rounded-full border-2 border-white p-5 overflow-hidden w-[100px] h-[100px] hover:bg-black/60 transition-all duration-300">
       {ld ? (
         <span className="loading loading-spinner loading-md" />
       ) : (
@@ -49,7 +60,6 @@ export default function Avatar({ user }: any) {
           fill
           src={
             avater ||
-            session.data?.user?.image ||
             "/assets/images/logos/logo.png"
           }
         />
@@ -58,7 +68,7 @@ export default function Avatar({ user }: any) {
         label=""
         type="file"
         className="hidden"
-        accept="image/*"
+        accept="image/png, image/jpeg, image/jpg"
         onChange={(evt) => updatePdp(evt.target.files[0])}
       />
     </label>

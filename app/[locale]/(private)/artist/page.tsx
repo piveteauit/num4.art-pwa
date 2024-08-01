@@ -35,7 +35,7 @@ export default async function Artist() {
             src={"/assets/images/icons/settings.svg"}
             width={50}
             height={50}
-            className="object-contain max-w-10"
+            className="object-contain max-w-10 "
             layout="responsive"
           />
         </Link>

@@ -123,3 +123,21 @@ export async function getProfile(userId: string) {
 
   })
  }
+ export async function getArtistProfile(artistId: string) {
+  return await prisma.artist.findUnique({
+    where: {
+      
+        id: artistId
+      
+    },include: {
+
+      profile: {
+        include: {
+          user: true,
+
+      }
+      
+    },
+
+ }})
+ }

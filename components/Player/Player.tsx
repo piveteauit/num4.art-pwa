@@ -6,7 +6,7 @@ import { usePathname } from "@/navigation";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { getProfile, likeSong, unlikeSong } from "@/libs/server/user.action";
+import { getProfile, likeSong, unlikeSong,getArtistProfile } from "@/libs/server/user.action";
 import ButtonCheckout from "../ui/sf/ButtonCheckout";
 import toast from "react-hot-toast";
 
@@ -51,7 +51,8 @@ function Player() {
   const searchParams = useSearchParams();
   const { data } = useSession();
   const [userProfile, setUserProfile] = useState(null);
-
+  const [artistProfile, setArtistProfile] = useState(null);
+  console.log(paused)
   useEffect(() => {
     getProfile(data?.user?.id).then(setUserProfile).catch(console.error);
   }, [data?.user?.id]);
@@ -70,6 +71,8 @@ function Player() {
 
   useEffect(() => {
     if (audioRef.current) {
+      console.log(paused)
+      console.log(currentTime);
       if (paused) audioRef.current.pause();
       if (!paused) audioRef.current.play();
     }
@@ -79,21 +82,29 @@ function Player() {
     (o: any) => o.songId === currentPlaying?.id
   );
   useEffect(() => {
-    if (!hasSong && currentTime >= 20) {
+    
+    if (!hasSong && currentTime >= 20 ) {
       setPaused(true);
       audioRef.current.currentTime = 0;
       setCurrentTime(0);
+      console.log("first condition met");
       toast.success("Extrait terminé", {});
     }
-
     if (currentTime === Number(audioRef.current?.duration)) {
+      console.log("second condition met");
       const songIndex = currentList?.indexOf(currentPlaying);
       setCurrentPlaying(
         currentList[songIndex < currentList?.length - 1 ? songIndex + 1 : 0]
       );
     }
   }, [currentTime]);
-
+  useEffect(() => {
+  if(!currentPlaying?.artists?.[0]?.id){
+    console.error("No artist id found in currentPlaying");
+    return;
+  }
+    getArtistProfile(currentPlaying?.artists?.[0]?.id).then(setArtistProfile).catch(console.error);
+  }, [currentPlaying?.artists?.[0]?.id])
   const isPlayerScreen = path === "/player";
 
   const playerHeight = !isPlayerScreen ? "h-0 hidden" : "h-6";
@@ -105,6 +116,7 @@ function Player() {
         (f: any) => f?.profil?.userId === data?.user?.id
       );
 
+
   return (
     <>
       {hasSong || !isPlayerScreen ? null : (
@@ -114,7 +126,7 @@ function Player() {
               <Image
                 className="object-cover rounded-2xl"
                 alt="jaquette musique"
-                src={currentPlaying?.image || ""}
+                src={artistProfile?.profile?.[0]?.user?.image || ""}
                 layout="fill"
               />
             </div>
@@ -139,6 +151,7 @@ function Player() {
             <div>
               <Button
                 onClick={() => {
+                  console.log("clicked");
                   setCurrentTime(0);
                   setPaused((p) => !p);
 
@@ -238,7 +251,7 @@ function Player() {
             onTimeUpdate={(evt) =>
               setCurrentTime(evt?.currentTarget?.currentTime)
             }
-            autoPlay={!paused || !audioRef?.current?.duration}
+            autoPlay={false}
             src={currentPlaying?.preview || currentPlaying?.audio}
             ref={audioRef}
           />

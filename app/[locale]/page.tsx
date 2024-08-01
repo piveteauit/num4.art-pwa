@@ -5,6 +5,7 @@ import { Link, redirect } from "@/navigation";
 import prisma from "@/libs/prisma";
 import { Artist, Profile } from "@prisma/client";
 import { getServerSession } from "@/libs/next-auth";
+import ClientComponent from "@/components/client/ClientComponent";
 
 export const generateMetadata = getGenerateMetadata("home");
 
@@ -55,8 +56,8 @@ export default async function Page({ params }: any) {
 
   return (
     <>
-      <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10">
-        <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
+     <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10">
+     <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
           <Link href={"/"}>
             <Image
               alt="Logo"
@@ -80,71 +81,7 @@ export default async function Page({ params }: any) {
           </Link>
         </section>
 
-        <section className="mt-20 p-2 w-screen lg:max-w-5xl lg:text-center">
-          <span>Catégories</span>
-
-          {/* <div className="flex gap-2">
-            <CategoryFilter songs={songs} categories={categories} />
-          </div> rounded-none rounded-sm rounded rounded-md rounded-lg  rounded-xl rounded-2xl rounded-3xl rounded-full*/}
-
-          <h3 className="text-xl my-8"> Sortie récente </h3>
-
-          <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-wrap lg:justify-center lg:mx-auto ">
-            {songs.map((s, i) => (
-              <Link
-                href={{
-                  pathname: "/player",
-                  query: { song: s.id }
-                }}
-                key={`song-${s.id}-${i}`}
-              >
-                <span className="block relative h-44 w-[140px] m-auto rounded-md overflow-hidden min-h-[180px] min-w-[180px]">
-                  
-                  <Image
-                    className="object-cover rounded-2l"
-                    alt="jaquette musique"
-                    src={s?.image || ""}
-                    layout="fill"
-                  />
-                </span>
-
-                <div className="flex flex-col items-start text-white mt-2">
-                  <span>{s.title}</span>
-                  <span className=" text-xs opacity-75">
-                    {s.artists?.[0]?.name}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20">
-          <h3 className="text-xl"> Connaissez-vous ? </h3>
-
-          <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
-            {artists.map((artist, i) => (
-              <Link
-                key={`home-artist-${i}-${artist.id}`}
-                className="flex justify-center text-center  items-center gap-2 flex-col min-w-[100px]"
-                href={{
-                  pathname: "/artist/[artist]",
-                  params: { artist: artist?.id }
-                }}
-              >
-                <Image
-                  layout="responsive"
-                  height={100}
-                  width={100}
-                  alt="Artiste avatar N A I"
-                  className="avatar rounded-full !w-[100px] !h-[100px] object-cover overflow-hidden"
-                  src={artist?.image || "/musics/artist-nai.jpg"}
-                />
-                <span>{artist?.name}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
+        <ClientComponent initialSongs={songs} initialArtists={artists} />
       </main>
     </>
   );

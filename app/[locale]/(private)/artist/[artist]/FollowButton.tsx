@@ -44,7 +44,7 @@ export function FollowButton({
   return (
     <Button
       onClick={handleFollow}
-      className={`rounded-full text-lg px-7 font-medium ${!following ? "btn-outline" : "!btn-outline !bg-primary !text-muted"} `}
+      className={`rounded-full text-lg px-7 font-medium ${!following ? "btn-outline text-white" : "btn-white "} `}
       size="xs"
     >
       {following ? "Suivi" : "Suivre"}

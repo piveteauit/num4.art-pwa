@@ -20,7 +20,7 @@ function Welcome() {
         autoComplete="username"
         name="username"
         value={artistName}
-        label= "Nom d'artiste (si artiste)"
+        label= "Nom d'artiste"
         onChange={({ target: { value } }: any) => setArtistName(value)}
       />
 
