@@ -12,17 +12,11 @@ const Menu = () => {
 
   
 
-  useEffect(() => {
-    document.body.style.marginLeft = isMenuOpen ? '200px' : '0';
-    return () => {
-      document.body.style.marginLeft = '0';
-    };
-  }, [isMenuOpen]);
 
   if (session?.status !== "authenticated" || pathname === "/dashboard" || pathname === "/player") return null;
 
   return (
-    <div className={`fixed top-20 left-0 z-50 h-full  transition-all duration-300 hidden lg:block ${isMenuOpen ? 'w-[200px]' : 'w-[50px]'}`}>
+    <div className={`fixed top-20 left-0 z-40 h-full  transition-all duration-300 hidden lg:block ${isMenuOpen ? 'w-[200px]' : 'w-[50px]'}`}>
       <div className="flex flex-col items-center h-full">
         <Button
           className="bg-white text-black p-3 w-full text-center"
