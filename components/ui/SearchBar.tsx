@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState,ChangeEvent } from "react";
+import React, { useEffect, useState,ChangeEvent } from "react";
 
 
 interface SearchBarProps {
