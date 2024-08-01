@@ -62,10 +62,11 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <SessionProvider>
+      <Menu/>
         {/* Show a progress bar at the top when navigating between pages */}
         <NextTopLoader color={config.colors.main} showSpinner={false} />
         <div className="flex flex-col">
-           <Menu/>
+        
           <PlayerProvider>
               {/* Content inside app/page.js files  */}
               {children}
