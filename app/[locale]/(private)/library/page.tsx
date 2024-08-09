@@ -38,10 +38,10 @@ export default async function Library() {
   });
 
   return (
-<main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24">
-  <div className="flex justify-between items-center w-full absolute top-0 px-8 py-4 bg-base absolute top-0 left-0">
+<main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24 ">
+  <div className="flex justify-between items-center w-full absolute top-0 px-0 py-4 bg-base absolute top-0 left-0 " >
     <h1 className="text-3xl md:text-5xl font-medium text-left ml-0">collection</h1>
-    <Link href={"/dashboard"} className="ml-4 "> 
+    <Link href={"/dashboard"} className="ml-0"> 
       <Image
         alt="Settings icon"
         src={"/assets/images/icons/settings.svg"}
@@ -53,21 +53,21 @@ export default async function Library() {
     </Link>
   </div>
 
-  <section className="flex flex-col gap-1 px-2 overflow-y-scroll max-h-[calc(100vh_-_120px)] mt-16">
-    <div className="flex flex-col">
+  <section className="flex flex-col gap-1 px-2 overflow-y-scroll max-h-[calc(100vh_-_120px)] lg:mx-[200px]" >
+    <div className="flex flex-col ml-4">
       <h2 className="text-xl mt-20 mb-2">Trier par </h2>
       <LibraryFilter options={options} />
     </div>
 
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 ml-4">
       {songs.map(({ artists, title, image, id }, k: number) => {
         return (
           <Link
             href={{ pathname: "/player", query: { song: id } }}
             key={`${id}--${title}--2`}
-            className="flex w-full p-1 gap-8"
+            className="flex w-full p-1 gap-8 ml-4"
           >
-            <span className="relative w-[50px] h-[50px]]">
+            <span className="relative w-[50px] h-[50px] ml-4">
               <Image
                 className="max-h-[50px] object-cover"
                 layout={"fill"}
@@ -75,7 +75,7 @@ export default async function Library() {
                 src={image}
               />
             </span>
-            <div className="flex flex-col">
+            <div className="flex flex-col ml-4">
               <h4 className="font-semibold text-xl">{title}</h4>
               <Link
                 href={{

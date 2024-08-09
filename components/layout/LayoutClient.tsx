@@ -61,6 +61,7 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <>
+    
       <SessionProvider>
       <Menu/>
         {/* Show a progress bar at the top when navigating between pages */}

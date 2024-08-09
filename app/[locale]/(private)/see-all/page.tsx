@@ -1,11 +1,18 @@
 
 import React from 'react';
-import { Link } from '@/navigation';
 import Image from 'next/image';
 import { GetServerSideProps } from 'next';
 import prisma from '@/libs/prisma';
+import { getServerSession } from "@/libs/next-auth";
+import { Link, redirect } from "@/navigation";
 
 export default async function Page() {
+  const session = await getServerSession();
+
+  if (!session?.user) {
+    redirect("/me/welcome");
+    return null;
+  }
   const songs = await prisma.song.findMany({
     include: {
       artists: {
