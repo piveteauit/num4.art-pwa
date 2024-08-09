@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import ButtonFilter from "./Button/ButtonFilter";
+interface LibraryFilterProps {
+  onSearch: (searchTerm: string) => void;
+}
 
 function LibraryFilter({ options }: { options: any[] }) {
   const [activeOptions, setActiveCategory] = useState<any>({});

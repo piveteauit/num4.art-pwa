@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import SearchBar from '../ui/SearchBar';
 import { Link } from '@/navigation';
 import Image from 'next/image';
+import LibraryFilter from "@/components/ui/LibraryFilter";
 
 interface Artist {
   id: string;
@@ -15,6 +16,7 @@ interface Song {
   id: string;
   title: string;
   image: string;
+  genres:{ id: string; label: string; }[];
   artists: { name: string }[];
 }
 
@@ -22,10 +24,15 @@ interface ClientComponentProps {
   initialSongs: Song[];
   initialArtists: Artist[];
 }
-
+const categories = [
+  { name: "Tout", all: true },
+  { name: "Rap" },
+  { name: "Rock" },
+  { name: "Pop" },
+  { name: "Electro" }
+];
 const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initialArtists }) => {
   const [searchTerm, setSearchTerm] = useState('');
-
   const filteredSongs = initialSongs.filter(song =>
     song.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -34,7 +41,8 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
     <>
       <section className="mt-10 p-2 w-screen lg:max-w-5xl lg:text-center">
         <SearchBar onSearch={setSearchTerm} />
-        <span>Catégories</span>
+        <span className="flex justify-between items-center my-8 text-xl">Catégories </span>
+        <LibraryFilter options={categories} />
         <div className="flex justify-between items-center my-8">
           <h3 className="text-xl">Sortie récente</h3>
           <Link href={{ 
