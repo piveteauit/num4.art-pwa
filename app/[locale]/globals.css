@@ -32,3 +32,15 @@ progress::-webkit-progress-value {
 .white-icon {
   fill: white;
 }
+.zoom-out-effect {
+  animation: zoomOut 10s ease-in-out infinite;
+}
+
+@keyframes zoomOut {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.9);
+  }
+}

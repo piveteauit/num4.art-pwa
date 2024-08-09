@@ -12,7 +12,7 @@ const Menu = () => {
   
 
 
-  if (session?.status !== "authenticated" || pathname === "/dashboard" || pathname === "/player") return null;
+  if (session?.status !== "authenticated" || pathname === "/dashboard" || pathname === "/player"|| pathname === "/artist/[artist]") return null;
 
   return (
     <div className={`flex justify-between items-center my-8 fixed top-20 left-0 z-50 px-8 hidden lg:block w-[200px] bg-gray rounded-xl`}>

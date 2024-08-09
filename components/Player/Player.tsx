@@ -82,7 +82,6 @@ function Player() {
     (o: any) => o.songId === currentPlaying?.id
   );
   useEffect(() => {
-    
     if (!hasSong && currentTime >= 20 ) {
       setPaused(true);
       audioRef.current.currentTime = 0;
@@ -201,11 +200,11 @@ function Player() {
           className={`bg-left-top bg-cover h-screen pb-24 overflow-hidden w-full fixed top-0 left-0 flex flex-col justify-center items-center`}
         >
           <div className="absolute top-0 left-0 w-full h-full backdrop-blur-md bg-[rgba(0,0,0,.1)]" />
-          <div className="relative h-60 w-60 rounded-2xl overflow-hidden">
+          <div className="relative h-60 w-60  rounded-2xl overflow-hidden" style={{ marginTop: '-100px' }}>
             <Image
               className="object-cover rounded-2xl"
               alt="jaquette musique"
-              src={currentPlaying?.image || ""}
+              src={currentPlaying?.image}
               layout="fill"
             />
           </div>
