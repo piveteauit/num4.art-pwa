@@ -62,13 +62,13 @@ export default async function Artist({ params: { artist } }: any) {
   console.log("artist", follow);
 
   return (
-    <main
+    <div  className="w-screen h-screen overflow-hidden py-8 pb-24 absolute top-0 left-0 pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed "
     style={{
       backgroundImage: `url(${artistFromDb?.profile?.[0]?.user?.image || "/musics/artist-nai.jpg"})`
     }}
-    className="w-screen h-screen overflow-hidden py-8 pb-24 absolute top-0 left-0 pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed"
+    
   >
-    <section className="max-w-xl mx-auto flex justify-between fixed w-full right-0 px-8 top-0 py-4 items-center">
+    <section className="max-w-xl mx-auto  flex justify-between  fixed w-full right-0 px-8 top-0 py-4 items-center ">
       <h1 className="text-xl md:text-4xl font-medium ml-[-960px]">
         {artistFromDb?.name}
       </h1>
@@ -85,7 +85,7 @@ export default async function Artist({ params: { artist } }: any) {
     </section>
   
     <div className="flex justify-center items-center" style={{ marginTop: '-100px' }}>
-      <div className="relative h-60 w-60 rounded-2xl overflow-hidden">
+      <div className="relative h-60 w-60 rounded-full overflow-hidden">
         <Image
           className="object-cover rounded-2xl"
           alt="jaquette musique"
@@ -155,6 +155,6 @@ export default async function Artist({ params: { artist } }: any) {
         })}
       </section>
     </div>
-  </main>
+  </div>
   );
 }

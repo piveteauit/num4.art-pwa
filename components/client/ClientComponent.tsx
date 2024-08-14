@@ -71,7 +71,17 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
               </span>
 
               <div className="flex flex-col items-start text-white mt-2">
-                <span>{s.title}</span>
+              <span
+                className="block w-[180px] truncate"
+                style={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textAlign: 'left',
+               }}
+  >
+    {s.title}
+  </span>
                 <span className="text-xs opacity-75">{s.artists?.[0]?.name}</span>
               </div>
             </Link>
@@ -80,9 +90,17 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
       </section>
 
       <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20">
-        <h3 className="text-xl">Connaissez-vous ?</h3>
-
-        <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
+  <div className="flex justify-between items-center">
+    <h3 className="text-xl">Connaissez-vous ?</h3>
+    <Link
+      href={{ pathname: "/see-all-artists" }}
+      className="text-white-500 hover:underline"
+    >
+      Voir tout
+    </Link>
+  </div>
+  <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
+          
           {initialArtists.map((artist, i) => (
             <Link
               key={`home-artist-${i}-${artist.id}`}

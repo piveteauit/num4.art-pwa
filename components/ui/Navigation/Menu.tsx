@@ -21,7 +21,11 @@ const Menu = () => {
      <div className={`flex flex-col items-left mt-2`}>
   <Link href={"/"} className="relative text-white mb-4 w-full flex items-center justify-left py-2 hover:bg-gray-700">
     <Image
-      src="/assets/images/icons/home.active.svg"
+      src={require(
+        pathname === "/"
+          ? "@/public/assets/images/icons/home.active.svg"
+          : "@/public/assets/images/icons/home.svg"
+      )}
       alt="Search Icon"
       width="30"
       height="30"
