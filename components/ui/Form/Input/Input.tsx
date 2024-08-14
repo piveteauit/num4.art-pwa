@@ -12,7 +12,6 @@ type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
 
 function Input(props: InputProps | TextAreaProps) {
   const { label } = props;
-
   return (
     <div className="flex flex-col text-white">
       {props?.type !== "checkbox" ? <label>{label}</label> : null}

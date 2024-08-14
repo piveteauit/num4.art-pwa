@@ -26,8 +26,10 @@ function SongForm({ user }: any) {
   const [values, setValues] = useState(defaultValues);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [genre, setGenre] = useState(["1"]);
+  
 
   const onSubmit = async () => {
+    
     setStatus("Upload du son...");
     const data = {
       audio: await uploadToS3(values.audio, `songs/full-${user?.profile?.id}`),
@@ -41,6 +43,7 @@ function SongForm({ user }: any) {
     setStatus("Finalisation du morceau");
     const { title, price, ISRC, description } = values;
     //title, price, genres, albums, description, image, audio, artists
+   
     const newSong = await addSong({
       title,
       price,
@@ -77,14 +80,18 @@ function SongForm({ user }: any) {
       </div>
 
       <Modal {...{ isModalOpen, setIsModalOpen, title: "Ajouter une musique" }}>
-        <div className="my-4 border-1 flex flex-col gap-4 border-primary p-2 rounded-lg">
-          <Input
-            label="Titre"
-            type="text"
-            onChange={({ target }) =>
-              setValues({ ...values, title: target.value })
-            }
-          />
+      <div className="my-4 border-1 flex flex-col gap-4 border-primary p-2 rounded-lg">
+      <Input
+        label="Titre"
+        type="text"
+        maxLength={35}
+        value={values.title}
+        onChange={({ target }) => {
+          setValues({ ...values, title: target.value });
+        }}
+      />
+      <p>{`${values.title.length}/35`} caractères utilisées</p>
+
 
           <Input
             label="Prix"
@@ -96,6 +103,7 @@ function SongForm({ user }: any) {
            <Input
             label="ISRC"
             type="text"
+            maxLength={15}
             onChange={({ target }) =>
               setValues({ ...values, ISRC:target.value })
             }
@@ -130,7 +138,7 @@ function SongForm({ user }: any) {
           <Input
             label="Image"
             type="file"
-            accept="image/*"
+            accept="image/png, image/jpeg, image/jpg"
             onChange={(evt) =>
               setValues({ ...values, image: evt.target.files[0] })
             }
