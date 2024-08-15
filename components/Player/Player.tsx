@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { getProfile, likeSong, unlikeSong,getArtistProfile } from "@/libs/server/user.action";
 import ButtonCheckout from "../ui/sf/ButtonCheckout";
 import toast from "react-hot-toast";
+import { Link } from '@/navigation';
 
 function getTimeArr(time: number) {
   let hour = 0,
@@ -82,7 +83,6 @@ function Player() {
     (o: any) => o.songId === currentPlaying?.id
   );
   useEffect(() => {
-    
     if (!hasSong && currentTime >= 20 ) {
       setPaused(true);
       audioRef.current.currentTime = 0;
@@ -134,9 +134,13 @@ function Player() {
               <h3 className="text-xl text-left text-white relative z-10">
                 {currentPlaying?.title}
               </h3>
-              <h4 className="text-sm text-left -mb-5 text-white relative z-10">
-                 {currentPlaying?.artists?.[0]?.name || "N/A"}
-              </h4>
+              <Link href={{ 
+            pathname: "/artist/[artist]",
+            params: { artist:currentPlaying?.artists?.[0]?.id } 
+            }} className="text-white-500 hover:underline">
+                 { currentPlaying?.artists?.[0]?.name }
+
+          </Link>
             </div>
           </div>
 
@@ -201,11 +205,11 @@ function Player() {
           className={`bg-left-top bg-cover h-screen pb-24 overflow-hidden w-full fixed top-0 left-0 flex flex-col justify-center items-center`}
         >
           <div className="absolute top-0 left-0 w-full h-full backdrop-blur-md bg-[rgba(0,0,0,.1)]" />
-          <div className="relative h-60 w-60 rounded-2xl overflow-hidden">
+          <div className="relative h-60 w-60  rounded-2xl overflow-hidden" style={{ marginTop: '-100px' }}>
             <Image
               className="object-cover rounded-2xl"
               alt="jaquette musique"
-              src={currentPlaying?.image || ""}
+              src={currentPlaying?.image}
               layout="fill"
             />
           </div>

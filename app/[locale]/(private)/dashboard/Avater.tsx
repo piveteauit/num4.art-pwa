@@ -8,7 +8,7 @@ import { useState } from "react";
 export default function Avatar({ user }: any) {
   const [ld, setLd] = useState(false);
   const session = useSession();
-  const [avater, setAvater] = useState<any>(user?.profile?.user?.image);
+  const [avater, setAvater] = useState<any>(session?.data?.user?.image);
   const updatePdp = async (image: File) => {
 
     const formData = new FormData();
@@ -46,7 +46,7 @@ export default function Avatar({ user }: any) {
 
  // console.log("image session",session.data?.user?.image);
   //console.log("avater",avater);
-if(!avater){ setAvater(session?.data?.user?.image);}
+if(!avater && session?.data?.user?.image){ setAvater(session?.data?.user?.image);}
 //console.log("session",session);
 //console.log("user",user);
 

@@ -6,16 +6,11 @@ import prisma from "@/libs/prisma";
 import { Artist, Profile } from "@prisma/client";
 import { getServerSession } from "@/libs/next-auth";
 import ClientComponent from "@/components/client/ClientComponent";
+import LibraryFilter from "@/components/ui/LibraryFilter";
 
 export const generateMetadata = getGenerateMetadata("home");
 
-const categories = [
-  { name: "Tout", all: true },
-  { name: "Rap" },
-  { name: "Rock" },
-  { name: "Pop" },
-  { name: "Electro" }
-];
+
 
 export default async function Page({ params }: any) {
   const session = await getServerSession();
@@ -24,6 +19,7 @@ export default async function Page({ params }: any) {
 
   const songs = await prisma.song.findMany({
     include: {
+      genres: true,
       artists: {
         include: {
           profile: {

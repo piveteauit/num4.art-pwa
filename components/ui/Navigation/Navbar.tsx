@@ -30,7 +30,7 @@ function Navbar() {
           className="text-white object-contain"
           alt="Icon Home"
           src={require(
-            pathname === "/player"
+            pathname === "/player" 
               ? "@/public/assets/images/icons/bouton-jouer-active.svg"
               : "@/public/assets/images/icons/bouton-jouer-_2_.svg"
           )}

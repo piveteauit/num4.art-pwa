@@ -8,39 +8,52 @@ import Button from "../Button/Button";
 const Menu = () => {
   const session = useSession();
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   
 
-  useEffect(() => {
-    document.body.style.marginLeft = isMenuOpen ? '200px' : '0';
-    return () => {
-      document.body.style.marginLeft = '0';
-    };
-  }, [isMenuOpen]);
 
-  if (session?.status !== "authenticated" || pathname === "/dashboard" || pathname === "/player") return null;
+  if (session?.status !== "authenticated" || pathname === "/dashboard" || pathname === "/player"|| pathname === "/artist/[artist]") return null;
 
   return (
-    <div className={`fixed top-20 left-0 z-50 h-full  transition-all duration-300 hidden lg:block ${isMenuOpen ? 'w-[200px]' : 'w-[50px]'}`}>
-      <div className="flex flex-col items-center h-full">
-        <Button
-          className="bg-white text-black p-3 w-full text-center"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? "Fermer" : "Menu"}
-        </Button>
-        <div className={`flex flex-col items-center mt-2 ${isMenuOpen ? 'block' : 'hidden'}`}>
-          <Link href={"/"} className="text-white mb-4 w-full text-center py-2 hover:bg-gray-700">
-            Home
-          </Link>
-          <Link href={"/player"} className="text-white mb-4 w-full text-center py-2 hover:bg-gray-700">
-            Lecteur
-          </Link>
-          <Link href={"/library"} className="text-white mb-4 w-full text-center py-2 hover:bg-gray-700">
-            Collection
-          </Link>
-        </div>
+    <div className={`flex justify-between items-center my-8 fixed top-20 left-0 z-50 px-8 hidden lg:block w-[200px] bg-gray rounded-xl`}>
+      <div className="flex flex-col items-left h-full ">
+       
+     <div className={`flex flex-col items-left mt-2`}>
+  <Link href={"/"} className="relative text-white mb-4 w-full flex items-center justify-left py-2 hover:bg-gray-700">
+    <Image
+      src={require(
+        pathname === "/"
+          ? "@/public/assets/images/icons/home.active.svg"
+          : "@/public/assets/images/icons/home.svg"
+      )}
+      alt="Search Icon"
+      width="30"
+      height="30"
+      className="mr-2"
+    />
+    <span>Home</span>
+  </Link>
+  <Link href={"/player"} className="relative text-white mb-4 w-full flex items-center justify-left py-2 hover:bg-gray-700">
+    <Image
+      src="/assets/images/icons/bouton-jouer-active.svg"
+      alt="Player Icon"
+      width="30"
+      height="30"
+      className="mr-2"
+    />
+    <span>Lecteur</span>
+  </Link>
+  <Link href={"/library"} className="relative text-white mb-4 w-full flex items-center justify-left py-2 hover:bg-gray-700">
+    <Image
+      src="/assets/images/icons/bibliotheque-numerique.svg"
+      alt="Library Icon"
+      width="30"
+      height="30"
+      className="mr-2"
+    />
+    <span>Collection</span>
+  </Link>
+</div>
       </div>
     </div>
   );
