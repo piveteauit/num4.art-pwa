@@ -14,7 +14,7 @@ export default function Avatar({ user }: any) {
     const formData = new FormData();
     setLd(true);
 
-    formData.append(" ", image);
+    formData.append("avatar", image);
 
     try {
       const { data } = await apiClient.post(
