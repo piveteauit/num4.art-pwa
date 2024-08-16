@@ -19,7 +19,7 @@ export default async function Page({ params }: any) {
 
   const songs = await prisma.song.findMany({
     include: {
-      genres: true,
+      genres:true,
       artists: {
         include: {
           profile: {
@@ -50,16 +50,18 @@ export default async function Page({ params }: any) {
     image: a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
   }));
 
+  
+
   return (
     <>
-     <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10">
-     <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
+     <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10 " style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}>
+     <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-5 py-4 bg-base z-50 items-center">
           <Link href={"/"}>
             <Image
               alt="Logo"
               src={"/assets/images/logos/Logo_num4_V2_blanc.png"} 
-              width={150} 
-              height={50} 
+              width={120} 
+              height={40} 
               className="object-contain"
               layout="fixed"
             />
@@ -69,8 +71,8 @@ export default async function Page({ params }: any) {
             <Image
               alt="Settings icon"
               src={"/assets/images/icons/settings.svg"}
-              width={50}
-              height={50}
+              width={40}
+              height={40}
               className="object-contain max-w-10"
               layout="responsive"
             />

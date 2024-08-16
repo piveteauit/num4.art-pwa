@@ -1,9 +1,10 @@
+
 import LibraryFilter from "@/components/ui/LibraryFilter";
 import { Link } from "@/navigation";
 import Image from "next/image";
 import prisma from "@/libs/prisma";
 import { getServerSession } from "@/libs/next-auth";
-
+import {useState} from "react";
 export const dynamic = "force-dynamic";
 
 const options = [
@@ -16,7 +17,9 @@ const options = [
 ];
 
 export default async function Library() {
+
   const session = await getServerSession();
+  const setCurrent = () => {}
   const orders = await prisma.order.findMany({
     where: {
       profil: {
@@ -39,15 +42,15 @@ export default async function Library() {
   });
 
   return (
-    <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24">
-      <div className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
-        <h1 className="text-3xl md:text-5xl font-medium text-left ml-0">Collection</h1>
+    <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}>
+      <div className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-3 py-4 bg-base z-50 items-center">
+        <h1 className="text-4xl md:text-4xl font-medium text-left ml-0">Collection</h1>
         <Link href={"/dashboard"} className="ml-0">
           <Image
             alt="Settings icon"
             src={"/assets/images/icons/settings.svg"}
-            width={50}
-            height={50}
+            width={30}
+            height={30}
             className="object-contain max-w-10"
             layout="responsive"
           />

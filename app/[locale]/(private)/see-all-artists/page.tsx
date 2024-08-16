@@ -30,7 +30,7 @@ export default async function Page() {
 
   return (
     <>
-      <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24">
+      <main className="w-screen h-screen overflow-y-auto md:p-8 pb-12 md:pb-24">
         
         <section className="fixed w-full top-0 px-8 py-2 bg-base z-50 flex justify-between items-center">
           <Link href={"/"}>
@@ -55,7 +55,7 @@ export default async function Page() {
           </Link>
         </section>
 
-        <section className="pt-20 p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20 mx-auto">
+        <section className="pt-20 p-2 w-screen overflow-y-auto lg:max-w-5xl lg:mt-10 pb-20 mx-auto">
           <h3 className="text-xl mb-4">Tous les artistes</h3>
           <div className="grid grid-cols-2 gap-4 justify-center lg:grid-cols-4">
             {artists.map((artist, i) => (

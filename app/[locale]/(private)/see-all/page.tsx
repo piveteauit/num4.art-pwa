@@ -47,14 +47,14 @@ export default async function Page() {
   return (
     <>
 
-    <main className="w-screen h-screen overflow-hidden md:p-8 pb-12 md:pb-24">
-    <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-0 py-4 bg-base z-50 items-center">
+    <main className="w-screen h-screen overflow-y-auto md:p-8 pb-12 md:pb-24">
+    <section className="fixed w-full top-0 px-8 py-4 bg-base z-50 flex justify-between items-center">
           <Link href={"/"}>
             <Image
               alt="Logo"
               src={"/assets/images/logos/Logo_num4_V2_blanc.png"} 
-              width={150} 
-              height={50} 
+              width={120} 
+              height={40} 
               className="object-contain"
               layout="fixed"
             />
@@ -63,14 +63,14 @@ export default async function Page() {
             <Image
               alt="Settings icon"
               src={"/assets/images/icons/settings.svg"}
-              width={50}
-              height={50}
+              width={40}
+              height={40}
               className="object-contain max-w-10"
               layout="responsive"
             />
           </Link>
           </section>
-    <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20 mx-auto">
+    <section className="pt-20 p-2 w-screen overflow-y-auto lg:max-w-5xl lg:mt-10 pb-20 mx-auto">
       <h3 className="text-xl mb-4">Tous les morceaux</h3>
       <div className="grid grid-cols-2 gap-4 justify-center lg:grid-cols-4">
         {songs.map((s, i) => (
@@ -91,19 +91,14 @@ export default async function Page() {
                 height={180}
               />
             </div>
-            <div className="flex flex-col items-center text-white mt-2">
+            <div className="flex flex-col items-start text-white mt-2">
             <span
                 className="block w-[180px] truncate"
-                style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                textAlign: 'left',
-               }}
+
   >
     {s.title}
   </span>
-              <span className="text-xs opacity-75">{s.artists?.[0]?.name}</span>
+              <span className="text-xs opacity-75" >{s.artists?.[0]?.name}</span>
             </div>
           </Link>
         ))}

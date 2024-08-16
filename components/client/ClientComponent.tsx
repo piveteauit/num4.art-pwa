@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from '../ui/SearchBar';
 import { Link } from '@/navigation';
 import Image from 'next/image';
@@ -28,21 +28,36 @@ const categories = [
   { name: "Tout", all: true },
   { name: "Rap" },
   { name: "Rock" },
-  { name: "Pop" },
-  { name: "Electro" }
+  { name: "Techno" },
+  { name: "House" },
+   {name: "Pop"}, 
+  {name: "Electro"}
 ];
 const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initialArtists }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredSongs = initialSongs.filter(song =>
-    song.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [currentGenre, setCurrentGenre]= useState('');
+  const [filteredSongs, setFilteredSong] = useState(initialSongs);
+  useEffect(()=> {
+    const filteredSongsBySerachTerm = initialSongs.filter(song =>
+      song.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredSong(filteredSongsBySerachTerm);
+  },[searchTerm]);
+  
+  
+  useEffect(()=>{
+  //  const filterdSongByCategorie = initialSongs.filter(song => 
+   //   song.genres?.[0].label.toLowerCase() === currentGenre.toLowerCase());
+    //  setFilteredSong(filterdSongByCategorie);
+     // console.log(initialSongs);
+  },[currentGenre]);
 
   return (
     <>
       <section className="mt-10 p-2 w-screen lg:max-w-5xl lg:text-center">
         <SearchBar onSearch={setSearchTerm} />
         <span className="flex justify-between items-center my-8 text-xl">Catégories </span>
-        <LibraryFilter options={categories} />
+        <LibraryFilter options={categories}  />
         <div className="flex justify-between items-center my-8">
           <h3 className="text-xl">Sortie récente</h3>
           <Link href={{ 
