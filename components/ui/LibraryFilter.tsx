@@ -1,8 +1,9 @@
 "use client";
+import React, { useEffect, useState,ChangeEvent } from "react";
 
-import { useState, ChangeEvent } from "react";
 import ButtonFilter from "./Button/ButtonFilter";
 interface LibraryFilterProps {
+  options: any[],
   onSearch: (searchTerm: string) => void;
 }
 

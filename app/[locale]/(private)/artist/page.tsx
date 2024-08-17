@@ -33,8 +33,8 @@ export default async function Artist() {
           <Image
             alt="Settings icon"
             src={"/assets/images/icons/settings.svg"}
-            width={50}
-            height={50}
+            width={40}
+            height={40}
             className="object-contain max-w-10 "
             layout="responsive"
           />

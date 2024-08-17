@@ -169,6 +169,14 @@ function SongForm({ user }: any) {
               {" "}
               {"House"}
             </option>
+            <option onClick={() => setGenre(["5"])} value={"5"}>
+              {" "}
+              {"Electro"}
+            </option>
+            <option onClick={() => setGenre(["6"])} value={"6"}>
+              {" "}
+              {"Pop"}
+            </option>
           </select>
         </div>
 
