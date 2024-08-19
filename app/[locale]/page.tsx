@@ -54,14 +54,22 @@ export default async function Page({ params }: any) {
 
   return (
     <>
-     <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10 " style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}>
-     <section className="max-lg:max-w-xl mx-auto flex justify-between absolute w-full right-0 px-8 top-5 py-4 bg-base z-50 items-center">
+      <main
+        className="flex flex-col h-screen w-screen items-center pb-10 md:p-10 "
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+          paddingLeft: "env(safe-area-inset-left)",
+          paddingRight: "env(safe-area-inset-right)"
+        }}
+      >
+        <section className="flex justify-between absolute w-full right-0 px-8 py-4 pt-8 max-lg:bg-base z-50 items-center">
           <Link href={"/"}>
             <Image
               alt="Logo"
-              src={"/assets/images/logos/Logo_num4_V2_blanc.png"} 
-              width={120} 
-              height={40} 
+              src={"/assets/images/logos/Logo_num4_V2_blanc.png"}
+              width={120}
+              height={40}
               className="object-contain"
               layout="fixed"
             />

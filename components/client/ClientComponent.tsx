@@ -54,7 +54,7 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
 
   return (
     <>
-      <section className="mt-10 p-2 w-screen lg:max-w-5xl lg:text-center">
+      <section className="mt-10 p-2 w-screen lg:max-w-3xl lg:text-center lg:left-[200px]">
         <SearchBar onSearch={setSearchTerm} />
         <span className="flex justify-between items-center my-8 text-xl">Catégories </span>
         <LibraryFilter options={categories}  />
@@ -104,7 +104,7 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initial
         </div>
       </section>
 
-      <section className="p-2 w-screen lg:max-w-5xl lg:mt-10 pb-20">
+      <section className="p-2 w-screen lg:max-w-3xl lg:mt-10 pb-20">
   <div className="flex justify-between items-center">
     <h3 className="text-xl">Connaissez-vous ?</h3>
     <Link

@@ -9,7 +9,7 @@ const Testimonial = () => {
     >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.base-300),theme(colors.base-100))] opacity-20" />
       <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-base-100 shadow-lg ring-1 ring-base-content/10 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center" />
-      <div className="mx-auto max-w-2xl lg:max-w-5xl">
+      <div className="mx-auto max-w-2xl lg:max-w-3xl">
         <figure className="mt-10">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="relative rounded-xl border border-base-content/5 bg-base-content/5 p-1.5 sm:-rotate-1">

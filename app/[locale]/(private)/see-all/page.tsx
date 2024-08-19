@@ -70,7 +70,7 @@ export default async function Page() {
             />
           </Link>
           </section>
-    <section className="pt-20 p-2 w-screen overflow-y-auto lg:max-w-5xl lg:mt-10 pb-20 mx-auto">
+    <section className="pt-20 p-2 w-screen overflow-y-auto lg:max-w-3xl lg:mt-10 pb-20 mx-auto">
       <h3 className="text-xl mb-4">Tous les morceaux</h3>
       <div className="grid grid-cols-2 gap-4 justify-center lg:grid-cols-4">
         {songs.map((s, i) => (
