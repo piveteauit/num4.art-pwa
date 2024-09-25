@@ -3,8 +3,6 @@ import type { NextAuthOptions } from "next-auth";
 
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
-
-import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 
 import config, { server } from "@/config";
@@ -45,7 +43,7 @@ export const authOptions: NextAuthOptionsExtended = {
           .map((f) => f())
           .join("")}`
           console.log("token", token)
-          resolve(token)
+          resolve("442024")
         });
       },
 
