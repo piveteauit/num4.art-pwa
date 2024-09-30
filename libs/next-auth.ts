@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptionsExtended = {
           .map((f) => f())
           .join("")}`
           console.log("token", token)
-          resolve("442024")
+          resolve(token)
         });
       },
 
