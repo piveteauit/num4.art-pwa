@@ -45,7 +45,7 @@ type SendEmailParams = {
 };
 
 export async function sendEmail({
-  from = process?.env?.MRK_MAIL_AUTH_USER,
+  from = process?.env?.MAIL_AUTH_USER,
   to,
   text,
   html,

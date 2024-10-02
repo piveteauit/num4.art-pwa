@@ -6,8 +6,8 @@ export const server = {
   port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
   secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
   auth: {
-    user: "piveteauit@gmail.com",//process?.env?.MAIL_AUTH_USER || "noreply@myreklam.fr",
-    pass: process?.env?.MAIL_AUTH_PASS || "W7Sm4wOdJIDp2HPv"
+    user: process?.env?.MAIL_AUTH_USER,// || "piveteauit@gmail.com",
+    pass: process?.env?.MAIL_AUTH_PASS,// || "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-NtHvnd6CyKSMsjQE"
   }
 };
 const config = {
