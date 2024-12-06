@@ -27,45 +27,37 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  userId       String
-  expires      DateTime
-  sessionToken String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  accounts      Account[]
-  Profile       Profile[]
-  sessions      Session[]
+  id               String     @id @default(cuid())
+  name             String?
+  email            String     @unique
+  emailVerified    DateTime?
+  image            String?
+  createdAt        DateTime   @default(now())
+  locale           String?    @db.VarChar(5)
+  passwordHash     String?
+  plan             UserPlan   @default(FREE)
+  resendContactId  String?
+  stripeCustomerId String?
+  accounts         Account[]
+  Feedback         Feedback[]
+  Profile          Profile[]
+  sessions         sessions[]
 }
 
-model VerificationToken {
-  identifier String @unique
-  token      String
-  expires    DateTime 
 
-  @@unique([identifier, token])
-}
 
 model Song {
   id          String     @id @default(cuid())
   title       String
   price       Float
-  ISRC        String?    @unique()
   image       String?
   description String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   audio       String?
   preview     String?
+  ISRC        String?    @unique
   favorites   Favorite[]
   orders      Order[]
   albums      Album[]    @relation("AlbumToSong")
@@ -153,4 +145,36 @@ model Follow {
   profileId String
   artist    Artist  @relation(fields: [artistId], references: [id])
   profil    Profile @relation(fields: [profileId], references: [id])
+}
+
+model Feedback {
+  id        String   @id
+  review    Int
+  message   String
+  email     String?
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  User      User?    @relation(fields: [userId], references: [id])
+}
+
+model sessions {
+  id           String   @id
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum UserPlan {
+  FREE
+  PREMIUM
 }
