@@ -36,6 +36,17 @@ progress::-webkit-progress-value {
   animation: zoomOut 10s ease-in-out infinite;
 }
 
+/* Masquer la scrollbar pour Chrome, Safari et Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Masquer la scrollbar pour IE, Edge et Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE et Edge */
+  scrollbar-width: none;  /* Firefox */
+} 
+
 @keyframes zoomOut {
   0% {
     transform: scale(1);
