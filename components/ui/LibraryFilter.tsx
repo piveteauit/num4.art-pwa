@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState,ChangeEvent } from "react";
+import React, { useEffect, useState, ChangeEvent } from "react";
 
 import ButtonFilter from "./Button/ButtonFilter";
 interface LibraryFilterProps {
-  options: any[],
+  options: any[];
   onSearch: (searchTerm: string) => void;
 }
 
@@ -33,9 +33,11 @@ function LibraryFilter({ options }: { options: any[] }) {
   };
 
   return (
-    <div className="flex gap-2 overflow-x-scroll pb-5">
+    <div className="flex gap-2 overflow-x-scroll scrollbar-hide">
       {options.map(({ name }, index) => (
         <ButtonFilter
+          className={`${index === 0 ? "ml-6" : ""} 
+                ${index === options.length - 1 ? "mr-6" : ""}`}
           active={!!activeOptions?.[name]}
           onClick={(evt) => onClick(name)}
           key={`LibraryFilter-${index}`}
