@@ -25,6 +25,7 @@ function Welcome() {
         toast.error("Ce nom d'artiste est déjà pris");
       } else {
         toast.error("Une erreur est survenue");
+        console.log(error);
       }
     } finally {
       setIsLoading(false);
@@ -32,28 +33,27 @@ function Welcome() {
   };
 
   return (
-    <section className="w-full flex flex-col gap-8 justify-center max-w-xs" >
+    <section className="w-full flex flex-col gap-8 justify-center max-w-xs">
       <Input
         type="text"
-        autoComplete="username"
         name="username"
         value={artistName}
         label="Nom d'artiste"
         onChange={({ target: { value } }: any) => setArtistName(value)}
+        style={{ backgroundColor: "#FFFFFF", color: "#000000" }}
       />
 
       <Button
         onClick={handleSubmit}
         disabled={isLoading}
-        className="bg-custom-black border border-white text-white p-2 rounded"
+        className="bg-custom-black border border-white p-2 rounded-lg text-white hover:text-black"
+        style={{ backgroundColor: "#191919", color: "#FFFFFF" }}
       >
-        <span style={{ color: '#FFFFF' }}>
-          {isLoading ? (
-            <span className="loading loading-spinner loading-sm"></span>
-          ) : (
-            "Valider"
-          )}
-        </span>
+        {isLoading ? (
+          <span className="loading loading-spinner loading-sm"></span>
+        ) : (
+          "Valider"
+        )}
       </Button>
     </section>
   );

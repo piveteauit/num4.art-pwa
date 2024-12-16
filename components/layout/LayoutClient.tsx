@@ -57,40 +57,40 @@ const CrispChat = (): null => {
 // 4. Tooltip: Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content=""
 // 5. CrispChat: Set Crisp customer chat support (see above)
 const ClientLayout = ({ children }: { children: ReactNode }) => {
-
-
   return (
     <>
-    
-      <SessionProvider>
-      <Menu/>
+        <Menu />
         {/* Show a progress bar at the top when navigating between pages */}
         <NextTopLoader color={config.colors.main} showSpinner={false} />
         <div className="flex flex-col">
-        
           <PlayerProvider>
-              {/* Content inside app/page.js files  */}
-              {children}
-              {/* Show Success/Error messages anywhere from the app with toast() */}
-              <Toaster
-                toastOptions={{
-                  duration: 3000
-                }}
-              />
+            {/* Content inside app/page.js files  */}
+            {children}
+            {/* Show Success/Error messages anywhere from the app with toast() */}
+            <Toaster
+              position="top-center"
+              containerStyle={{
+                zIndex: 10000000
+              }}
+              toastOptions={{
+                duration: 3000,
+                style: {
+                  zIndex: 10000000
+                }
+              }}
+            />
 
-              {/* Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content="" */}
-              <Tooltip
-                id="tooltip"
-                className="z-[60] !opacity-100 max-w-sm shadow-lg"
-              />
+            {/* Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content="" */}
+            <Tooltip
+              id="tooltip"
+              className="z-[60] !opacity-100 max-w-sm shadow-lg"
+            />
 
-              <Installer />
-              <Navbar />
-              <Player />
-
+            <Installer />
+            <Navbar />
+            <Player />
           </PlayerProvider>
         </div>
-      </SessionProvider>
     </>
   );
 };

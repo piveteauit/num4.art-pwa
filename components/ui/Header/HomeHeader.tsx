@@ -4,21 +4,11 @@ import Button from "@/components/ui/Button/Button";
 import AuthModal from "@/components/ui/Modal/AuthModal";
 import Image from "next/image";
 import { Link } from "@/navigation";
-import { Session } from "next-auth";
 import HeaderBorder from "@/components/ui/HeaderBorder";
+import { useSession } from "next-auth/react";
 
-interface ProviderLight {
-  id: string;
-  name: string;
-  type: "email" | "oauth" | "credentials";
-}
-
-interface HomeHeaderProps {
-  session: Session | null;
-  providers: ProviderLight[];
-}
-
-export default function HomeHeader({ session, providers }: HomeHeaderProps) {
+export default function HomeHeader() {
+  const { data: session } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleClose = () => {
@@ -75,13 +65,7 @@ export default function HomeHeader({ session, providers }: HomeHeaderProps) {
         )}
       </HeaderBorder>
 
-      {!session && (
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={handleClose}
-          providers={providers}
-        />
-      )}
+      {!session && <AuthModal isOpen={isAuthModalOpen} onClose={handleClose} />}
     </>
   );
 }

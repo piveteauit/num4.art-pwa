@@ -1,8 +1,8 @@
 import LibraryFilter from "@/components/ui/LibraryFilter";
 import { Link } from "@/navigation";
 import Image from "next/image";
-import prisma from "@/libs/prisma";
-import { getServerSession } from "@/libs/next-auth";
+import { prisma } from "@/libs/prisma";
+import { auth } from "@/auth";
 import HeaderBorder from "@/components/ui/HeaderBorder";
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ const options = [
 ];
 
 export default async function Library() {
-  const session = await getServerSession();
+  const session = await auth();
   const setCurrent = () => {};
   const orders = await prisma.order.findMany({
     where: {
@@ -65,7 +65,10 @@ export default async function Library() {
         </Link>
       </HeaderBorder>
 
-      <section id="scrollable-content" className="flex overflow-y-scroll flex-col gap-1 max-lg:max-h-[calc(100vh_-_140px)] lg:max-h-[calc(100vh_-_73px)] overflow-x-hidden lg:mx-[200px]">
+      <section
+        id="scrollable-content"
+        className="flex overflow-y-scroll flex-col gap-1 max-lg:max-h-[calc(100vh_-_140px)] lg:max-h-[calc(100vh_-_73px)] overflow-x-hidden lg:mx-[200px]"
+      >
         <div className="flex flex-col mt-4">
           <h2 className="text-xl mb-2 ml-6 ">Trier par</h2>
           <LibraryFilter options={options} />

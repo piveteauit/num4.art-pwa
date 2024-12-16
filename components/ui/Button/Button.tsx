@@ -30,10 +30,9 @@ export const ButtonChangeMode = ({
 
   return (
     <Button
-    {...props}
-    color="white" // Ajouté la couleur blanche en tant que propriété
-    className={`text-white hover:bg-gray-100 hover:text-black focus:outline-none text-sm px-4 py-1 ${props.className}`}
-    
+      {...props}
+      color="white" // Ajouté la couleur blanche en tant que propriété
+      className={`text-white hover:bg-gray-100 hover:text-black focus:outline-none text-sm px-4 py-1 ${props.className}`}
       onClick={async (evt) => {
         await setCurrentMode({ id, artistMode });
         router.push({ pathname: "/dashboard", query: { artistMode } });

@@ -50,13 +50,14 @@ function Player() {
   const audioRef = useRef<ReactHTMLElement<HTMLAudioElement> | any>();
   const path = usePathname();
   const searchParams = useSearchParams();
-  const { data } = useSession();
+  const { data: session } = useSession();
   const [userProfile, setUserProfile] = useState(null);
   const [artistProfile, setArtistProfile] = useState(null);
-  console.log(paused)
   useEffect(() => {
-    getProfile(data?.user?.id).then(setUserProfile).catch(console.error);
-  }, [data?.user?.id]);
+    if (session?.user?.id) {
+      getProfile(session.user.id).then(setUserProfile).catch(console.error);
+    }
+  }, [session?.user?.id]);
 
   useEffect(() => {
     if (!currentPlaying) setCurrentPlaying(currentList[0]);
@@ -113,7 +114,7 @@ function Player() {
     currentPlaying.liked =
       currentPlaying.liked ||
       currentPlaying?.favorites?.some(
-        (f: any) => f?.profil?.userId === data?.user?.id
+        (f: any) => f?.profil?.userId === session?.user?.id
       );
 
 
@@ -343,7 +344,7 @@ function Player() {
                 !currentList[currentList.indexOf(currentPlaying)].liked;
 
               if (newList[currentList.indexOf(currentPlaying)].liked)
-                likeSong(data?.user?.id, currentPlaying.id);
+                likeSong(session?.user?.id, currentPlaying.id);
               else unlikeSong(currentPlaying.id);
 
               setCurrentList(newList);

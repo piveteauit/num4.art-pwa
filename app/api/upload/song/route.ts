@@ -1,6 +1,6 @@
 import { s3, s3Config } from "@/libs/s3";
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from "@/auth";
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -9,10 +9,11 @@ export const runtime = "nodejs"
 
 export async function POST(req: NextRequest & { file: any }, res: NextResponse) {
   try {
-    const token = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await auth();
+    
+    if (!session) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
 
     const formData = await req.formData();
     const audio: any = formData.get("audio");

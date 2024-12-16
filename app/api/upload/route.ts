@@ -1,9 +1,8 @@
 import { s3, s3Config } from "@/libs/s3";
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from "@/libs/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/libs/prisma";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "@/libs/next-auth";
+import { auth } from "@/auth";
 
 // export const config = {
 //   api: {
@@ -11,12 +10,16 @@ import { getServerSession } from "@/libs/next-auth";
 //   },
 // };
 
-export async function POST(req: NextRequest & { file: any }, res: NextResponse) {
+export async function POST(
+  req: NextRequest & { file: any },
+  res: NextResponse
+) {
   try {
-    const token = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await auth();
+
+    if (!session) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
 
     const formData = await req.formData();
     const audio: any = formData.get("audio");
@@ -28,26 +31,26 @@ export async function POST(req: NextRequest & { file: any }, res: NextResponse) 
     const imageKey = `${prefix}/${image?.name}`;
     const avatarKey = `${prefix}/${avatar?.name}`;
 
-
     if (avatar) {
-      const avatarResult = await s3.upload({
-        Bucket: s3Config.id,
-        Key: avatarKey,
-        Body: Buffer.from((await avatar.arrayBuffer())),
-        ACL: "public-read"
-      }).promise();
+      const avatarResult = await s3
+        .upload({
+          Bucket: s3Config.id,
+          Key: avatarKey,
+          Body: Buffer.from(await avatar.arrayBuffer()),
+          ACL: "public-read"
+        })
+        .promise();
 
       await prisma.user.update({
         where: {
-          id: req.nextUrl.searchParams.get('userId')
+          id: req.nextUrl.searchParams.get("userId")
         },
         data: {
           image: avatarResult?.Location
         }
-      })
+      });
 
-    
-      revalidatePath('/dashboard');
+      revalidatePath("/dashboard");
 
       return NextResponse.json({
         avatar: {
@@ -55,21 +58,24 @@ export async function POST(req: NextRequest & { file: any }, res: NextResponse) 
           url: avatarResult?.Location
         }
       });
-     }
+    }
 
-    const audioResult = await s3.upload({
-      Bucket: s3Config.id,
-      Key: audioKey,
-      Body: Buffer.from((await audio.arrayBuffer())),
-    }).promise();
+    const audioResult = await s3
+      .upload({
+        Bucket: s3Config.id,
+        Key: audioKey,
+        Body: Buffer.from(await audio.arrayBuffer())
+      })
+      .promise();
 
-    const imageResult = await s3.upload({
-      Bucket: s3Config.id,
-      Key: imageKey,
-      Body: Buffer.from((await image.arrayBuffer())),
-      ACL: "public-read"
-    }).promise();
-
+    const imageResult = await s3
+      .upload({
+        Bucket: s3Config.id,
+        Key: imageKey,
+        Body: Buffer.from(await image.arrayBuffer()),
+        ACL: "public-read"
+      })
+      .promise();
 
     // await s3.putObjectTagging({
 
@@ -85,9 +91,11 @@ export async function POST(req: NextRequest & { file: any }, res: NextResponse) 
         url: imageResult?.Location
       }
     });
-
   } catch (error) {
-    console.error('Error uploading file to S3:', error);
-    return NextResponse.json({ error: 'Failed to upload file to S3' }, { status: 500 });
+    console.error("Error uploading file to S3:", error);
+    return NextResponse.json(
+      { error: "Failed to upload file to S3" },
+      { status: 500 }
+    );
   }
 }

@@ -7,6 +7,7 @@ import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/layout/LayoutClient";
 import config from "@/config";
 import "./globals.css";
+import Provider from "@/context/Provider";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -45,10 +46,10 @@ export default function RootLayout({
         </head>
       )}
       <NextIntlClientProvider locale={locale} messages={messages}>
-        
         <body>
-          {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
-          <ClientLayout>{children}</ClientLayout>
+          <Provider>
+            <ClientLayout>{children}</ClientLayout>
+          </Provider>
         </body>
       </NextIntlClientProvider>
     </html>
