@@ -4,6 +4,7 @@ import Image from "next/image";
 import { prisma } from "@/libs/prisma";
 import { auth } from "@/auth";
 import HeaderBorder from "@/components/ui/HeaderBorder";
+import { EmptyState } from "@/components/ui/EmptyState";
 export const dynamic = "force-dynamic";
 
 const options = [
@@ -74,38 +75,49 @@ export default async function Library() {
           <LibraryFilter options={options} />
         </div>
 
-        <div className="flex flex-col gap-2 mx-6 mt-8 mb-4">
-          {songs.map(({ artists, title, image, id }, k: number) => {
-            return (
-              <Link
-                href={{ pathname: "/player", query: { song: id } }}
-                key={`${id}--${title}--2`}
-                className="flex w-full gap-8"
-              >
-                <span className="relative w-[50px] h-[50px]">
-                  <Image
-                    className="max-h-[50px] object-cover rounded-sm"
-                    fill
-                    alt={`Jaquette ${title}`}
-                    src={image}
-                  />
-                </span>
-                <div className="flex flex-col">
-                  <h4 className="font-semibold text-xl">{title}</h4>
-                  <Link
-                    href={{
-                      pathname: "/artist/[artist]",
-                      params: { artist: artists?.[0]?.name }
-                    }}
-                    className="opacity-60"
-                  >
-                    {artists?.[0]?.name}
-                  </Link>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        {songs.length > 0 ? (
+          <div className="flex flex-col gap-2 mx-6 mt-8 mb-4">
+            {songs.map(({ artists, title, image, id }, k: number) => {
+              return (
+                <Link
+                  href={{ pathname: "/player", query: { song: id } }}
+                  key={`${id}--${title}--2`}
+                  className="flex w-full gap-8"
+                >
+                  <span className="relative w-[50px] h-[50px]">
+                    <Image
+                      className="max-h-[50px] object-cover rounded-sm"
+                      fill
+                      alt={`Jaquette ${title}`}
+                      src={image}
+                    />
+                  </span>
+                  <div className="flex flex-col">
+                    <h4 className="font-semibold text-xl">{title}</h4>
+                    <Link
+                      href={{
+                        pathname: "/artist/[artist]",
+                        params: { artist: artists?.[0]?.name }
+                      }}
+                      className="opacity-60"
+                    >
+                      {artists?.[0]?.name}
+                    </Link>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 mx-6 mt-8 mb-4">
+            <EmptyState
+              title="Votre bibliothèque est vide"
+              description="Découvrez notre catalogue et ajoutez vos morceaux préférés à votre collection"
+              actionLabel="Explorer le catalogue"
+              actionLink={{ pathname: "/" }}
+            />
+          </div>
+        )}
       </section>
     </main>
   );
