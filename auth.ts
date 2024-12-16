@@ -65,7 +65,7 @@ export const config = {
             userId: user.id
           },
           include: {
-            artist: true,
+            artist: true || false,
             user: true,
             orders: true
           }
@@ -75,7 +75,6 @@ export const config = {
         if (userProfile) {
           user.profile = userProfile;
         }
-        console.log("isnewuser", user.isNewUser);
 
         session.user = user;
       }

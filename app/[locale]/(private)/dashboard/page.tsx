@@ -33,7 +33,7 @@ export default async function Dashboard() {
         userId: user?.id
       },
       include: {
-        artist: true,
+        artist: true || false,
         user: true
       }
     });
@@ -63,7 +63,7 @@ export default async function Dashboard() {
         <div className="text-center">
           <h4 className="font-medium text-xl">{`@${user?.profile?.artist?.name || user?.name || user?.email?.split("@")[0]}`}</h4>
           <span className="opacity-60">
-            Mode {!user?.profile?.artistMode ? "auditeur" : "artiste"}{" "}
+            Mode {!user?.profile?.artistMode ? "auditeur" : "artiste"}
           </span>
         </div>
       </section>

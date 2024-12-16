@@ -5,12 +5,6 @@ import { auth } from "@/auth";
 import { Link, redirect } from "@/navigation";
 
 export default async function Page() {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect("/me/welcome");
-    return null;
-  }
   const songs = await prisma.song.findMany({
     include: {
       artists: {
