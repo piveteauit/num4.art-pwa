@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import apiClient from "@/libs/api";
 import config from "@/config";
 import { buySong } from "@/libs/server/song.action";
+import { useSession } from "next-auth/react";
 
 // This component is used to create Stripe Checkout Sessions
 // It calls the /api/stripe/create-checkout route with the priceId, successUrl and cancelUrl
@@ -23,11 +24,13 @@ const ButtonCheckout = ({
   label?: string | React.ReactNode | React.ReactNodeArray | string[];
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { update } = useSession();
 
   const handlePayment = async () => {
     setIsLoading(true);
     setTimeout(async () => {
       await buySong({ songId, profileId });
+      await update();
       setIsLoading(false);
     }, 2000);
 
