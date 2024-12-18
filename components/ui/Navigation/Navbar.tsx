@@ -67,7 +67,7 @@ function Navbar() {
               )}
             />
           </div>
-          <p className="font-light text-sm">Bibliothèque</p>
+          <p className="font-light text-sm">Collection</p>
         </div>
       </Link>
     </div>
