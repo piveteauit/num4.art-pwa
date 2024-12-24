@@ -1,10 +1,10 @@
-import LibraryFilter from "@/components/ui/LibraryFilter";
 import { Link } from "@/navigation";
 import Image from "next/image";
 import { prisma } from "@/libs/prisma";
 import { auth } from "@/auth";
 import HeaderBorder from "@/components/ui/HeaderBorder";
-import { EmptyState } from "@/components/ui/EmptyState";
+import LibraryContent from "@/components/Library/LibraryContent";
+
 export const dynamic = "force-dynamic";
 
 const options = [
@@ -18,7 +18,6 @@ const options = [
 
 export default async function Library() {
   const session = await auth();
-  const setCurrent = () => {};
   const orders = await prisma.order.findMany({
     where: {
       profil: {
@@ -29,6 +28,7 @@ export default async function Library() {
       songId: true
     }
   });
+  
   const songs = await prisma.song.findMany({
     where: {
       id: {
@@ -66,59 +66,7 @@ export default async function Library() {
         </Link>
       </HeaderBorder>
 
-      <section
-        id="scrollable-content"
-        className="flex overflow-y-scroll flex-col gap-1 max-lg:max-h-[calc(100vh_-_140px)] lg:max-h-[calc(100vh_-_73px)] overflow-x-hidden lg:mx-[200px]"
-      >
-        <div className="flex flex-col mt-4">
-          <h2 className="text-xl mb-2 ml-6 ">Trier par</h2>
-          <LibraryFilter options={options} />
-        </div>
-
-        {songs.length > 0 ? (
-          <div className="flex flex-col gap-2 mx-6 mt-8 mb-4">
-            {songs.map(({ artists, title, image, id }, k: number) => {
-              return (
-                <Link
-                  href={{ pathname: "/player", query: { song: id } }}
-                  key={`${id}--${title}--2`}
-                  className="flex w-full gap-8"
-                >
-                  <span className="relative w-[50px] h-[50px]">
-                    <Image
-                      className="max-h-[50px] object-cover rounded-sm"
-                      fill
-                      alt={`Jaquette ${title}`}
-                      src={image}
-                    />
-                  </span>
-                  <div className="flex flex-col">
-                    <h4 className="font-semibold text-xl">{title}</h4>
-                    <Link
-                      href={{
-                        pathname: "/artist/[artist]",
-                        params: { artist: artists?.[0]?.name }
-                      }}
-                      className="opacity-60"
-                    >
-                      {artists?.[0]?.name}
-                    </Link>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2 mx-6 mt-8 mb-4">
-            <EmptyState
-              title="Votre bibliothèque est vide"
-              description="Découvrez notre catalogue et ajoutez vos morceaux préférés à votre collection"
-              actionLabel="Explorer le catalogue"
-              actionLink={{ pathname: "/" }}
-            />
-          </div>
-        )}
-      </section>
+      <LibraryContent songs={songs} options={options} />
     </main>
   );
 }

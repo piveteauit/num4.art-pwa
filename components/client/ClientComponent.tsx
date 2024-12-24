@@ -5,21 +5,12 @@ import SearchBar from "../ui/SearchBar";
 import { Link } from "@/navigation";
 import Image from "next/image";
 import LibraryFilter from "@/components/ui/LibraryFilter";
-
-interface Artist {
-  id: string;
-  name: string;
-  image: string;
-}
-
-interface Song {
-  id: string;
-  title: string;
-  image: string;
-  genres: { id: string; label: string }[];
-  artists: { name: string }[];
-}
-
+import { usePlayer } from "@/context/PlayerContext";
+import { usePlayerMargin } from "@/hooks/usePlayerMargin";
+import CategoryTitle from "@/components/ui/CategoryTitle";
+import { Song } from "@/types/song";
+import { Artist } from "@/types/artist";
+import ScrollableSongsCards from "@/components/ui/ScrollableSongsCards";
 interface ClientComponentProps {
   initialSongs: Song[];
   initialArtists: Artist[];
@@ -33,51 +24,6 @@ const categories = [
   { name: "Pop" },
   { name: "Electro" }
 ];
-
-type AppRoutes =
-  | "/see-all"
-  | "/see-all-artists"
-  | "/player"
-  | "/artist"
-  | "/library";
-
-const SongCard: React.FC<{
-  song: Song;
-  index: number;
-  totalLength: number;
-}> = ({ song, index, totalLength }) => (
-  <Link
-    className={`${index === 0 ? "ml-6" : ""} 
-    ${index === totalLength - 1 ? "mr-6" : ""}`}
-    href={{
-      pathname: "/player",
-      query: { song: song.id }
-    }}
-  >
-    <span className="block relative h-44 w-[140px] m-auto rounded-md overflow-hidden min-h-[180px] min-w-[180px]">
-      <Image
-        className="object-cover rounded-md"
-        alt="jaquette musique"
-        src={song?.image || ""}
-        layout="fill"
-      />
-    </span>
-    <div className="flex flex-col items-start text-white mt-2">
-      <span
-        className="block w-[180px] truncate"
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          textAlign: "left"
-        }}
-      >
-        {song.title}
-      </span>
-      <span className="text-xs opacity-75">{song.artists?.[0]?.name}</span>
-    </div>
-  </Link>
-);
 
 const ArtistCard: React.FC<{
   artist: Artist;
@@ -107,24 +53,13 @@ const ArtistCard: React.FC<{
   </Link>
 );
 
-const SectionHeader: React.FC<{ title: string; linkPath: AppRoutes }> = ({
-  title,
-  linkPath
-}) => (
-  <Link href={linkPath} className="text-white-500 hover:underline">
-    <div className="flex justify-between items-center mb-4 mx-6">
-      <h3 className="font-semibold text-xl">{title}</h3>
-      <span>Voir tout</span>
-    </div>
-  </Link>
-);
-
 const ClientComponent: React.FC<ClientComponentProps> = ({
   initialSongs,
   initialArtists
 }) => {
+  const { getMargin } = usePlayerMargin();
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentGenre, setCurrentGenre] = useState("");
+  // const [currentGenre, setCurrentGenre] = useState("");
   const [filteredSongs, setFilteredSong] = useState(initialSongs);
 
   useEffect(() => {
@@ -145,22 +80,16 @@ const ClientComponent: React.FC<ClientComponentProps> = ({
         <LibraryFilter options={categories} />
       </div>
 
-      <div className="mb-8">
-        <SectionHeader title="Sortie récente" linkPath="/see-all" />
-        <div className="flex gap-2 overflow-x-scroll scrollbar-hide max-lg:pr-4 lg:flex-nowrap lg:justify-start lg:mx-auto">
-          {filteredSongs.map((song, i) => (
-            <SongCard
-              key={`song-${song.id}-${i}`}
-              song={song}
-              index={i}
-              totalLength={filteredSongs.length}
-            />
-          ))}
-        </div>
-      </div>
+      <ScrollableSongsCards
+        title="Sortie récente"
+        className="mb-8"
+        songs={filteredSongs}
+        artistName={filteredSongs[0]?.artists[0]?.name}
+        href="/see-all"
+      />
 
-      <div className="mb-20">
-        <SectionHeader title="Connaissez-vous ?" linkPath="/see-all-artists" />
+      <div style={{ marginBottom: getMargin() }}>
+        <CategoryTitle title="Connaissez-vous ?" href="/see-all-artists" />
         <div className="flex gap-2 overflow-x-scroll scrollbar-hide flex-grow">
           {initialArtists.map((artist, i) => (
             <ArtistCard

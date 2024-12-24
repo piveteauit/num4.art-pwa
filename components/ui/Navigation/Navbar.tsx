@@ -12,11 +12,9 @@ function Navbar() {
   }
 
   return (
-    <div className="btm-nav h-auto py-2 border-t border-white border-opacity-10 bg-opacity-80 backdrop-blur-sm text-white bg-base  z-[9999] lg:hidden">
+    <div className="btm-nav h-auto py-2 border-t border-white border-opacity-10 bg-opacity-80 backdrop-blur-sm text-white bg-base z-[9999] lg:hidden">
       <Link href={"/"}>
-        <div
-          className={`flex flex-col justify-center items-center ${pathname === "/" ? "opacity-100" : "opacity-70"}`}
-        >
+        <div className={`flex flex-col justify-center items-center ${pathname === "/" ? "opacity-100" : "opacity-70"}`}>
           <div className="relative w-8 h-8">
             <Image
               fill
@@ -32,29 +30,9 @@ function Navbar() {
           <p className="font-light text-sm">Accueil</p>
         </div>
       </Link>
-      <Link href={"/player"}>
-        <div
-          className={`flex flex-col justify-center items-center ${pathname === "/player" ? "opacity-100" : "opacity-70"}`}
-        >
-          <div className="relative size-[1.75rem] mb-1 ">
-            <Image
-              fill
-              className="text-white object-contain mb-1"
-              alt="Icon Player"
-              src={require(
-                pathname === "/player"
-                  ? "@/public/assets/images/icons/bouton-jouer-active.svg"
-                  : "@/public/assets/images/icons/bouton-jouer-_2_.svg"
-              )}
-            />
-          </div>
-          <p className="font-light text-sm">Lecteur</p>
-        </div>
-      </Link>
+      
       <Link href={"/library"}>
-        <div
-          className={`flex flex-col justify-center items-center ${pathname === "/library" ? "opacity-100" : "opacity-70"}`}
-        >
+        <div className={`flex flex-col justify-center items-center ${pathname === "/library" ? "opacity-100" : "opacity-70"}`}>
           <div className="relative w-8 h-8">
             <Image
               fill

@@ -22,21 +22,6 @@ export default async function Page() {
     }
   });
 
-  const artists = (
-    await prisma.artist.findMany({
-      include: {
-        profile: {
-          include: {
-            user: true
-          }
-        }
-      }
-    })
-  ).map((a) => ({
-    ...a,
-    image:
-      a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
-  }));
   return (
     <>
       <main className="w-screen h-screen overflow-y-auto md:p-8 pb-12 md:pb-24">
@@ -68,8 +53,8 @@ export default async function Page() {
             {songs.map((s, i) => (
               <Link
                 href={{
-                  pathname: "/player",
-                  query: { song: s.id }
+                  pathname: "/song",
+                  query: { id: s.id }
                 }}
                 key={`song-${s.id}-${i}`}
                 className="flex flex-col items-center"

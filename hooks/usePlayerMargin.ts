@@ -1,14 +1,14 @@
 import { usePlayer } from "@/context/PlayerContext";
 
-export const usePlayerMargin = () => {
+export const usePlayerMargin = ({ from0 = false }: { from0?: boolean } = {}) => {
   const { currentPlaying, isExpanded } = usePlayer();
 
-  const getBottomMargin = () => {
+  const getMargin = () => {
     if (!isExpanded && currentPlaying) {
-      return "mb-[160px]";
+      return from0 ? "80px" : "160px";
     }
-    return "mb-[80px]";
+    return from0 ? "0px" : "80px";
   };
 
-  return { getBottomMargin };
-}; 
+  return { getMargin };
+};

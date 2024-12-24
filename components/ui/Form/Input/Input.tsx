@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from 'react';
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -10,35 +10,28 @@ type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   type?: "textarea";
 };
 
-function Input(props: InputProps | TextAreaProps) {
-  const { label } = props;
+const Input = forwardRef<HTMLInputElement, InputProps>(({
+  label,
+  type = "text",
+  ...props
+}, ref) => {
   return (
-    <div className="flex flex-col text-white">
-      {props?.type !== "checkbox" ? <label>{label}</label> : null}
-      {props?.type === "textarea" ? (
-        <textarea
-          className="p-3 bg-secondary border-white border-opacity-50 border-2 rounded-lg text-black" 
-          {...props}
-        />
-      ) : props?.type === "checkbox" ? (
-        <div className="form-control">
-          <label className="label cursor-pointer">
-            <input
-              type="checkbox"
-              className="checkbox checkbox-accent w-6 h-6 text-black"
-              {...props}
-            />
-            <span className="label-text text-black">{label}</span>
-          </label>
-        </div>
-      ) : (
-        <input
-          className="p-3 bg-secondary border-2 border-white border-opacity-50 rounded-lg text-black"
-          {...props}
-        />
+    <div className="form-control w-full">
+      {label && (
+        <label className="label">
+          <span className="text-white">{label}</span>
+        </label>
       )}
+      <input
+        ref={ref}
+        type={type}
+        className="input input-bordered w-full"
+        {...props}
+      />
     </div>
   );
-}
+});
+
+Input.displayName = 'Input';
 
 export default Input;

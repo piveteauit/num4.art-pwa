@@ -8,6 +8,8 @@ import ClientLayout from "@/components/layout/LayoutClient";
 import config from "@/config";
 import "./globals.css";
 import Provider from "@/context/Provider";
+import Player from "@/components/Player/Player";
+import Navbar from "@/components/ui/Navigation/Navbar";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -48,7 +50,11 @@ export default function RootLayout({
       <NextIntlClientProvider locale={locale} messages={messages}>
         <body>
           <Provider>
-            <ClientLayout>{children}</ClientLayout>
+            <ClientLayout>
+              {children}
+              <Player />
+              <Navbar />
+            </ClientLayout>
           </Provider>
         </body>
       </NextIntlClientProvider>

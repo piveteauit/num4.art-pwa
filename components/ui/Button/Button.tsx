@@ -14,7 +14,7 @@ function Button(props: ButtonProps) {
   return (
     <button
       {...props}
-      className={`btn ${size ? "btn-" + size : ""} ${color ? "disabled:opacity-60 disabled:bg-" + color : "disabled:bg-primary disabled:opacity-60"} ${color ? "btn-" + color : "btn-white"} text-custom ${props?.className}`}
+      className={`btn ${size ? "btn-" + size : ""} ${color ? "disabled:opacity-60 disabled:bg-" + color : "disabled:bg-inherit disabled:text-inherit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-inherit disabled:hover:text-inherit disabled:pointer-events-auto "} ${color ? "btn-" + color : "btn-white"} text-custom ${props?.className}`}
     >
       {children}
     </button>

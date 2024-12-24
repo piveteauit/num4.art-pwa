@@ -16,7 +16,11 @@ export const pathnames = {
   "/me/welcome": "/me/welcome",
   "/me/signout": "/me/signout",
   "/me/signup": "/me/signup",
-   
+
+  "/song": {
+    en: "/song",
+    fr: "/chanson"
+  },
 
   "/dashboard": {
     en: "/my-account",
@@ -46,7 +50,7 @@ export const pathnames = {
   "/see-all": {
     en: "/see-all",
     fr: "/voir-tout"
-  }, 
+  },
   "/see-all-artists": {
     en: "/see-all-artists",
     fr: "/voir-tout-les-artistes"

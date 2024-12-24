@@ -12,7 +12,7 @@ import config from "@/config";
 import Player from "../Player/Player";
 import Navbar from "../ui/Navigation/Navbar";
 import Menu from "../ui/Navigation/Menu";
-import PlayerProvider from "@/context/PlayerContext";
+import { PlayerProvider } from "@/context/PlayerContext";
 import Installer from "../Installer";
 
 // Crisp customer chat support:
@@ -59,38 +59,37 @@ const CrispChat = (): null => {
 const ClientLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
-        <Menu />
-        {/* Show a progress bar at the top when navigating between pages */}
-        <NextTopLoader color={config.colors.main} showSpinner={false} />
-        <div className="flex flex-col">
-          <PlayerProvider>
-            {/* Content inside app/page.js files  */}
-            {children}
-            {/* Show Success/Error messages anywhere from the app with toast() */}
-            <Toaster
-              position="top-center"
-              containerStyle={{
+      <Menu />
+      {/* Show a progress bar at the top when navigating between pages */}
+      <NextTopLoader color={config.colors.main} showSpinner={false} />
+      <div className="flex flex-col">
+        <PlayerProvider>
+          {/* Content inside app/page.js files  */}
+          {children}
+          {/* Show Success/Error messages anywhere from the app with toast() */}
+          <Toaster
+            position="top-center"
+            containerStyle={{
+              zIndex: 10000000
+            }}
+            toastOptions={{
+              duration: 3000,
+              style: {
                 zIndex: 10000000
-              }}
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  zIndex: 10000000
-                }
-              }}
-            />
+              }
+            }}
+          />
 
-            {/* Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content="" */}
-            <Tooltip
-              id="tooltip"
-              className="z-[60] !opacity-100 max-w-sm shadow-lg"
-            />
+          {/* Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content="" */}
+          <Tooltip
+            id="tooltip"
+            className="z-[60] !opacity-100 max-w-sm shadow-lg"
+          />
 
-            <Installer />
-            <Navbar />
-            <Player />
-          </PlayerProvider>
-        </div>
+          <Installer />
+          <Navbar />
+        </PlayerProvider>
+      </div>
     </>
   );
 };
