@@ -3,7 +3,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300;
+export const maxDuration = 60;
 export const runtime = "nodejs"
 
 
