@@ -2,12 +2,12 @@ import themes from "daisyui/src/theming/themes.js";
 import { ConfigProps } from "./types/config";
 
 export const server = {
-  host: "smtp-relay.brevo.com" ,//process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
-  port: 587,//Number(process?.env?.MAIL_AUTH_PORT || "465"),
-  secure: false,//process?.env?.MAIL_AUTH_SECURE == "true",
+  host: "smtp-relay.brevo.com", //process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
+  port: 587, //Number(process?.env?.MAIL_AUTH_PORT || "465"),
+  secure: false, //process?.env?.MAIL_AUTH_SECURE == "true",
   auth: {
-    user: process?.env?.MAIL_AUTH_USER,// || "piveteauit@gmail.com",
-    pass: process?.env?.MAIL_AUTH_PASS,// || "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-NtHvnd6CyKSMsjQE"
+    user: process?.env?.MAIL_AUTH_USER, // || "piveteauit@gmail.com",
+    pass: process?.env?.MAIL_AUTH_PASS // || "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-NtHvnd6CyKSMsjQE"
   }
 };
 const config = {
@@ -73,12 +73,12 @@ const config = {
       }
     ]
   },
-  aws: {
-    // If you use AWS S3/Cloudfront, put values in here
-    bucket: "bucket-name",
-    bucketUrl: `https://bucket-name.s3.amazonaws.com/`,
-    cdn: "https://cdn-id.cloudfront.net/"
-  },
+  // aws: {
+  //   // If you use AWS S3/Cloudfront, put values in here
+  //   bucket: process.env.OVH_STORAGE_BUCKET,
+  //   bucketUrl: `${process.env.OVH_STORAGE_ENDPOINT}/${process.env.OVH_STORAGE_BUCKET}/`,
+  //   region: process.env.OVH_STORAGE_REGION
+  // },
   mailgun: {
     // subdomain to use when sending emails, if you don't have a subdomain, just remove it. Highly recommended to have one (i.e. mg.yourdomain.com or mail.yourdomain.com)
     subdomain: "mg",

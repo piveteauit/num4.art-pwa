@@ -47,7 +47,7 @@ export default async function Dashboard() {
     redirect("/me/welcome");
   }
   return (
-    <main className="min-h-screen pb-24">
+    <main className=" flex-1">
       <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center bg-custom-black">
         <div className="relative">
           <Avatar user={user} />

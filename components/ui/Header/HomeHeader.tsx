@@ -48,7 +48,6 @@ export default function HomeHeader() {
                 src={"/assets/images/icons/settings.svg"}
                 width={10}
                 height={10}
-                layout="responsive"
                 className="object-contain max-w-8"
               />
             </Link>

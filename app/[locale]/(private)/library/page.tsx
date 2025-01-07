@@ -28,7 +28,7 @@ export default async function Library() {
       songId: true
     }
   });
-  
+
   const songs = await prisma.song.findMany({
     where: {
       id: {
@@ -61,7 +61,6 @@ export default async function Library() {
             width={5}
             height={5}
             className="object-contain max-w-8"
-            layout="responsive"
           />
         </Link>
       </HeaderBorder>

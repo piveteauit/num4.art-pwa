@@ -96,6 +96,9 @@ function SongForm({ user }: any) {
           <Input
             label="Prix"
             type="number"
+            min={0}
+            max={10000}
+            
             onChange={({ target }) =>
               setValues({ ...values, price: Number(target.value) })
             }
@@ -114,7 +117,7 @@ function SongForm({ user }: any) {
               setValues({ ...values, description: target.value })
             }
             label="Description"
-            type="textarea"
+            type="text"
           />
         </div>
 

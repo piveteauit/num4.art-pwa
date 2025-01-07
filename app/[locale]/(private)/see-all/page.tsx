@@ -24,7 +24,7 @@ export default async function Page() {
 
   return (
     <>
-      <main className="w-screen h-screen overflow-y-auto md:p-8 pb-12 md:pb-24">
+      <main className="w-screen flex-1 overflow-y-auto md:p-8">
         <section className="fixed w-full top-0 px-8 py-4 bg-base z-50 flex justify-between items-center">
           <Link href={"/"}>
             <Image
@@ -33,7 +33,6 @@ export default async function Page() {
               width={120}
               height={40}
               className="object-contain"
-              layout="fixed"
             />
           </Link>
           <Link className="z-50" href={"/dashboard"}>
@@ -43,7 +42,6 @@ export default async function Page() {
               width={40}
               height={40}
               className="object-contain max-w-10"
-              layout="responsive"
             />
           </Link>
         </section>

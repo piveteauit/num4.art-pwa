@@ -9,8 +9,6 @@ import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 import config from "@/config";
-import Player from "../Player/Player";
-import Navbar from "../ui/Navigation/Navbar";
 import Menu from "../ui/Navigation/Menu";
 import { PlayerProvider } from "@/context/PlayerContext";
 import Installer from "../Installer";
@@ -62,7 +60,7 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
       <Menu />
       {/* Show a progress bar at the top when navigating between pages */}
       <NextTopLoader color={config.colors.main} showSpinner={false} />
-      <div className="flex flex-col">
+      <div className="flex flex-col h-dvh">
         <PlayerProvider>
           {/* Content inside app/page.js files  */}
           {children}
@@ -87,7 +85,6 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
           />
 
           <Installer />
-          <Navbar />
         </PlayerProvider>
       </div>
     </>

@@ -70,7 +70,6 @@ export default async function Artist({ params: { artist } }: any) {
             width={50}
             height={50}
             className="object-contain max-w-10"
-            layout="responsive"
           />
         </Link>
       </section>

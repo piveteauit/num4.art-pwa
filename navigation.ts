@@ -27,6 +27,11 @@ export const pathnames = {
     fr: "/mon-compte"
   },
 
+  "/publish": {
+    en: "/publish",
+    fr: "/publier"
+  },
+
   "/player": {
     en: "/music-player",
     fr: "/lecteur-musique"

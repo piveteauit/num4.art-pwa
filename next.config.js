@@ -35,7 +35,18 @@ const nextConfig = {
       "s3.fr-par.scw.cloud",
       "cloud.ovh.net",
       "numero.s3.gra.io.cloud.ovh.net"
-    ]
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.cloud.ovh.net",
+        port: "",
+        pathname: "/**"
+      }
+    ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
 
   publicRuntimeConfig: {

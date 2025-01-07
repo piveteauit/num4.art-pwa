@@ -588,7 +588,7 @@ function Player(): JSX.Element | null {
                   className="object-cover"
                   alt="jaquette musique"
                   src={currentPlaying.image}
-                  layout="fill"
+                  fill
                 />
               </div>
               <div>

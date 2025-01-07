@@ -2,6 +2,7 @@
 import { setCurrentMode } from "@/libs/server/user.action";
 import { redirect, useRouter } from "@/navigation";
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   active?: boolean;
@@ -24,20 +25,31 @@ function Button(props: ButtonProps) {
 export const ButtonChangeMode = ({
   id,
   artistMode,
+  children,
   ...props
 }: ButtonProps & any) => {
   const router = useRouter();
+  const { update } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <Button
       {...props}
-      color="white" // Ajouté la couleur blanche en tant que propriété
-      className={`text-white hover:bg-gray-100 hover:text-black focus:outline-none text-sm px-4 py-1 ${props.className}`}
+      color="white"
+      className={`relative text-white hover:bg-gray-100 hover:text-black focus:outline-none text-sm px-4 py-1 ${props.className}`}
       onClick={async (evt) => {
+        setIsLoading(true);
         await setCurrentMode({ id, artistMode });
+        await update();
         router.push({ pathname: "/dashboard", query: { artistMode } });
+        setIsLoading(false);
       }}
-    />
+    >
+      <span className={isLoading ? "invisible" : "visible"}>{children}</span>
+      {isLoading && (
+        <span className="loading loading-spinner loading-sm absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></span>
+      )}
+    </Button>
   );
 };
 

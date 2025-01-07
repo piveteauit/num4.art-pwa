@@ -65,6 +65,7 @@ export default async function SongPage({
       genres: true
     }
   });
+  console.log(song);
 
   const userProfile = session?.user?.id
     ? await prisma.profile.findFirst({

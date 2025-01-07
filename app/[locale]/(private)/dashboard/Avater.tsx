@@ -52,6 +52,7 @@ export default function Avatar({ user }: any) {
       {ld ? (
         <span className="loading loading-spinner loading-md" />
       ) : (
+        // <div className="w-50 h-50 bg-red-500"></div>
         <Image
           alt={`Avatar ${user?.name || user?.email?.split("@")[0]}`}
           fill
