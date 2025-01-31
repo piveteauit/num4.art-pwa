@@ -15,7 +15,7 @@ const font = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
   // Will use the primary color of your theme to show a nice theme color in the URL bar of supported browsers
-  themeColor: config.colors.main,
+  themeColor: "#131313",
   width: "device-width",
   initialScale: 1
 };
@@ -48,7 +48,7 @@ export default function RootLayout({
         </head>
       )}
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <body>
+        <body className="relative h-dvh">
           <Provider>
             <ClientLayout>
               {children}

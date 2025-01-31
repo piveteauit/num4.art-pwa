@@ -19,7 +19,7 @@ const nextConfig = {
     return [
       {
         source: "/api/storage/:path*",
-        destination: `${process.env?.AWS_S3_BUCKET_PUBLIC_ENDPOINT || "https://numero.s3.gra.io.cloud.ovh.net"}/:path*`
+        destination: `${process.env?.OVH_PUBLIC_URL}/:path*`
       }
     ];
   },
@@ -34,8 +34,19 @@ const nextConfig = {
       "picsum.photos",
       "s3.fr-par.scw.cloud",
       "cloud.ovh.net",
-      "numero.s3.gra.io.cloud.ovh.net"
-    ]
+      "numero.s3.sbg.io.cloud.ovh.net"
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.cloud.ovh.net",
+        port: "",
+        pathname: "/**"
+      }
+    ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
 
   publicRuntimeConfig: {

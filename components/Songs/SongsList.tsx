@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePlayer } from "@/context/PlayerContext";
 import SkeletonSong from "@/components/ui/SkeletonSong";
 import { usePlayMusic } from "@/hooks/usePlayMusic";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface SongsListProps {
   songs: any[];
@@ -55,11 +56,17 @@ export const SongsList = ({
           >
             <div className="flex w-full gap-8">
               <span className="relative w-[52px] h-[52px]">
-                <Image
+                {/* <Image
                   className="max-h-[52px] object-cover rounded-sm"
                   fill
                   alt={`Jaquette ${song.title}`}
                   src={song.image}
+                /> */}
+                <ImageWithFallback
+                  // src={song.image}
+                  src={"/assets/images/PHOTO-2024-01-22-17-14-05.jpg"}
+                  alt={`Jaquette ${song.title}`}
+                  fill
                 />
               </span>
               <div className="flex flex-col items-start">
@@ -71,7 +78,7 @@ export const SongsList = ({
                   }}
                   className="opacity-60"
                 >
-                  {song.artists?.[0]?.name}
+                  {song.artists?.[0]?.name || "Artiste inconnu"}
                 </Link>
               </div>
             </div>

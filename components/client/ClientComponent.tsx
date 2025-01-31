@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from "react";
 import SearchBar from "../ui/SearchBar";
 import { Link } from "@/navigation";
-import Image from "next/image";
 import LibraryFilter from "@/components/ui/LibraryFilter";
-import { usePlayer } from "@/context/PlayerContext";
 import { usePlayerMargin } from "@/hooks/usePlayerMargin";
 import CategoryTitle from "@/components/ui/CategoryTitle";
 import { Song } from "@/types/song";
 import { Artist } from "@/types/artist";
 import ScrollableSongsCards from "@/components/ui/ScrollableSongsCards";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import Image from "next/image";
+
 interface ClientComponentProps {
   initialSongs: Song[];
   initialArtists: Artist[];
@@ -24,40 +25,11 @@ const categories = [
   { name: "Pop" },
   { name: "Electro" }
 ];
-
-const ArtistCard: React.FC<{
-  artist: Artist;
-  index: number;
-  totalLength: number;
-}> = ({ artist, index, totalLength }) => (
-  <Link
-    className={`overflow-hidden flex justify-center text-center items-center gap-2 flex-col min-w-[100px] 
-    ${index === 0 ? "ml-6" : ""} 
-    ${index === totalLength - 1 ? "mr-6" : ""}`}
-    href={{
-      pathname: "/artist/[artist]",
-      params: { artist: artist?.id }
-    }}
-  >
-    <Image
-      layout="responsive"
-      height={100}
-      width={100}
-      alt="Artiste avatar N A I"
-      className="avatar rounded-full !w-[100px] !h-[100px] object-cover overflow-hidden"
-      src={artist?.image || "/musics/artist-nai.jpg"}
-    />
-    <span className="overflow-hidden text-nowrap text-ellipsis max-w-[100px] text-sm">
-      {artist?.name}
-    </span>
-  </Link>
-);
-
 const ClientComponent: React.FC<ClientComponentProps> = ({
   initialSongs,
   initialArtists
 }) => {
-  const { getMargin } = usePlayerMargin();
+  const { getMargin } = usePlayerMargin({ from0: true });
   const [searchTerm, setSearchTerm] = useState("");
   // const [currentGenre, setCurrentGenre] = useState("");
   const [filteredSongs, setFilteredSong] = useState(initialSongs);
@@ -74,10 +46,10 @@ const ClientComponent: React.FC<ClientComponentProps> = ({
       <SearchBar onSearch={setSearchTerm} />
 
       <div className="my-8">
-        <span className="flex justify-between items-center font-semibold mx-6 mb-4 text-xl">
+        {/* <span className="flex justify-between items-center font-semibold mx-6 mb-4 text-xl">
           Catégories
         </span>
-        <LibraryFilter options={categories} />
+        <LibraryFilter options={categories} /> */}
       </div>
 
       <ScrollableSongsCards
@@ -102,6 +74,39 @@ const ClientComponent: React.FC<ClientComponentProps> = ({
         </div>
       </div>
     </section>
+  );
+};
+
+const ArtistCard: React.FC<{
+  artist: Artist;
+  index: number;
+  totalLength: number;
+}> = ({ artist, index, totalLength }) => {
+  if (!artist) {
+    return null;
+  }
+  return (
+    <Link
+      className={`overflow-hidden relative flex justify-center text-center items-center gap-2 flex-col min-w-[100px] 
+      ${index === 0 ? "ml-6" : ""} 
+      ${index === totalLength - 1 ? "mr-6" : ""}`}
+      href={{
+        pathname: "/artist/[artist]",
+        params: { artist: artist?.id }
+      }}
+    >
+      <ImageWithFallback
+        src={artist?.image}
+        alt={`Avatar ${artist?.name}`}
+        className="avatar !rounded-full !w-[100px] !h-[100px] aspect-square"
+        classNameError="rounded-full !h-[100px] aspect-square inset-0 bg-gray-500/30 relative"
+        width={100}
+        height={100}
+      />
+      <span className="overflow-hidden text-nowrap text-ellipsis max-w-[100px] text-sm">
+        {artist?.name ?? "Artiste inconnu"}
+      </span>
+    </Link>
   );
 };
 

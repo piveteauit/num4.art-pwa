@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import Image from "next/image";
 import { usePlayMusic } from "@/hooks/usePlayMusic";
 import { Song } from "@/types/song";
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
 
 const categories = [
   { name: "Tout", all: true },
@@ -15,16 +15,23 @@ const categories = [
   { name: "Electro" }
 ];
 
-export default async function Artist() {
-  const prisma = new PrismaClient();
-
-  const songs = (await prisma.song.findMany({
-    include: {
-      artists: true
-    }
-  })) as Song[];
-
+export default function Artist() {
   const { handlePlay } = usePlayMusic();
+  const [songs, setSongs] = useState<Song[]>([]);
+
+  useEffect(() => {
+    const fetchSongs = async () => {
+      const prisma = new PrismaClient();
+      const songsData = (await prisma.song.findMany({
+        include: {
+          artists: true
+        }
+      })) as Song[];
+      setSongs(songsData);
+    };
+
+    fetchSongs();
+  }, []);
 
   return (
     <main className="w-screen h-screen overflow-hidden p-8 pb-24 absolute top-0 left-0">
@@ -39,7 +46,6 @@ export default async function Artist() {
             width={40}
             height={40}
             className="object-contain max-w-10 "
-            layout="responsive"
           />
         </Link>
       </section>

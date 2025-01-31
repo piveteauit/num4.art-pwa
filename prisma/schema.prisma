@@ -45,25 +45,24 @@ model User {
   sessions         sessions[]
 }
 
-
-
 model Song {
-  id          String     @id @default(cuid())
-  title       String
-  price       Float
-  image       String?
-  description String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  audio       String?
-  preview     String?
-  ISRC        String?    @unique
-  favorites   Favorite[]
-  orders      Order[]
-  albums      Album[]    @relation("AlbumToSong")
-  artists     Artist[]   @relation("ArtistToSong")
-  genres      Genre[]    @relation("GenreToSong")
-  playlists   Playlist[] @relation("PlaylistToSong")
+  id               String     @id @default(cuid())
+  title            String
+  price            Float
+  image            String?
+  description      String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  audio            String?
+  preview          String?
+  ISRC             String?    @unique
+  previewStartTime Float?     @default(0)
+  favorites        Favorite[]
+  orders           Order[]
+  albums           Album[]    @relation("AlbumToSong")
+  artists          Artist[]   @relation("ArtistToSong")
+  genres           Genre[]    @relation("GenreToSong")
+  playlists        Playlist[] @relation("PlaylistToSong")
 }
 
 model Artist {

@@ -1,11 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import { prisma } from "@/libs/prisma";
-import { auth } from "@/auth";
-import { Link, redirect } from "@/navigation";
+import { Link } from "@/navigation";
 
 export default async function Page() {
-
   const artists = (
     await prisma.artist.findMany({
       include: {
@@ -33,7 +31,7 @@ export default async function Page() {
               width={150}
               height={50}
               className="object-contain"
-              layout="fixed"
+              fill
             />
           </Link>
           <Link className="z-50" href={"/dashboard"}>
@@ -43,7 +41,6 @@ export default async function Page() {
               width={50}
               height={50}
               className="object-contain max-w-10"
-              layout="responsive"
             />
           </Link>
         </section>

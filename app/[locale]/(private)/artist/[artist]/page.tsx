@@ -1,4 +1,3 @@
-import Button from "@/components/ui/Button/Button";
 import { Link } from "@/navigation";
 import Image from "next/image";
 import { prisma } from "@/libs/prisma";
@@ -54,7 +53,7 @@ export default async function Artist({ params: { artist } }: any) {
 
   return (
     <div
-      className="w-screen h-screen overflow-hidden py-8 pb-24 absolute top-0 left-0 pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed "
+      className="w-screen flex-1 overflow-hidden py-8 pb-24 absolute top-0 left-0 pt-[40vh] overflow-y-scroll bg-cover bg-left-top bg-fixed "
       style={{
         backgroundImage: `url(${artistFromDb?.profile?.[0]?.user?.image || "/musics/artist-nai.jpg"})`
       }}
@@ -70,7 +69,6 @@ export default async function Artist({ params: { artist } }: any) {
             width={50}
             height={50}
             className="object-contain max-w-10"
-            layout="responsive"
           />
         </Link>
       </section>

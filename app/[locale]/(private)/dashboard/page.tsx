@@ -1,13 +1,11 @@
-import Button, { ButtonChangeMode } from "@/components/ui/Button/Button";
-import SongForm from "@/components/ui/Form/SongForm";
+import { ButtonChangeMode } from "@/components/ui/Button/Button";
 import LocalePicker from "@/components/ui/LocalePicker";
 import { auth } from "@/auth";
-import { Link, redirect } from "@/navigation";
+import { redirect } from "@/navigation";
 import { PrismaClient } from "@prisma/client";
-import Image from "next/image";
 import Avatar from "./Avater";
 import SignOutButton from "@/components/ui/Button/SignOutButton";
-
+import Image from "next/image";
 export const dynamic = "force-dynamic";
 
 // This is a private page: It's protected by the layout.js component which ensures the user is authenticated.
@@ -47,15 +45,15 @@ export default async function Dashboard() {
     redirect("/me/welcome");
   }
   return (
-    <main className="min-h-screen pb-24">
+    <main className=" flex-1">
       <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center bg-custom-black">
         <div className="relative">
           <Avatar user={user} />
-          <img
+          <Image
             src="/assets/images/icons/stylo.svg"
             alt="Stylo Icon"
-            width="25"
-            height="25"
+            width={25}
+            height={25}
             className="absolute bottom-0 right-0"
           />
         </div>
@@ -69,8 +67,6 @@ export default async function Dashboard() {
       </section>
 
       <section className="z-2 bg-custom-black p-5 fixed h-[60%] pb-[60px] top-[40%] flex flex-col w-full items-center">
-        <SongForm user={user} />
-
         <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
           <span>Profil</span>
           <ButtonChangeMode

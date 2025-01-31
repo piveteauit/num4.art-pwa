@@ -1,15 +1,13 @@
 import { getGenerateMetadata } from "@/generateMetadata";
 import { prisma } from "@/libs/prisma";
-import ClientComponent from "@/components/client/ClientComponent";
 import HomeHeader from "@/components/ui/Header/HomeHeader";
-import { auth } from "@/auth";
+import HomeContent from "@/components/HomeContent";
 
 export const generateMetadata = getGenerateMetadata("home");
 
-export default async function Page({ params }: any) {
-  const session = await auth();
-
+export default async function Page() {
   const songs = await prisma.song.findMany({
+    take: 10,
     include: {
       genres: true,
       artists: {
@@ -29,6 +27,7 @@ export default async function Page({ params }: any) {
 
   const artists = (
     await prisma.artist.findMany({
+      take: 10,
       include: {
         profile: {
           include: {
@@ -44,11 +43,9 @@ export default async function Page({ params }: any) {
   }));
 
   return (
-    <>
-      <main className="flex flex-col h-screen w-screen items-center pb-10 md:p-10">
-        <HomeHeader/>
-        <ClientComponent initialSongs={songs} initialArtists={artists} />
-      </main>
-    </>
+    <main className="flex flex-col flex-1  w-screen items-center pb-10 md:p-10">
+      <HomeHeader />
+      <HomeContent songs={songs} artists={artists} />
+    </main>
   );
 }

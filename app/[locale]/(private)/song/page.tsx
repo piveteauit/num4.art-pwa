@@ -7,6 +7,7 @@ import ButtonCheckout from "@/components/ui/sf/ButtonCheckout";
 import SongPageClient from "./SongPageClient";
 import AddToQueueButton from "@/components/ui/Button/AddToQueueButton";
 import ScrollableSongsCards from "@/components/ui/ScrollableSongsCards";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 // const RelatedSongs = ({
 //   songs,
 //   artistId,
@@ -128,11 +129,12 @@ export default async function SongPage({
       {/* Image et informations principales */}
       <div className="flex flex-col gap-4 items-center">
         <div className="relative w-[28svh] h-[28svh] mx-auto ">
-          <Image
+          <ImageWithFallback
             src={song.image}
             alt={song.title}
             fill
             className="object-cover rounded-lg shadow-[1px_10px_49px_21px_rgba(255,255,255,0.05)]"
+            classNameError="rounded-lg"
           />
         </div>
 
@@ -145,7 +147,7 @@ export default async function SongPage({
             }}
             className="text-xl text-white/80 hover:text-white hover:underline"
           >
-            {song.artists[0]?.name}
+            {song.artists[0]?.name || "Unknown Artist"}
           </Link>
           <div className="flex gap-2 text-sm text-white/60">
             {song.genres.map((genre) => (
@@ -177,7 +179,7 @@ export default async function SongPage({
                 <span className="font-bold">{song.price}€</span>
               </span>
             }
-            priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
+            // priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
           />
         )}
       </div>
@@ -194,12 +196,11 @@ export default async function SongPage({
 
       {/* Description */}
       {song.description && (
-        <div className="mt-12 p-6 bg-white/5 rounded-xl">
+        <div className="mt-12 mx-6 p-6 bg-white/5 rounded-xl">
           <h2 className="text-xl font-semibold text-white mb-4">À propos</h2>
           <p className="text-white/80 leading-relaxed">{song.description}</p>
         </div>
       )}
-      {/* </div> */}
     </SongPageClient>
   );
 }

@@ -66,6 +66,7 @@ export const config = {
           },
           include: {
             artist: true || false,
+
             user: true,
             orders: true
           }

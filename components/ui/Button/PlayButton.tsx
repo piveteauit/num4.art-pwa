@@ -16,6 +16,7 @@ export default function PlayButton({ song, text }: PlayButtonProps) {
 
   const { handlePlay } = usePlayMusic();
 
+  console.log("song", song);
   return (
     <Button
       onClick={() => handlePlay(song)}

@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  ReactElement
+} from "react";
 import { usePlayer } from "@/context/PlayerContext";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -10,10 +16,10 @@ import { toast } from "react-hot-toast";
 import AudioPlayer, { RHAP_UI } from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import type H5AudioPlayer from "react-h5-audio-player";
-import debounce from "lodash/debounce";
 import ButtonCheckout from "../ui/sf/ButtonCheckout";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Song } from "@/types/song";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface CloseButtonProps {
   onClick: () => void;
@@ -126,7 +132,7 @@ const PlaylistView = ({
   return (
     <div className="absolute top-0 right-0 w-full h-full bg-base backdrop-blur-lg p-4 overflow-y-auto z-50 border-l border-white/10">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-white text-lg font-medium">File d'attente</h3>
+        <h3 className="text-white text-lg font-medium">File d&apos;attente</h3>
         <button
           onClick={onClose}
           className="text-white/70 hover:text-white transition-colors"
@@ -173,7 +179,7 @@ const PlaylistView = ({
 
       {remainingSongs.length === 0 ? (
         <p className="text-white/60 text-center py-4">
-          Aucun morceau dans la file d'attente
+          Aucun morceau dans la file d&apos;attente
         </p>
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -269,7 +275,7 @@ const PlaylistView = ({
   );
 };
 
-function Player(): JSX.Element | null {
+function Player(): React.JSX.Element | null {
   const {
     setPaused,
     paused,
@@ -405,9 +411,20 @@ function Player(): JSX.Element | null {
     }
   };
 
+  const handleAudioError = (e: ErrorEvent) => {
+    console.error("Erreur détaillée:", {
+      error: e,
+      src: currentPlaying?.preview || currentPlaying?.audio,
+      errorCode: audioRef.current?.audio.current?.error?.code,
+      errorMessage: audioRef.current?.audio.current?.error?.message
+    });
+    toast.error("Impossible de lire le morceau. Veuillez réessayer.");
+    setPaused(true);
+  };
+
   const commonAudioProps = {
     ref: audioRef,
-    src: currentPlaying?.preview || currentPlaying?.audio,
+    src: hasSong ? currentPlaying?.audio : currentPlaying?.preview,
     autoPlay: !paused,
     onPlay: () => setPaused(false),
     onPause: () => setPaused(true),
@@ -459,7 +476,8 @@ function Player(): JSX.Element | null {
           toast.success("Extrait terminé");
         }
       }
-    }
+    },
+    onError: handleAudioError
   };
 
   useEffect(() => {
@@ -475,6 +493,26 @@ function Player(): JSX.Element | null {
       document.body.style.overflow = "auto";
     };
   }, [isExpanded]);
+
+  useEffect(() => {
+    if (!hasSong && audioRef.current?.audio.current) {
+      const audioElement = audioRef.current.audio.current;
+
+      const handleTimeUpdate = () => {
+        if (audioElement.currentTime >= currentPlaying.previewStartTime + 30) {
+          audioElement.pause();
+          audioElement.currentTime = currentPlaying.previewStartTime;
+          setPaused(true);
+          toast.success("Extrait terminé");
+        }
+      };
+
+      audioElement.currentTime = currentPlaying.previewStartTime;
+      audioElement.addEventListener("timeupdate", handleTimeUpdate);
+      return () =>
+        audioElement.removeEventListener("timeupdate", handleTimeUpdate);
+    }
+  }, [hasSong, currentPlaying]);
 
   if (!currentPlaying) return null;
 
@@ -528,11 +566,19 @@ function Player(): JSX.Element | null {
               <div className="relative z-20">
                 <div className="px-4">
                   <div className="relative w-64 h-64 mx-auto mb-8">
-                    <Image
+                    {/* <Image
                       src={currentPlaying.image}
                       alt={currentPlaying.title}
                       fill
                       className="object-cover rounded-lg shadow-[1px_10px_49px_21px_rgba(255,255,255,0.05)]"
+                    /> */}
+                    <ImageWithFallback
+                      src={currentPlaying.image}
+                      alt={currentPlaying.title}
+                      // width={256}
+                      // height={256}
+                      className="object-cover rounded-lg shadow-[1px_10px_49px_21px_rgba(255,255,255,0.05)]"
+                      fill
                     />
                   </div>
                   <h2 className="text-2xl font-bold text-white text-center">
@@ -566,7 +612,7 @@ function Player(): JSX.Element | null {
                         </span>
                       </span>
                     }
-                    priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
+                    // priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
                   />
                 </div>
               )}
@@ -584,11 +630,16 @@ function Player(): JSX.Element | null {
           ) : (
             <div className="flex items-center gap-3 p-4 border-t  border-white/20 ">
               <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                <Image
-                  className="object-cover"
-                  alt="jaquette musique"
+                {/* <Image
+                    className="object-cover"
+                    alt="jaquette musique"
+                    src={currentPlaying.image}
+                  fill
+                /> */}
+                <ImageWithFallback
                   src={currentPlaying.image}
-                  layout="fill"
+                  alt={currentPlaying.title}
+                  fill
                 />
               </div>
               <div>

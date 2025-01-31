@@ -17,7 +17,7 @@ export default function ButtonStyleAppleMusic({
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
           <path d="M8 5v14l11-7z" />
         </svg>
-        Découvrir l'artiste
+        Découvrir l&apos;artiste
       </span>
     </Button>
   );

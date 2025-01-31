@@ -26,7 +26,7 @@ function Welcome() {
       document.location.href = "/dashboard";
     } catch (error) {
       if (error.message.includes("Unique constraint failed")) {
-        toast.error("Ce nom d'artiste est déjà pris");
+        toast.error("Ce nom d&apos;artiste est déjà pris");
       } else {
         toast.error("Une erreur est survenue");
         console.log(error);
@@ -73,8 +73,8 @@ function Welcome() {
             }`}
           >
             <p className="text-white text-center text-sm">
-              En tant qu'auditeur, vous pourrez écouter et acheter de la musique
-              sur la plateforme.
+              En tant qu&apos;auditeur, vous pourrez écouter et acheter de la
+              musique sur la plateforme.
             </p>
           </div>
 
@@ -86,7 +86,7 @@ function Welcome() {
             }`}
           >
             <p className="text-white text-center text-sm">
-              En tant qu'artiste, vous pourrez publier votre musique et la
+              En tant qu&apos;artiste, vous pourrez publier votre musique et la
               vendre sur la plateforme.
             </p>
             <Input

@@ -1,42 +1,37 @@
-import React from "react";
-import Image from "next/image";
-import { Link } from "@/navigation";
 import { Song } from "@/types/song";
+import { Link } from "@/navigation";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface SongCardProps {
   song: Song;
   index: number;
   totalLength: number;
-  padding?: string;
 }
 
-const SongCard: React.FC<SongCardProps> = ({ song, index, totalLength, padding }) => {
+export default function SongCard({ song, index, totalLength }: SongCardProps) {
   return (
+    // song.artists?.[0]?.name && (
     <Link
       href={{
         pathname: "/song",
         query: { id: song.id }
       }}
-      className={`cursor-pointer`}
-      style={{
-        marginRight: index === totalLength - 1 ? padding ? padding : "1.5rem" : "0rem",
-        marginLeft: index === 0 ? padding ? padding : "1.5rem" : "0rem"
-      }}
+      className={`flex-shrink-0 w-[180px]`}
     >
-      <span className="block relative h-44 w-[140px] m-auto rounded-md overflow-hidden min-h-[180px] min-w-[180px]">
-        <Image
-          className="object-cover rounded-md"
-          alt="jaquette musique"
-          src={song?.image || ""}
-          layout="fill"
+      <div className="relative w-[180px] h-[180px] rounded-lg overflow-hidden">
+        <ImageWithFallback
+          src={song.image}
+          alt={`Jaquette ${song.title}`}
+          fill
         />
-      </span>
-      <div className="flex flex-col items-start text-white mt-2">
-        <span className="block w-[180px] truncate">{song.title}</span>
-        <span className="text-xs opacity-75">{song.artists?.[0]?.name}</span>
+      </div>
+      <div className="mt-2 text-left">
+        <h3 className="font-semibold truncate">{song.title}</h3>
+        <p className="text-sm text-white/60 truncate">
+          {song.artists?.[0]?.name || "Artiste inconnu"}
+        </p>
       </div>
     </Link>
+    // )
   );
-};
-
-export default SongCard;
+}

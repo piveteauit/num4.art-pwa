@@ -43,11 +43,11 @@ export interface ConfigProps {
       }[];
     }[];
   };
-  aws?: {
-    bucket?: string;
-    bucketUrl?: string;
-    cdn?: string;
-  };
+  // aws?: {
+  //   bucket?: string;
+  //   bucketUrl?: string;
+  //   cdn?: string;
+  // };
   mailgun: {
     subdomain: string;
     fromNoReply: string;

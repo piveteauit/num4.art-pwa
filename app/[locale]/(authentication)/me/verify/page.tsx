@@ -2,7 +2,6 @@
 import Button from "@/components/ui/Button/Button";
 import Input from "@/components/ui/Form/Input/Input";
 import apiClient from "@/libs/api";
-import { redirect } from "@/navigation";
 import { useEffect, useState } from "react";
 
 function VerifyPage() {

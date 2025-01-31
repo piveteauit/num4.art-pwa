@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET() {
   try {
     const artists = (
       await prisma.artist.findMany({

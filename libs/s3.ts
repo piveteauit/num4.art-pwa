@@ -1,22 +1,38 @@
-import AWS from "aws-sdk";
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL
+} from "@aws-sdk/client-s3";
 
 export const s3Config = {
-  id: "numero",
-  endPoint: "https://s3.gra.io.cloud.ovh.net",
-  accessKey: "b19ec7383a4e4e3aa4eb5759d962c7c6",
-  secretKey: "7fa4e7fd1b6340dc92ee029c21757dd7",
-  region: "GRA"
-}
-
-
-
-export const s3 = new AWS.S3({
-  region: s3Config.region,
-  endpoint: s3Config.endPoint,
+  id: process.env.OVH_STORAGE_BUCKET!,
+  endPoint: process.env.OVH_STORAGE_ENDPOINT!,
+  region: "sbg",
+  publicUrl: process.env.OVH_PUBLIC_URL!,
   credentials: {
-    accessKeyId: s3Config.accessKey,
-    secretAccessKey: s3Config.secretKey,
-  },
-})
+    accessKeyId: process.env.OVH_ACCESS_KEY!,
+    secretAccessKey: process.env.OVH_SECRET_KEY!
+  }
+};
 
+export const s3Client = new S3Client({
+  endpoint: s3Config.endPoint,
+  region: s3Config.region,
+  credentials: s3Config.credentials,
+  forcePathStyle: true,
+  maxAttempts: 3
+});
 
+export const uploadToS3 = async (params: {
+  Bucket: string;
+  Key: string;
+  Body: Buffer;
+  ACL?: ObjectCannedACL;
+}) => {
+  const command = new PutObjectCommand(params);
+  const result = await s3Client.send(command);
+  return {
+    ...result,
+    Location: `${s3Config.publicUrl}/${params.Key}`
+  };
+};

@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       backgroundColor: {
         base: "rgb(19,19,19)"
+        // base: "#984447"
       },
       backgroundImage: {
         gradient:
@@ -69,7 +70,12 @@ module.exports = {
       {
         light: {
           ...require("daisyui/src/theming/themes").light,
-          primary: "rgb(232,191,155)",
+          // primary: "rgb(232,191,155)",
+          // primary: "#984447",
+          // primary: "#FC9E4F",
+          // primary: "#1D7874",
+          // primary: "#B0413E",
+          primary: "#5DA9E9",
           secondary: "rgb(141,141,141)",
           accent: "rgb(204,204,204)",
           base: "rgb(65,65,65)"

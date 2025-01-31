@@ -4,7 +4,7 @@ import Input from "../Form/Input/Input";
 import Button from "../Button/Button";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-import { signIn, SignInResponse, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import apiClient from "@/libs/api";
 import { useRouter } from "next/navigation";
 
@@ -33,7 +33,7 @@ export default function VerifyModal({
   const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setTimeout>;
     if (timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
