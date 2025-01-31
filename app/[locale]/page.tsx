@@ -5,8 +5,9 @@ import HomeContent from "@/components/HomeContent";
 
 export const generateMetadata = getGenerateMetadata("home");
 
-export default async function Page({ params }: any) {
+export default async function Page() {
   const songs = await prisma.song.findMany({
+    take: 10,
     include: {
       genres: true,
       artists: {
@@ -26,6 +27,7 @@ export default async function Page({ params }: any) {
 
   const artists = (
     await prisma.artist.findMany({
+      take: 10,
       include: {
         profile: {
           include: {

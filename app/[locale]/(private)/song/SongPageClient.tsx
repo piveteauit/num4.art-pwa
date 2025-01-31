@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { usePlayerMargin } from "@/hooks/usePlayerMargin";
 
 interface SongPageClientProps {
@@ -7,11 +8,11 @@ interface SongPageClientProps {
 }
 
 export default function SongPageClient({ children }: SongPageClientProps) {
-  const { getMargin } = usePlayerMargin({ from0: false });
+  const { getMargin } = usePlayerMargin({  fromValue: 32 });
 
   return (
     <main
-      className="min-h-dvh bg-gradient-to-b from-neutral-900 to-base pt-20"
+      className=" flex-1 bg-gradient-to-b from-neutral-900 to-base pt-20"
       style={{ paddingBottom: getMargin() }}
     >
       {children}

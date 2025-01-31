@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export default function HeaderBorder({
   children
@@ -14,7 +14,9 @@ export default function HeaderBorder({
     const timer = setTimeout(() => {
       setIsScrolled(false);
 
-      const section = document.querySelector("#scrollable-content") || document.querySelector("body");
+      const section =
+        document.querySelector("#scrollable-content") ||
+        document.querySelector("body");
 
       const handleScroll = () => {
         if (section) {

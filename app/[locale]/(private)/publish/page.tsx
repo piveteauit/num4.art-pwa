@@ -2,7 +2,7 @@
 import { useUserMode } from "@/context/UserModeContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { uploadToS3 } from "@/libs/uploadFile";
+import { uploadSong } from "@/libs/uploadFile";
 import { addSong } from "@/libs/server/song.action";
 import { usePlayer } from "@/context/PlayerContext";
 import { useSession } from "next-auth/react";
@@ -12,6 +12,8 @@ import MetadataStep from "./components/MetadataStep";
 import ImageUploadStep from "./components/ImageUploadStep";
 import FinalStep from "./components/FinalStep";
 import AudioPreviewSelector from "./components/AudioPreviewSelector";
+import { getArtistIdByUserId } from "@/libs/server/artist.action";
+import { toast } from "react-hot-toast";
 
 const steps = ["Audio", "Preview", "Informations", "Image", "Finalisation"];
 
@@ -27,9 +29,10 @@ export default function PublishPage() {
     ISRC: "",
     description: "",
     audio: null,
-    preview: null,
+    // preview: null,
     image: null,
-    genre: ["1"]
+    genre: ["1"],
+    previewStartTime: 0
   });
   const [isUploading, setIsUploading] = useState(false);
 
@@ -55,57 +58,37 @@ export default function PublishPage() {
 
     setIsUploading(true);
     try {
-      console.log("Début upload des fichiers", {
-        audio: formData.audio?.name,
-        preview: formData.preview instanceof Blob,
-        image: formData.image?.name
-      });
+      const uploadedFiles = await uploadSong(
+        {
+          audio: formData.audio,
+          image: formData.image,
+          previewStartTime: formData.previewStartTime
+        },
+        `songs/${session.user.profile?.id}`
+      );
 
-      const uploadedFiles = {
-        audio: await uploadToS3(
-          formData.audio,
-          `songs/full-${session.user.profile?.id}`
-        ),
-        preview: await uploadToS3(
-          formData.preview,
-          `songs/preview-${session.user.profile?.id}`
-        ),
-        image: await uploadToS3(
-          formData.image,
-          `songs/cover-${session.user.profile?.id}`
-        )
-      };
+      const artistId = await getArtistIdByUserId(session.user.id);
+      if (!artistId) {
+        throw new Error("Profil artiste non trouvé");
+      }
 
-      console.log("Fichiers uploadés:", uploadedFiles);
-
-      console.log("Données du son à ajouter:", {
-        title: formData.title,
-        artistId: session.user.profile?.artist?.id,
-        urls: {
-          image: uploadedFiles.image?.url,
-          audio: uploadedFiles.audio?.url,
-          preview: uploadedFiles.preview?.url
-        }
-      });
-
+      //bdd
       await addSong({
         title: formData.title,
         price: formData.price,
         ISRC: formData.ISRC,
         description: formData.description,
-        image: uploadedFiles.image?.url,
-        audio: uploadedFiles.audio?.url,
-        preview: uploadedFiles.preview?.url,
-        artists: session.user.profile?.artist?.id
-          ? [session.user.profile.artist.id]
-          : [],
+        image: uploadedFiles.image.url,
+        audio: uploadedFiles.audio.url,
+        previewStartTime: formData.previewStartTime,
+        artists: [artistId],
         genres: formData.genre
       });
 
-      console.log("Son ajouté avec succès");
       await fetchSongs();
       router.push("/dashboard");
     } catch (error) {
+      toast.error("Erreur lors de la publication");
       console.error("Erreur détaillée lors de la publication:", error);
     } finally {
       setIsUploading(false);
@@ -129,10 +112,10 @@ export default function PublishPage() {
         {currentStep === 1 && (
           <AudioPreviewSelector
             audioFile={formData.audio}
-            onPreviewGenerated={(previewBlob) => {
+            onPreviewGenerated={(previewStartTime) => {
               setFormData((prev) => ({
                 ...prev,
-                preview: previewBlob
+                previewStartTime: previewStartTime
               }));
             }}
             onNext={handleNext}
@@ -167,7 +150,6 @@ export default function PublishPage() {
           />
         )}
       </div>
-      {/* </div> */}
     </div>
   );
 }

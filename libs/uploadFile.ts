@@ -1,8 +1,4 @@
-import {
-  createPresignedUploadUrl,
-  updateFileVisibility
-} from "./server/uploadFile.action";
-import { s3Config } from "./s3";
+import { createPresignedUploadUrl } from "./server/uploadFile.action";
 
 const getPreSignedUrl = async (file: File, prefix: string = "") => {
   const ext = file?.type.split("/")[1];
@@ -23,29 +19,34 @@ const getPreSignedUrl = async (file: File, prefix: string = "") => {
   };
 };
 
-export async function uploadToS3(file: File, prefix: string = "") {
+export async function uploadSong(
+  files: {
+    audio: File;
+    previewStartTime: number;
+    image: File;
+  },
+  prefix: string
+) {
   try {
-    const { preSignedUrl, url, name } = await getPreSignedUrl(file, prefix);
+    const formData = new FormData();
+    formData.append("audio", files.audio);
+    formData.append("previewStartTime", files.previewStartTime.toString());
+    formData.append("image", files.image);
+    formData.append("prefix", prefix);
 
-    await fetch(preSignedUrl, {
-      method: "PUT",
-      body: file,
-      headers: {
-        "Content-Type": file.type
-      }
+    const response = await fetch("/api/upload/song", {
+      method: "POST",
+      body: formData
     });
 
-    await updateFileVisibility(url);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Erreur lors de l'upload");
+    }
 
-    // Construction de l'URL publique avec le préfixe correct
-    const publicUrl = `${s3Config.publicUrl}/${url}`;
-
-    return {
-      url: publicUrl,
-      name
-    };
+    return await response.json();
   } catch (error) {
-    console.error("Erreur lors de l'upload du fichier:", error);
+    console.error("Erreur lors de l'upload:", error);
     throw error;
   }
 }

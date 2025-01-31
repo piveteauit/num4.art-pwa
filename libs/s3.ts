@@ -1,9 +1,13 @@
-import { S3Client } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL
+} from "@aws-sdk/client-s3";
 
 export const s3Config = {
   id: process.env.OVH_STORAGE_BUCKET!,
   endPoint: process.env.OVH_STORAGE_ENDPOINT!,
-  region: process.env.OVH_STORAGE_REGION!,
+  region: "sbg",
   publicUrl: process.env.OVH_PUBLIC_URL!,
   credentials: {
     accessKeyId: process.env.OVH_ACCESS_KEY!,
@@ -14,5 +18,21 @@ export const s3Config = {
 export const s3Client = new S3Client({
   endpoint: s3Config.endPoint,
   region: s3Config.region,
-  credentials: s3Config.credentials
+  credentials: s3Config.credentials,
+  forcePathStyle: true,
+  maxAttempts: 3
 });
+
+export const uploadToS3 = async (params: {
+  Bucket: string;
+  Key: string;
+  Body: Buffer;
+  ACL?: ObjectCannedACL;
+}) => {
+  const command = new PutObjectCommand(params);
+  const result = await s3Client.send(command);
+  return {
+    ...result,
+    Location: `${s3Config.publicUrl}/${params.Key}`
+  };
+};

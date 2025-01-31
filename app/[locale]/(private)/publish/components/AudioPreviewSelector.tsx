@@ -1,33 +1,86 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import Button from "@/components/ui/Button/Button";
 import LayoutPublishStep from "./LayoutPublishStep";
 
 interface AudioPreviewSelectorProps {
   audioFile: File | null;
-  onPreviewGenerated: (preview: Blob) => void;
+  onPreviewGenerated: (previewStartTime: number) => void;
   onNext: () => void;
   onPrevious: () => void;
 }
 
-const Submit = ({
-  onPrevious,
-  onNext
-}: {
-  onPrevious: () => void;
-  onNext: () => void;
-}) => {
-  return (
-    <div className="flex justify-between gap-4 absolute max-lg:bottom-[75px] max-lg:left-6 max-lg:right-6">
-      <Button color="base" className="flex-1 opacity-60" onClick={onPrevious}>
-        Précédent
-      </Button>
-      <Button color="primary" className="flex-1" onClick={onNext}>
-        Suivant
-      </Button>
-    </div>
-  );
+// const Submit = ({
+//   onPrevious,
+//   onNext
+// }: {
+//   onPrevious: () => void;
+//   onNext: () => void;
+// }) => {
+//   return (
+//     <div className="flex justify-between gap-4 absolute max-lg:bottom-[75px] max-lg:left-6 max-lg:right-6">
+//       <Button color="base" className="flex-1 opacity-60" onClick={onPrevious}>
+//         Précédent
+//       </Button>
+//       <Button color="primary" className="flex-1" onClick={onNext}>
+//         Suivant
+//       </Button>
+//     </div>
+//   );
+// };
+
+// Initialiser FFmpeg
+// const ffmpeg = new FFmpeg();
+// let ffmpegLoaded = false;
+
+// Fonction utilitaire pour convertir AudioBuffer en WAV
+const audioBufferToWav = (buffer: AudioBuffer): Blob => {
+  const numOfChan = buffer.numberOfChannels;
+  const length = buffer.length * numOfChan * 2;
+  const buffer1 = new ArrayBuffer(44 + length);
+  const view = new DataView(buffer1);
+  const channels = [];
+  let pos = 0;
+
+  // Écrire l'en-tête WAV
+  writeString("RIFF"); // RIFF identifier
+  view.setUint32(4, 36 + length, true); // file length
+  writeString("WAVE"); // RIFF type
+  writeString("fmt "); // format chunk identifier
+  view.setUint32(16, 16, true); // format chunk length
+  view.setUint16(20, 1, true); // sample format (raw)
+  view.setUint16(22, numOfChan, true); // channel count
+  view.setUint32(24, buffer.sampleRate, true); // sample rate
+  view.setUint32(28, buffer.sampleRate * 2 * numOfChan, true); // byte rate
+  view.setUint16(32, numOfChan * 2, true); // block align
+  view.setUint16(34, 16, true); // bits per sample
+  writeString("data"); // data chunk identifier
+  view.setUint32(40, length, true); // data chunk length
+
+  // Écrire les données audio
+  for (let i = 0; i < buffer.numberOfChannels; i++) {
+    channels.push(buffer.getChannelData(i));
+  }
+
+  pos = 44;
+  for (let i = 0; i < buffer.length; i++) {
+    for (let channel = 0; channel < numOfChan; channel++) {
+      const sample = Math.max(-1, Math.min(1, channels[channel][i]));
+      const int = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+      view.setInt16(pos, int, true);
+      pos += 2;
+    }
+  }
+
+  function writeString(str: string) {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(pos + i, str.charCodeAt(i));
+    }
+    pos += str.length;
+  }
+
+  return new Blob([buffer1], { type: "audio/wav" });
 };
 
 export default function AudioPreviewSelector({
@@ -45,7 +98,7 @@ export default function AudioPreviewSelector({
   const [isPlaying, setIsPlaying] = useState(false);
   const [previewStartTime, setPreviewStartTime] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   // On garde uniquement la mesure du viewport
   useEffect(() => {
@@ -107,7 +160,7 @@ export default function AudioPreviewSelector({
   }, [previewStartTime]);
 
   // Gérer le scroll horizontal
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = () => {
     if (!containerRef.current || !duration) return;
 
     setIsScrolling(true);
@@ -153,68 +206,80 @@ export default function AudioPreviewSelector({
     // return `${seconds} s`;
   };
 
-  const generatePreview = async () => {
+  // Fonction utilitaire pour extraire un segment audio
+  // const extractAudioSegment = (
+  //   buffer: AudioBuffer,
+  //   startTime: number,
+  //   duration: number
+  // ) => {
+  //   const sampleRate = buffer.sampleRate;
+  //   const startSample = Math.floor(startTime * sampleRate);
+  //   const length = Math.floor(duration * sampleRate);
+
+  //   // Créer un nouveau buffer pour notre extrait
+  //   const audioContext = new AudioContext();
+  //   const segmentBuffer = audioContext.createBuffer(
+  //     buffer.numberOfChannels,
+  //     length,
+  //     sampleRate
+  //   );
+
+  //   // Copier les données pour chaque canal
+  //   for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+  //     const channelData = buffer.getChannelData(channel);
+  //     const segmentData = segmentBuffer.getChannelData(channel);
+
+  //     for (let i = 0; i < length; i++) {
+  //       if (startSample + i < channelData.length) {
+  //         segmentData[i] = channelData[startSample + i];
+  //       }
+  //     }
+  //   }
+
+  //   return segmentBuffer;
+  // };
+
+  // Fonction pour encoder l'AudioBuffer dans le format souhaité
+  // const encodeAudioBuffer = async (
+  //   audioBuffer: AudioBuffer,
+  //   mimeType: string
+  // ): Promise<Blob> => {
+  //   // Créer un AudioContext standard au lieu d'un OfflineAudioContext
+  //   const audioContext = new AudioContext();
+
+  //   // Créer un MediaStream à partir de notre AudioBuffer
+  //   const mediaStreamDestination = audioContext.createMediaStreamDestination();
+  //   const source = audioContext.createBufferSource();
+  //   source.buffer = audioBuffer;
+  //   source.connect(mediaStreamDestination);
+  //   source.start();
+
+  //   // Utiliser MediaRecorder pour encoder dans le bon format
+  //   return new Promise((resolve, reject) => {
+  //     const chunks: Blob[] = [];
+  //     const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, {
+  //       mimeType: MediaRecorder.isTypeSupported("audio/webm")
+  //         ? "audio/webm"
+  //         : "audio/mp4"
+  //     });
+
+  //     mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+  //     mediaRecorder.onstop = async () => {
+  //       const blob = new Blob(chunks, { type: mimeType });
+  //       resolve(blob);
+  //     };
+  //     mediaRecorder.onerror = (e) => reject(e);
+
+  //     mediaRecorder.start();
+  //     setTimeout(() => mediaRecorder.stop(), 100); // Arrêter après avoir tout enregistré
+  //   });
+  // };
+
+  // La fonction principale de génération de preview
+  const generatePreview = () => {
     if (!audioFile) return;
-
-    try {
-      // 1. Lire le fichier audio
-      const audioContext = new AudioContext();
-      const audioData = await audioFile.arrayBuffer();
-      const fullAudioBuffer = await audioContext.decodeAudioData(audioData);
-
-      // 2. Calculer les paramètres de l'extrait
-      const sampleRate = fullAudioBuffer.sampleRate;
-      const startOffset = Math.floor(previewStartTime * sampleRate);
-      const length = Math.floor(30 * sampleRate);
-
-      // 3. Créer un nouveau buffer pour les 30 secondes
-      const previewBuffer = audioContext.createBuffer(
-        fullAudioBuffer.numberOfChannels,
-        length,
-        sampleRate
-      );
-
-      // 4. Copier l'extrait sélectionné
-      for (
-        let channel = 0;
-        channel < fullAudioBuffer.numberOfChannels;
-        channel++
-      ) {
-        const channelData = fullAudioBuffer.getChannelData(channel);
-        const previewData = previewBuffer.getChannelData(channel);
-
-        for (let i = 0; i < length; i++) {
-          if (startOffset + i < channelData.length) {
-            previewData[i] = channelData[startOffset + i];
-          }
-        }
-      }
-
-      // 5. Convertir en format binaire
-      const offlineContext = new OfflineAudioContext(
-        previewBuffer.numberOfChannels,
-        length,
-        sampleRate
-      );
-
-      const source = offlineContext.createBufferSource();
-      source.buffer = previewBuffer;
-      source.connect(offlineContext.destination);
-      source.start();
-
-      const renderedBuffer = await offlineContext.startRendering();
-
-      // 6. Convertir en Blob MP3
-      const preview = new Blob(
-        [Int16Array.from(renderedBuffer.getChannelData(0))],
-        { type: "audio/mp3" }
-      );
-
-      onPreviewGenerated(preview);
-      onNext();
-    } catch (error) {
-      console.error("Erreur lors de la génération de la preview:", error);
-    }
+    onPreviewGenerated(previewStartTime);
+    onNext();
   };
 
   return (
@@ -223,7 +288,6 @@ export default function AudioPreviewSelector({
       description="Il pourra être écouté par les utilsateurs gratuitement"
       onPrevious={onPrevious}
       onNext={generatePreview}
-      className=""
     >
       <audio
         ref={audioRef}
@@ -342,7 +406,11 @@ export default function AudioPreviewSelector({
                               : i % 2 === 0
                                 ? "28px"
                                 : "16px", // Taille normale hors viewport
-                            opacity: isPlaying ? isInViewport ? 0.7 : 0.55 : 0.7
+                            opacity: isPlaying
+                              ? isInViewport
+                                ? 0.7
+                                : 0.55
+                              : 0.7
                           }}
                         />
                       );

@@ -37,7 +37,7 @@ export default function ScrollableSongsCards({
   return (
     <div className={className}>
       {title && <CategoryTitle title={title} href={href} />}
-      <div className="flex gap-2 overflow-x-scroll scrollbar-hide max-lg:pr-4 lg:flex-nowrap lg:justify-start lg:mx-auto">
+      <div className="flex px-6 gap-2 overflow-x-scroll scrollbar-hide lg:flex-nowrap lg:justify-start lg:mx-auto">
         {songsComplete.map((songComplete, i) => (
           <SongCard
             key={`song-${songComplete.id}-${i}`}

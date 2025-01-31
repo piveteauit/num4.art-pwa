@@ -27,12 +27,7 @@ export default function MetadataStep({
   };
 
   const isFormValid = () => {
-    return (
-      formData.title &&
-      formData.price > 0 &&
-      formData.ISRC &&
-      formData.description
-    );
+    return formData.title && formData.price > 0 && formData.ISRC;
   };
 
   return (

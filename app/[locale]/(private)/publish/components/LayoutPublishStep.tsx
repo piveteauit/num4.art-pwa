@@ -1,14 +1,14 @@
 import Button from "@/components/ui/Button/Button";
-import { twMerge } from "tailwind-merge";
+import React from "react";
 
 const Submit = ({
   onPrevious,
   onNext,
-  previous
+  canProgress = true
 }: {
   onPrevious?: () => void;
   onNext: () => void;
-  previous?: boolean;
+  canProgress?: boolean;
 }) => {
   return (
     <div className="flex justify-between mb-6 gap-4 w-full px-6">
@@ -17,7 +17,12 @@ const Submit = ({
           Précédent
         </Button>
       )}
-      <Button color="primary" className="flex-1" onClick={onNext}>
+      <Button
+        color="primary"
+        className="flex-1"
+        onClick={onNext}
+        disabled={!canProgress}
+      >
         Suivant
       </Button>
     </div>
@@ -30,24 +35,26 @@ export default function LayoutPublishStep({
   onNext,
   title,
   description,
-  className
+  canProgress = true
 }: {
   children: React.ReactNode;
   onPrevious?: () => void;
   onNext: () => void;
   title: string;
   description?: string;
-  className?: string;
+  canProgress?: boolean;
 }) {
   return (
     <>
       <h2 className="ml-6 text-2xl font-bold">{title}</h2>
-      {description && (
-        <p className="ml-6 text-gray-300">{description}</p>
-      )}
+      {description && <p className="ml-6 text-gray-300">{description}</p>}
       <div className="flex flex-col justify-between items-center flex-1">
         {children}
-        <Submit onPrevious={onPrevious} onNext={onNext} />
+        <Submit
+          onPrevious={onPrevious}
+          onNext={onNext}
+          canProgress={canProgress}
+        />
       </div>
     </>
   );

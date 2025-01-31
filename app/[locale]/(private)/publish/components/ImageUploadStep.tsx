@@ -1,3 +1,6 @@
+import Image from "next/image";
+import React from "react";
+
 interface ImageUploadStepProps {
   formData: {
     image: File | null;
@@ -32,7 +35,7 @@ export default function ImageUploadStep({
   };
 
   return (
-    <div className="space-y-6 max-w-xl mx-auto">
+    <div className="space-y-6 px-6 max-w-xl mx-auto">
       <h2 className="text-2xl font-bold">Ajouter une pochette</h2>
 
       <div
@@ -60,12 +63,15 @@ export default function ImageUploadStep({
         >
           {formData.image ? (
             <div className="space-y-4">
-              <img
+              <Image
                 src={handleImagePreview()}
                 alt="Preview"
-                className="mx-auto max-w-[200px] rounded-lg"
+                className="mx-auto w-[180px] h-[180px] overflow-hidden rounded-lg object-cover"
+                // fill
+                width={180}
+                height={180}
               />
-              <p>Cliquez ou glissez pour changer l'image</p>
+              <p>Cliquez ou glissez pour changer l&apos;image</p>
             </div>
           ) : (
             "Glissez votre image ici ou cliquez pour sélectionner"

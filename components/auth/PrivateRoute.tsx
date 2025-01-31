@@ -1,6 +1,7 @@
 "use client";
 import AuthModal from "../ui/Modal/AuthModal";
 import { Session } from "next-auth";
+import React from "react";
 
 interface ProviderLight {
   id: string;

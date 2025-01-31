@@ -1,42 +1,45 @@
 "use client";
 
 import React, { useState } from "react";
-import apiClient from "@/libs/api";
 import config from "@/config";
 import { buySong } from "@/libs/server/song.action";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // This component is used to create Stripe Checkout Sessions
 // It calls the /api/stripe/create-checkout route with the priceId, successUrl and cancelUrl
 // By default, it doesn't force users to be authenticated. But if they are, it will prefill the Checkout data with their email and/or credit card. You can change that in the API route
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
 const ButtonCheckout = ({
-  priceId,
+  // priceId,
   songId,
   profileId,
-  mode = "payment",
+  // mode = "payment",
   label,
   onSuccess
 }: {
-  priceId: string;
+  // priceId: string;
   songId?: string;
   profileId?: string;
-  mode?: "payment" | "subscription";
+  // mode?: "payment" | "subscription";
   label?: string | React.ReactNode | React.ReactNodeArray | string[];
   onSuccess?: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { update } = useSession();
+  const router = useRouter();
 
   const handlePayment = async () => {
     setIsLoading(true);
     try {
       await buySong({ songId, profileId });
+      await update();
+      // Revalider les données de la page
+      router.refresh();
       if (onSuccess) {
         onSuccess();
       }
-      await update();
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de l'achat");

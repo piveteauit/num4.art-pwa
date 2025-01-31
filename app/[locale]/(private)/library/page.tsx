@@ -4,6 +4,7 @@ import { prisma } from "@/libs/prisma";
 import { auth } from "@/auth";
 import HeaderBorder from "@/components/ui/HeaderBorder";
 import LibraryContent from "@/components/Library/LibraryContent";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +19,13 @@ const options = [
 
 export default async function Library() {
   const session = await auth();
+  if (!session?.user?.profile?.id) {
+    throw new Error("User profile not found");
+  }
   const orders = await prisma.order.findMany({
     where: {
       profil: {
-        id: session?.user?.profile?.id
+        id: session.user.profile?.id
       }
     },
     select: {
@@ -42,13 +46,15 @@ export default async function Library() {
 
   return (
     <main
-      className="w-screen overflow-hidden md:p-8 pb-12 md:pb-24"
-      style={{
-        paddingTop: "env(safe-area-inset-top)",
-        paddingBottom: "env(safe-area-inset-bottom)",
-        paddingLeft: "env(safe-area-inset-left)",
-        paddingRight: "env(safe-area-inset-right)"
-      }}
+      className="w-screen flex-1 md:p-8 pb-12 md:pb-24"
+      style={
+        {
+          // paddingTop: "env(safe-area-inset-top)",
+          // paddingBottom: "env(safe-area-inset-bottom)",
+          // paddingLeft: "env(safe-area-inset-left)",
+          // paddingRight: "env(safe-area-inset-right)"
+        }
+      }
     >
       <HeaderBorder>
         <h1 className="text-3xl md:text-4xl font-medium text-left ml-0">
@@ -58,8 +64,8 @@ export default async function Library() {
           <Image
             alt="Settings icon"
             src={"/assets/images/icons/settings.svg"}
-            width={5}
-            height={5}
+            width={40}
+            height={40}
             className="object-contain max-w-8"
           />
         </Link>

@@ -11,16 +11,17 @@ export async function addSong({
   description,
   image,
   audio,
-  preview,
+  previewStartTime,
   artists
 }: any) {
   genres = [];
+
   return await prisma.song.create({
     data: {
       title,
       image,
       audio,
-      preview,
+      previewStartTime,
       description,
       artists: {
         connect: artists?.map((id: string) => ({ id }))
@@ -36,23 +37,37 @@ export async function addSong({
   });
 }
 
-export async function buySong({ songId, profileId }: any) {
-  const result = await prisma.order.create({
-    data: {
-      profil: {
-        connect: {
-          id: profileId
-        }
-      },
-      song: {
-        connect: {
-          id: songId
+export async function buySong({
+  songId,
+  profileId
+}: {
+  songId?: string;
+  profileId?: string;
+}) {
+  try {
+    const result = await prisma.order.create({
+      data: {
+        profil: {
+          connect: {
+            id: profileId
+          }
+        },
+        song: {
+          connect: {
+            id: songId
+          }
         }
       }
-    }
-  });
+    });
 
-  return result;
+    // Revalider le chemin de la page du morceau
+    revalidatePath("/song");
+
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Échec de l'achat du morceau");
+  }
 }
 
 export async function getAllSongs() {

@@ -1,8 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { prisma } from "@/libs/prisma";
-import { auth } from "@/auth";
-import { Link, redirect } from "@/navigation";
+import { Link } from "@/navigation";
 
 export default async function Page() {
   const artists = (

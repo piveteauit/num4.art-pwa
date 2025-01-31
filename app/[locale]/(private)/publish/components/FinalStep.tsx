@@ -32,7 +32,7 @@ export default function FinalStep({
   };
 
   return (
-    <div className="space-y-6 max-w-xl mx-auto">
+    <div className="space-y-6 px-6 max-w-xl mx-auto">
       <h2 className="text-2xl font-bold">Vérification finale</h2>
 
       <div className="bg-gray-800 p-6 rounded-lg space-y-4">

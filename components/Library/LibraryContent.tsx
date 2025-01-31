@@ -23,10 +23,10 @@ export default function LibraryContent({
   return (
     <section
       id="scrollable-content"
-      className={`*:flex overflow-y-scroll flex-col gap-1 lg:max-h-[calc(100vh_-_73px)] overflow-x-hidden lg:mx-[200px]`}
-      style={{
-        maxHeight: `calc(100svh - (${getMargin()} + 69px))`
-      }}
+      className={`*:flex /overflow-y-scroll overflow-hidden flex-col gap-1 //lg:max-h-[calc(100vh_-_73px)] overflow-x-hidden lg:mx-[200px]`}
+      // style={{
+      //   maxHeight: `calc(100svh - (${getMargin()} + 69px))`
+      // }}
     >
       <div className="flex flex-col mt-4">
         <h2 className="text-xl mb-2 ml-6">Trier par</h2>

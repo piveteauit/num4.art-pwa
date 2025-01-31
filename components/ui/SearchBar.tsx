@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState, ChangeEvent } from "react";
-
+import React, { useState, ChangeEvent } from "react";
+import Image from "next/image";
 interface SearchBarProps {
   onSearch: (searchTerm: string) => void;
 }
@@ -24,11 +24,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           onChange={handleChange}
           className="w-full px-4 py-2 pr-10 rounded-xl bg-secondary bg-opacity-50  focus:outline-none focus:ring-1 focus:ring-white text-white placeholder:text-white placeholder:text-opacity-70"
         />
-        <img
+        <Image
           src="/assets/images/icons/loupe.svg"
           alt="Search Icon"
-          width="20"
-          height="20"
+          width={20}
+          height={20}
           className="absolute right-3 top-1/2 transform -translate-y-1/2"
         />
       </div>

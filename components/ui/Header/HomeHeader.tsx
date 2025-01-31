@@ -46,8 +46,8 @@ export default function HomeHeader() {
               <Image
                 alt="Settings icon"
                 src={"/assets/images/icons/settings.svg"}
-                width={10}
-                height={10}
+                width={40}
+                height={40}
                 className="object-contain max-w-8"
               />
             </Link>

@@ -1,10 +1,10 @@
-import Button from "@/components/ui/Button/Button";
 import LayoutPublishStep from "./LayoutPublishStep";
+import React from "react";
 
 interface AudioUploadStepProps {
   formData: {
     audio: File | null;
-    preview: Blob | null;
+    previewStartTime: number | null;
   };
   setFormData: (data: any) => void;
   onNext: () => void;
@@ -22,7 +22,7 @@ export default function AudioUploadStep({
       setFormData((prev: any) => ({
         ...prev,
         audio: files[0],
-        preview: null
+        previewStartTime: null
       }));
     }
   };
@@ -32,6 +32,7 @@ export default function AudioUploadStep({
       title="Importer votre musique"
       //   description="Importer votre musique"
       onNext={onNext}
+      canProgress={!!formData.audio}
     >
       <div className="flex flex-col gap-4 px-6 mt-6">
         <div
@@ -47,7 +48,7 @@ export default function AudioUploadStep({
                 setFormData((prev: any) => ({
                   ...prev,
                   audio: e.target.files?.[0],
-                  preview: null
+                  previewStartTime: null
                 }));
               }
             }}
