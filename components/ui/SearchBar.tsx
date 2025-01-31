@@ -1,13 +1,12 @@
 "use client";
-import React, { useEffect, useState,ChangeEvent } from "react";
-
-
+import React, { useState, ChangeEvent } from "react";
+import Image from "next/image";
 interface SearchBarProps {
   onSearch: (searchTerm: string) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -16,20 +15,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="my-16 w-full flex justify-center items-center text-white">
-      <div className="relative w-64">
+    <div className="flex flex-1 mx-6 justify-center items-center ">
+      <div className="relative w-full">
         <input
           type="text"
-          placeholder="Rechercher..."
+          placeholder="Artistes, titres, albums..."
           value={searchTerm}
           onChange={handleChange}
-          className="w-full px-2 py-0 border rounded-full bg-gray-300 bg-opacity-50 focus:outline-none focus:ring-1 focus:ring-white"
+          className="w-full px-4 py-2 pr-10 rounded-xl bg-secondary bg-opacity-50  focus:outline-none focus:ring-1 focus:ring-white text-white placeholder:text-white placeholder:text-opacity-70"
         />
-        <img
+        <Image
           src="/assets/images/icons/loupe.svg"
           alt="Search Icon"
-          width="15"
-          height="15"
+          width={20}
+          height={20}
           className="absolute right-3 top-1/2 transform -translate-y-1/2"
         />
       </div>

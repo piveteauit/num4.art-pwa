@@ -10,7 +10,15 @@ declare module "next-auth" {
       profile?: Profile & {
         artist?: Artist;
       };
+      isNewUser?: boolean;
     } & User &
       DefaultSession["user"];
+  }
+
+  interface User extends DefaultSession["user"] {
+    profile?: Profile & {
+      artist?: Artist;
+    };
+    isNewUser?: boolean;
   }
 }

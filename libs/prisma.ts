@@ -1,20 +1,8 @@
+// export default globalPrisma;
 import { PrismaClient } from "@prisma/client";
 
-declare global {
-  var prisma: PrismaClient;
-}
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-// const models = global?.prisma ? global.prisma : new PrismaClient();
+export const prisma = globalForPrisma.prisma || new PrismaClient();
 
-const globalPrisma = global?.prisma ? global.prisma : new PrismaClient()
-
-globalPrisma.$use(async (params, next) => {
-  if (params.action === "create" && params.model === "VerificationToken") { 
-    await globalPrisma.verificationToken.deleteMany({
-      where: { identifier: params.args.data.identifier}
-    })
-  }
-  return await next(params);
-})
-
-export default globalPrisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

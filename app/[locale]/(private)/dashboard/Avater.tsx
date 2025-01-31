@@ -10,7 +10,6 @@ export default function Avatar({ user }: any) {
   const session = useSession();
   const [avater, setAvater] = useState<any>(session?.data?.user?.image);
   const updatePdp = async (image: File) => {
-
     const formData = new FormData();
     setLd(true);
 
@@ -44,24 +43,20 @@ export default function Avatar({ user }: any) {
     }
   };
 
- // console.log("image session",session.data?.user?.image);
-  //console.log("avater",avater);
-if(!avater && session?.data?.user?.image){ setAvater(session?.data?.user?.image);}
-//console.log("session",session);
-//console.log("user",user);
+  if (!avater && session?.data?.user?.image) {
+    setAvater(session?.data?.user?.image);
+  }
 
   return (
     <label className="avatar hover:cursor-pointer rounded-full border-2 border-white p-5 overflow-hidden w-[100px] h-[100px] hover:bg-black/60 transition-all duration-300">
       {ld ? (
         <span className="loading loading-spinner loading-md" />
       ) : (
+        // <div className="w-50 h-50 bg-red-500"></div>
         <Image
           alt={`Avatar ${user?.name || user?.email?.split("@")[0]}`}
           fill
-          src={
-            avater ||
-            "/assets/images/logos/logo.png"
-          }
+          src={avater || "/assets/images/logos/logo.png"}
         />
       )}
       <Input

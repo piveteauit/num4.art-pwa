@@ -73,7 +73,7 @@ function Timeline({ items }: { items: TimelineProps }) {
                     <div className="flex-[2] relative">
                       <Image
                         className="object-contain"
-                        layout="fill"
+                        fill
                         src={image.src}
                         alt={image.name}
                       />

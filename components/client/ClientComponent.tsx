@@ -1,24 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import SearchBar from '../ui/SearchBar';
-import { Link } from '@/navigation';
-import Image from 'next/image';
+import React, { useState, useEffect } from "react";
+import SearchBar from "../ui/SearchBar";
+import { Link } from "@/navigation";
 import LibraryFilter from "@/components/ui/LibraryFilter";
-
-interface Artist {
-  id: string;
-  name: string;
-  image: string;
-}
-
-interface Song {
-  id: string;
-  title: string;
-  image: string;
-  genres:{ id: string; label: string; }[];
-  artists: { name: string }[];
-}
+import { usePlayerMargin } from "@/hooks/usePlayerMargin";
+import CategoryTitle from "@/components/ui/CategoryTitle";
+import { Song } from "@/types/song";
+import { Artist } from "@/types/artist";
+import ScrollableSongsCards from "@/components/ui/ScrollableSongsCards";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import Image from "next/image";
 
 interface ClientComponentProps {
   initialSongs: Song[];
@@ -30,115 +22,91 @@ const categories = [
   { name: "Rock" },
   { name: "Techno" },
   { name: "House" },
-   {name: "Pop"}, 
-  {name: "Electro"}
+  { name: "Pop" },
+  { name: "Electro" }
 ];
-const ClientComponent: React.FC<ClientComponentProps> = ({ initialSongs, initialArtists }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentGenre, setCurrentGenre]= useState('');
+const ClientComponent: React.FC<ClientComponentProps> = ({
+  initialSongs,
+  initialArtists
+}) => {
+  const { getMargin } = usePlayerMargin({ from0: true });
+  const [searchTerm, setSearchTerm] = useState("");
+  // const [currentGenre, setCurrentGenre] = useState("");
   const [filteredSongs, setFilteredSong] = useState(initialSongs);
-  useEffect(()=> {
-    const filteredSongsBySerachTerm = initialSongs.filter(song =>
+
+  useEffect(() => {
+    const filteredSongsBySerachTerm = initialSongs.filter((song) =>
       song.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredSong(filteredSongsBySerachTerm);
-  },[searchTerm]);
-  
-  
-  useEffect(()=>{
-  //  const filterdSongByCategorie = initialSongs.filter(song => 
-   //   song.genres?.[0].label.toLowerCase() === currentGenre.toLowerCase());
-    //  setFilteredSong(filterdSongByCategorie);
-     // console.log(initialSongs);
-  },[currentGenre]);
+  }, [searchTerm]);
 
   return (
-    <>
-      <section className="mt-10 p-2 w-screen lg:max-w-3xl lg:text-center lg:left-[200px]">
-        <SearchBar onSearch={setSearchTerm} />
-        <span className="flex justify-between items-center my-8 text-xl">Catégories </span>
-        <LibraryFilter options={categories}  />
-        <div className="flex justify-between items-center my-8">
-          <h3 className="text-xl">Sortie récente</h3>
-          <Link href={{ 
-            pathname: "/see-all" 
-            }} className="text-white-500 hover:underline">
-            Voir tout
-          </Link>
-        </div>
+    <section className="w-[100svw] mt-4 lg:max-w-3xl lg:text-center lg:left-[200px]">
+      <SearchBar onSearch={setSearchTerm} />
 
-        <div className="flex gap-2 overflow-x-scroll max-lg:w-96 max-lg:pr-4 lg:flex-nowrap lg:justify-start lg:mx-auto">
-          {filteredSongs.map((s, i) => (
-            <Link
-              href={{
-                pathname: "/player",
-                query: { song: s.id }
-              }}
-              key={`song-${s.id}-${i}`}
-            >
-              <span className="block relative h-44 w-[140px] m-auto rounded-md overflow-hidden min-h-[180px] min-w-[180px]">
-                <Image
-                  className="object-cover rounded-md"
-                  alt="jaquette musique"
-                  src={s?.image || ""}
-                  layout="fill"
-                />
-              </span>
+      <div className="my-8">
+        {/* <span className="flex justify-between items-center font-semibold mx-6 mb-4 text-xl">
+          Catégories
+        </span>
+        <LibraryFilter options={categories} /> */}
+      </div>
 
-              <div className="flex flex-col items-start text-white mt-2">
-              <span
-                className="block w-[180px] truncate"
-                style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                textAlign: 'left',
-               }}
-  >
-    {s.title}
-  </span>
-                <span className="text-xs opacity-75">{s.artists?.[0]?.name}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <ScrollableSongsCards
+        title="Sortie récente"
+        className="mb-8"
+        songs={filteredSongs}
+        artistName={filteredSongs[0]?.artists[0]?.name}
+        href="/see-all"
+      />
 
-      <section className="p-2 w-screen lg:max-w-3xl lg:mt-10 pb-20">
-  <div className="flex justify-between items-center">
-    <h3 className="text-xl">Connaissez-vous ?</h3>
-    <Link
-      href={{ pathname: "/see-all-artists" }}
-      className="text-white-500 hover:underline"
-    >
-      Voir tout
-    </Link>
-  </div>
-  <div className="flex gap-2 py-4 overflow-x-scroll flex-grow pr-4">
-          
+      <div style={{ marginBottom: getMargin() }}>
+        <CategoryTitle title="Connaissez-vous ?" href="/see-all-artists" />
+        <div className="flex gap-2 overflow-x-scroll scrollbar-hide flex-grow">
           {initialArtists.map((artist, i) => (
-            <Link
+            <ArtistCard
               key={`home-artist-${i}-${artist.id}`}
-              className="flex justify-center text-center items-center gap-2 flex-col min-w-[100px]"
-              href={{
-                pathname: "/artist/[artist]",
-                params: { artist: artist?.id }
-              }}
-            >
-              <Image
-                layout="responsive"
-                height={100}
-                width={100}
-                alt="Artiste avatar N A I"
-                className="avatar rounded-full !w-[100px] !h-[100px] object-cover overflow-hidden"
-                src={artist?.image || "/musics/artist-nai.jpg"}
-              />
-              <span>{artist?.name}</span>
-            </Link>
+              artist={artist}
+              index={i}
+              totalLength={initialArtists.length}
+            />
           ))}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
+  );
+};
+
+const ArtistCard: React.FC<{
+  artist: Artist;
+  index: number;
+  totalLength: number;
+}> = ({ artist, index, totalLength }) => {
+  if (!artist) {
+    return null;
+  }
+  return (
+    <Link
+      className={`overflow-hidden relative flex justify-center text-center items-center gap-2 flex-col min-w-[100px] 
+      ${index === 0 ? "ml-6" : ""} 
+      ${index === totalLength - 1 ? "mr-6" : ""}`}
+      href={{
+        pathname: "/artist/[artist]",
+        params: { artist: artist?.id }
+      }}
+    >
+      <ImageWithFallback
+        src={artist?.image}
+        alt={`Avatar ${artist?.name}`}
+        className="avatar !rounded-full !w-[100px] !h-[100px] aspect-square"
+        classNameError="rounded-full !h-[100px] aspect-square inset-0 bg-gray-500/30 relative"
+        width={100}
+        height={100}
+      />
+      <span className="overflow-hidden text-nowrap text-ellipsis max-w-[100px] text-sm">
+        {artist?.name ?? "Artiste inconnu"}
+      </span>
+    </Link>
   );
 };
 

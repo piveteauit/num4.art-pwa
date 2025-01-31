@@ -1,18 +1,9 @@
-import React from 'react';
-import Image from 'next/image';
-import { GetServerSideProps } from 'next';
-import prisma from '@/libs/prisma';
-import { getServerSession } from "@/libs/next-auth";
-import { Link, redirect } from "@/navigation";
+import React from "react";
+import Image from "next/image";
+import { prisma } from "@/libs/prisma";
+import { Link } from "@/navigation";
 
 export default async function Page() {
-  const session = await getServerSession();
-
-  if (!session?.user) {
-    redirect("/me/welcome");
-    return null;
-  }
-
   const artists = (
     await prisma.artist.findMany({
       include: {
@@ -25,22 +16,22 @@ export default async function Page() {
     })
   ).map((a) => ({
     ...a,
-    image: a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
+    image:
+      a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
   }));
 
   return (
     <>
       <main className="w-screen h-screen overflow-y-auto md:p-8 pb-12 md:pb-24">
-        
         <section className="fixed w-full top-0 px-8 py-2 bg-base z-50 flex justify-between items-center">
           <Link href={"/"}>
             <Image
               alt="Logo"
-              src={"/assets/images/logos/Logo_num4_V2_blanc.png"} 
-              width={150} 
-              height={50} 
+              src={"/assets/images/logos/Logo_num4_V2_blanc.png"}
+              width={150}
+              height={50}
               className="object-contain"
-              layout="fixed"
+              fill
             />
           </Link>
           <Link className="z-50" href={"/dashboard"}>
@@ -50,7 +41,6 @@ export default async function Page() {
               width={50}
               height={50}
               className="object-contain max-w-10"
-              layout="responsive"
             />
           </Link>
         </section>

@@ -1,369 +1,674 @@
 "use client";
+
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  ReactElement
+} from "react";
 import { usePlayer } from "@/context/PlayerContext";
-import React, { ReactHTMLElement, useEffect, useRef, useState } from "react";
-import Button from "../ui/Button/Button";
-import { usePathname } from "@/navigation";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { getProfile, likeSong, unlikeSong,getArtistProfile } from "@/libs/server/user.action";
+import { getProfile } from "@/libs/server/user.action";
+import { toast } from "react-hot-toast";
+import AudioPlayer, { RHAP_UI } from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
+import type H5AudioPlayer from "react-h5-audio-player";
 import ButtonCheckout from "../ui/sf/ButtonCheckout";
-import toast from "react-hot-toast";
-import { Link } from '@/navigation';
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { Song } from "@/types/song";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
-function getTimeArr(time: number) {
-  let hour = 0,
-    min = Math.floor(time / 60),
-    sec = Math.round(time % 60);
-
-  if (min >= 60) {
-    hour = Math.floor(min / 60);
-    min = Math.round(min % 60);
-  }
-  const timeArr = [
-    sec.toString().padStart(2, "0"),
-    ":",
-    min.toString().padStart(2, "0")
-  ];
-  if (hour) {
-    timeArr.push(":");
-    timeArr.push(hour.toString().padStart(2, "0"));
-  }
-  return timeArr;
-  // return `${hour ? hour.toString().padStart(2, "0") + ":" : ""}${min
-  //   .toString()
-  //   .padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+interface CloseButtonProps {
+  onClick: () => void;
+  isExpanded: boolean;
 }
 
-function Player() {
+interface DragEndResult {
+  destination?: {
+    index: number;
+  };
+  source: {
+    index: number;
+  };
+}
+
+const CloseButton: React.FC<CloseButtonProps> = ({ isExpanded, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`absolute top-4 right-4 text-white z-50 transition-opacity duration-300 ${
+      isExpanded ? "opacity-100" : "opacity-0 pointer-events-none"
+    }`}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
+  </button>
+);
+
+const PlaylistButton = ({ onClick }: { onClick: () => void }) => (
+  <button
+    className={`absolute top-4 right-16 text-white z-50 transition-opacity duration-300`}
+    onClick={onClick}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 6h16M4 12h16M4 18h16"
+      />
+    </svg>
+  </button>
+);
+
+const PlaylistView = ({
+  songs,
+  currentPlaying,
+  currentIndex,
+  onSelect,
+  onClose,
+  onRemove,
+  onReorder
+}: {
+  songs: Song[];
+  currentPlaying: Song;
+  currentIndex: number;
+  onSelect: (song: Song, index: number) => void;
+  onClose: () => void;
+  onRemove: (songId: string) => void;
+  onReorder: (newOrder: Song[]) => void;
+}) => {
+  const { setCurrentQueue, currentQueuePosition } = usePlayer();
+
+  // Obtenir uniquement les chansons restantes
+  const remainingSongs = songs.slice(currentQueuePosition + 1);
+
+  const handleDragEnd = (result: DragEndResult) => {
+    if (!result.destination) return;
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+
+    // Ajuster les index pour prendre en compte le décalage
+    const actualSourceIndex = sourceIndex + currentQueuePosition + 1;
+    const actualDestinationIndex = destinationIndex + currentQueuePosition + 1;
+
+    // Copier la queue complète
+    const newQueue = [...songs];
+
+    // Déplacer l'élément dans la queue complète
+    const [movedItem] = newQueue.splice(actualSourceIndex, 1);
+    newQueue.splice(actualDestinationIndex, 0, movedItem);
+
+    setCurrentQueue(newQueue);
+  };
+
+  const handleSelectFromQueue = (song: Song, index: number) => {
+    // Ajuster l'index pour prendre en compte les chansons déjà jouées
+    const actualIndex = index + currentQueuePosition + 1;
+    onSelect(song, actualIndex);
+  };
+
+  return (
+    <div className="absolute top-0 right-0 w-full h-full bg-base backdrop-blur-lg p-4 overflow-y-auto z-50 border-l border-white/10">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-white text-lg font-medium">File d&apos;attente</h3>
+        <button
+          onClick={onClose}
+          className="text-white/70 hover:text-white transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Morceau en cours de lecture */}
+      <div className="mb-4 p-2 bg-white/5 rounded-lg">
+        <div className="flex items-center gap-3">
+          <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+            <Image
+              src={currentPlaying.image}
+              alt={currentPlaying.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-white text-sm font-medium truncate">
+              {currentPlaying.title}
+            </p>
+            <p className="text-white/60 text-xs truncate">
+              {currentPlaying.artists?.[0]?.name}
+            </p>
+          </div>
+          <span className="text-emerald-400 text-xs">En cours de lecture</span>
+        </div>
+      </div>
+
+      {remainingSongs.length === 0 ? (
+        <p className="text-white/60 text-center py-4">
+          Aucun morceau dans la file d&apos;attente
+        </p>
+      ) : (
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="playlist">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-2"
+              >
+                {remainingSongs.map((song, index) => (
+                  <Draggable
+                    key={`${song.id}-${index}`}
+                    draggableId={`${song.id}-${index}`}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.draggableProps.style}
+                        className={`flex items-center gap-3 p-2 rounded-lg transition-colors group
+                          ${snapshot.isDragging ? "bg-white/20 shadow-lg" : "hover:bg-white/10"}`}
+                      >
+                        <button
+                          onClick={() => onRemove(song.id)}
+                          className="text-white/40 hover:text-red-500 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                        <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+                          <Image
+                            src={song.image}
+                            alt={song.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div
+                          className="min-w-0 flex-1 cursor-pointer"
+                          onClick={() => handleSelectFromQueue(song, index)}
+                        >
+                          <p className="text-white text-sm font-medium truncate">
+                            {song.title}
+                          </p>
+                          <p className="text-white/60 text-xs truncate">
+                            {song.artists?.[0]?.name}
+                          </p>
+                        </div>
+                        <div
+                          className="px-5 py-3"
+                          {...provided.dragHandleProps}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-white/40"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M4 12h16M4 18h16"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
+    </div>
+  );
+};
+
+function Player(): React.JSX.Element | null {
   const {
-    paused,
     setPaused,
+    paused,
     currentPlaying,
-    currentList,
     setCurrentPlaying,
-    setCurrentList,
-    currentTime,
+    ownedSongs,
     setCurrentTime,
-    fetchSongs
+    isExpanded,
+    setIsExpanded,
+    loadOwnedSongs,
+    currentQueue,
+    setCurrentQueue,
+    currentQueuePosition,
+    setCurrentQueuePosition
   } = usePlayer();
-  const audioRef = useRef<ReactHTMLElement<HTMLAudioElement> | any>();
-  const path = usePathname();
-  const searchParams = useSearchParams();
-  const { data } = useSession();
-  const [userProfile, setUserProfile] = useState(null);
-  const [artistProfile, setArtistProfile] = useState(null);
-  console.log(paused)
-  useEffect(() => {
-    getProfile(data?.user?.id).then(setUserProfile).catch(console.error);
-  }, [data?.user?.id]);
+
+  const { data: session } = useSession();
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [showPlaylist, setShowPlaylist] = useState(false);
+  const audioRef = useRef<H5AudioPlayer>(null);
+  const [repeat, setRepeat] = useState(false);
 
   useEffect(() => {
-    if (!currentPlaying) setCurrentPlaying(currentList[0]);
-    if (!currentList?.length) fetchSongs();
-  }, []);
-
-  useEffect(() => {
-    const song = searchParams.get("song");
-    if (typeof song === "string" && song) {
-      setCurrentPlaying(currentList?.find((s) => s.id === song));
+    if (session?.user?.id) {
+      loadOwnedSongs(session.user.id).then((profile) => {
+        if (profile) {
+          setUserProfile(profile);
+        }
+      });
     }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      console.log(paused)
-      console.log(currentTime);
-      if (paused) audioRef.current.pause();
-      if (!paused) audioRef.current.play();
-    }
-  }, [paused]);
+  }, [session?.user?.id]);
 
   const hasSong = userProfile?.orders?.find(
     (o: any) => o.songId === currentPlaying?.id
   );
-  useEffect(() => {
-    if (!hasSong && currentTime >= 20 ) {
-      setPaused(true);
-      audioRef.current.currentTime = 0;
-      setCurrentTime(0);
-      console.log("first condition met");
-      toast.success("Extrait terminé", {});
+
+  const handleSongChange = (newPosition: number, isSameTrack: boolean) => {
+    if (isSameTrack) {
+      // Réinitialiser le temps de lecture
+      const audioElement = audioRef.current?.audio.current;
+      if (audioElement) {
+        audioElement.currentTime = 0;
+      }
+      // Mettre à jour la position dans la queue
+      setCurrentQueuePosition(newPosition);
+    } else {
+      setCurrentQueuePosition(newPosition);
+      setCurrentPlaying(currentQueue[newPosition]);
     }
-    if (currentTime === Number(audioRef.current?.duration)) {
-      console.log("second condition met");
-      const songIndex = currentList?.indexOf(currentPlaying);
-      setCurrentPlaying(
-        currentList[songIndex < currentList?.length - 1 ? songIndex + 1 : 0]
-      );
+  };
+
+  const handleNext = () => {
+    if (!hasSong || currentQueue.length === 0) return;
+
+    const nextPosition = currentQueuePosition + 1;
+
+    if (nextPosition < currentQueue.length) {
+      const isSameTrack =
+        currentQueue[nextPosition].id === currentQueue[currentQueuePosition].id;
+      handleSongChange(nextPosition, isSameTrack);
+    } else {
+      setCurrentQueuePosition(0);
+      setCurrentPlaying(currentQueue[0]);
     }
-  }, [currentTime]);
+    setPaused(false);
+  };
+
+  const handlePrevious = () => {
+    if (!hasSong || currentQueue.length === 0) return;
+
+    const previousPosition =
+      currentQueuePosition > 0
+        ? currentQueuePosition - 1
+        : currentQueue.length - 1;
+
+    const isSameTrack =
+      currentQueue[previousPosition].id ===
+      currentQueue[currentQueuePosition].id;
+    handleSongChange(previousPosition, isSameTrack);
+  };
+
+  const handlePurchaseSuccess = useCallback(() => {
+    if (session?.user?.id) {
+      getProfile(session.user.id).then(setUserProfile).catch(console.error);
+      loadOwnedSongs(session.user.id);
+    }
+  }, [session?.user?.id]);
+
+  const handleRemoveFromQueue = (songId: string) => {
+    const newQueue = currentQueue.filter((song, index) => {
+      if (index === currentQueuePosition) return true; // Garder le morceau en cours
+      return song.id !== songId;
+    });
+
+    setCurrentQueue(newQueue);
+    // Ajuster la position si nécessaire
+    if (currentQueuePosition >= newQueue.length) {
+      setCurrentQueuePosition(0);
+      setCurrentPlaying(newQueue[0]);
+    }
+  };
+
+  const handleSelectFromPlaylist = (song: Song, index: number) => {
+    setCurrentQueuePosition(index);
+    setCurrentPlaying(currentQueue[index]);
+    setPaused(false);
+  };
+
+  const handleEnded = () => {
+    if (repeat) {
+      // Si repeat est activé, on redémarre le même morceau
+      const audioElement = audioRef.current?.audio.current;
+      if (audioElement) {
+        audioElement.currentTime = 0;
+        audioElement.play();
+      }
+    } else {
+      // Sinon on passe au morceau suivant
+      handleNext();
+    }
+  };
+
+  const handleReorderQueue = (newQueue: Song[]) => {
+    const currentSong = currentQueue[currentQueuePosition];
+    const newPosition = newQueue.findIndex(
+      (song) => song.id === currentSong.id
+    );
+
+    setCurrentQueue(newQueue);
+    if (newPosition !== -1) {
+      setCurrentQueuePosition(newPosition);
+      setCurrentPlaying(newQueue[newPosition]);
+    }
+  };
+
+  const handleAudioError = (e: ErrorEvent) => {
+    console.error("Erreur détaillée:", {
+      error: e,
+      src: currentPlaying?.preview || currentPlaying?.audio,
+      errorCode: audioRef.current?.audio.current?.error?.code,
+      errorMessage: audioRef.current?.audio.current?.error?.message
+    });
+    toast.error("Impossible de lire le morceau. Veuillez réessayer.");
+    setPaused(true);
+  };
+
+  const commonAudioProps = {
+    ref: audioRef,
+    src: hasSong ? currentPlaying?.audio : currentPlaying?.preview,
+    autoPlay: !paused,
+    onPlay: () => setPaused(false),
+    onPause: () => setPaused(true),
+    onEnded: handleEnded,
+    showJumpControls: false,
+    showSkipControls: hasSong,
+    onClickPrevious: handlePrevious,
+    onClickNext: handleNext,
+    loop: false,
+    customProgressBarSection: [
+      RHAP_UI.CURRENT_TIME,
+      RHAP_UI.PROGRESS_BAR,
+      RHAP_UI.DURATION,
+      <button
+        key="repeat"
+        onClick={() => setRepeat(!repeat)}
+        className={`ml-4 ${repeat ? "text-white" : "text-white/40"} ${
+          isExpanded ? "" : "hidden"
+        }`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+      </button>
+    ] as Array<RHAP_UI | ReactElement>,
+    customControlsSection: [RHAP_UI.MAIN_CONTROLS] as Array<
+      RHAP_UI | ReactElement
+    >,
+    onListen: (e: Event) => {
+      const audioElement = audioRef.current?.audio.current;
+      if (audioElement && !isNaN(audioElement.currentTime)) {
+        setCurrentTime(audioElement.currentTime);
+
+        if (!hasSong && audioElement.currentTime >= 30) {
+          audioElement.pause();
+          audioElement.currentTime = 0;
+          setPaused(true);
+          toast.success("Extrait terminé");
+        }
+      }
+    },
+    onError: handleAudioError
+  };
+
   useEffect(() => {
-  if(!currentPlaying?.artists?.[0]?.id){
-    console.error("No artist id found in currentPlaying");
-    return;
-  }
-    getArtistProfile(currentPlaying?.artists?.[0]?.id).then(setArtistProfile).catch(console.error);
-  }, [currentPlaying?.artists?.[0]?.id])
-  const isPlayerScreen = path === "/player";
+    if (isExpanded) {
+      document.body.style.overflow = "hidden";
+      document.body.style.height = "100dvh";
+    } else {
+      document.body.style.overflow = "auto";
+      document.body.style.height = "auto";
+    }
 
-  const playerHeight = !isPlayerScreen ? "h-0 hidden" : "h-6";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isExpanded]);
 
-  if (currentPlaying)
-    currentPlaying.liked =
-      currentPlaying.liked ||
-      currentPlaying?.favorites?.some(
-        (f: any) => f?.profil?.userId === data?.user?.id
-      );
+  useEffect(() => {
+    if (!hasSong && audioRef.current?.audio.current) {
+      const audioElement = audioRef.current.audio.current;
 
+      const handleTimeUpdate = () => {
+        if (audioElement.currentTime >= currentPlaying.previewStartTime + 30) {
+          audioElement.pause();
+          audioElement.currentTime = currentPlaying.previewStartTime;
+          setPaused(true);
+          toast.success("Extrait terminé");
+        }
+      };
+
+      audioElement.currentTime = currentPlaying.previewStartTime;
+      audioElement.addEventListener("timeupdate", handleTimeUpdate);
+      return () =>
+        audioElement.removeEventListener("timeupdate", handleTimeUpdate);
+    }
+  }, [hasSong, currentPlaying]);
+
+  if (!currentPlaying) return null;
 
   return (
     <>
-      {hasSong || !isPlayerScreen ? null : (
-        <div className="absolute rounded-t-3xl flex flex-col shadow-inner shadow-white/50 pb-16 justify-around gap-4 z-50 px-10 bg-base bottom-0 left-0 w-full h-1/2 min-h-[200px]">
-          <div className="flex items-center">
-            <div className="relative h-20 w-20 rounded-full m-auto overflow-hidden">
-              <Image
-                className="object-cover rounded-2xl"
-                alt="jaquette musique"
-                src={artistProfile?.profile?.[0]?.user?.image || ""}
-                layout="fill"
-              />
-            </div>
-            <div>
-              <h3 className="text-xl text-left text-white relative z-10">
-                {currentPlaying?.title}
-              </h3>
-              <Link href={{ 
-            pathname: "/artist/[artist]",
-            params: { artist:currentPlaying?.artists?.[0]?.id } 
-            }} className="text-white-500 hover:underline">
-                 { currentPlaying?.artists?.[0]?.name }
-
-          </Link>
-            </div>
-          </div>
-
-          <div className="flex items-center text-left">
-            <h5 className="font-semibold text-base/80 text-sm">
-              {" "}
-              {"Description : "}{" "}
-            </h5>
-            <p>{currentPlaying?.description || ""}</p>
-          </div>
-          <div className="flex flex-row-reverse justify-between items-center gap-2">
-            <div>
-              <Button
-                onClick={() => {
-                  console.log("clicked");
-                  setCurrentTime(0);
-                  setPaused((p) => !p);
-
-                  setTimeout(() => {
-                    audioRef.current.currentTime = 0;
-                    setPaused(true);
-
-                    toast.success("Extrait terminé", {});
-                  }, 20_000);
-                }}
-                className="btn-accent relative border-2"
-              >
-                <span
-                  className="bg-primary absolute top-0 left-0 h-full z-10 overflow-hidden rounded-md"
-                  style={{ width: `${(currentTime / 20) * 100}%` }}
-                >
-                  <span className="text-white relative z-50 text-nowrap flex justify-center items-center"></span>
-                </span>
-                <span className="text-primary-content relative z-50">
-                  {"Écouter l'extrait"}
-                </span>
-              </Button>
-            </div>
-            <div>
-              <ButtonCheckout
-                songId={currentPlaying?.id}
-                profileId={userProfile?.id}
-                label={
-                  <span className="text-center">
-                    <span className="font-bold pt-2">
-                      {currentPlaying?.price}
-
-                      <sup className="font-normal ml-1">{"€"}</sup>
-                    </span>
-                  </span>
-                }
-                priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
-              />
-            </div>
-          </div>
-        </div>
+      {isExpanded && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999998] isolate" />
       )}
-
-      {!isPlayerScreen ? null : (
-        <div
-          style={{ backgroundImage: `url(${currentPlaying?.image})` }}
-          className={`bg-left-top bg-cover h-screen pb-24 overflow-hidden w-full fixed top-0 left-0 flex flex-col justify-center items-center`}
-        >
-          <div className="absolute top-0 left-0 w-full h-full backdrop-blur-md bg-[rgba(0,0,0,.1)]" />
-          <div className="relative h-60 w-60  rounded-2xl overflow-hidden" style={{ marginTop: '-100px' }}>
-            <Image
-              className="object-cover rounded-2xl"
-              alt="jaquette musique"
-              src={currentPlaying?.image}
-              layout="fill"
-            />
-          </div>
-
-          <h3 className="text-3xl text-center text-white relative z-10">
-            {currentPlaying?.title}
-          </h3>
-          <h4 className="text-md text-center -mb-5 text-white relative z-10">
-            Par {currentPlaying?.artists?.[0]?.name || "N/A"}
-          </h4>
-        </div>
-      )}
-
-      <div
-        className={`absolute bottom-[90px] py-2 left-0 w-full ${playerHeight} flex justify-around items-center`}
+      <motion.div
+        initial={false}
+        animate={{
+          height: isExpanded ? "100dvh" : "80px",
+          bottom: isExpanded ? 0 : "73px"
+        }}
+        transition={{ duration: 0.3 }}
+        className={`fixed left-0 w-full bg-base z-[99999999] isolate ${
+          isExpanded
+            ? "flex flex-col justify-center overflow-hidden"
+            : "cursor-pointer"
+        }`}
       >
-        <div className="absolute rounded-full -top-8 left-2  right-2 w-98 h-5 ">
-          <input
-            onChange={({ target: { value } }) => {
-              setCurrentTime(Number(value));
-              audioRef.current.currentTime = Number(value);
-            }}
-            type="range"
-            max={
-              audioRef?.current?.duration
-                ? audioRef?.current?.duration
-                : undefined
-            }
-            value={currentTime}
-            className="absolute w-full h-full bg-[red] -top-3"
-          />
+        <CloseButton
+          isExpanded={isExpanded}
+          onClick={() => setIsExpanded(false)}
+        />
+        {hasSong && isExpanded && (
+          <PlaylistButton onClick={() => setShowPlaylist(!showPlaylist)} />
+        )}
 
-          <div className="flex flex-row justify-between">
-            <span>{getTimeArr(currentTime).reverse()}</span>
-            {audioRef?.current?.duration ? (
-              <span>{getTimeArr(audioRef?.current?.duration).reverse()}</span>
-            ) : null}
-          </div>
-        </div>
-
-        {!currentPlaying?.audio && !currentPlaying?.preview ? null : (
-          <audio
-            onTimeUpdate={(evt) =>
-              setCurrentTime(evt?.currentTarget?.currentTime)
-            }
-            autoPlay={false}
-            src={currentPlaying?.preview || currentPlaying?.audio}
-            ref={audioRef}
+        {showPlaylist && hasSong && (
+          <PlaylistView
+            songs={currentQueue}
+            currentPlaying={currentPlaying}
+            currentIndex={currentQueuePosition}
+            onSelect={(song, index) => handleSelectFromPlaylist(song, index)}
+            onClose={() => setShowPlaylist(false)}
+            onRemove={handleRemoveFromQueue}
+            onReorder={handleReorderQueue}
           />
         )}
 
-        <Button
-          className="!text-white border-none rounded-full min-h-0 w-10 h-10  relative !bg-[transparent]"
-          onClick={() => {
-            const newList = [...currentList];
-            setCurrentList(newList.reverse());
-          }}
+        <div onClick={() => !isExpanded && setIsExpanded(true)}>
+          {isExpanded ? (
+            <>
+              {!hasSong && (
+                <p className="absolute top-4 left-4 text-red-300 text-sm z-10">
+                  EXTRAIT DE 30 SECONDES
+                </p>
+              )}
+
+              <div className="relative z-20">
+                <div className="px-4">
+                  <div className="relative w-64 h-64 mx-auto mb-8">
+                    {/* <Image
+                      src={currentPlaying.image}
+                      alt={currentPlaying.title}
+                      fill
+                      className="object-cover rounded-lg shadow-[1px_10px_49px_21px_rgba(255,255,255,0.05)]"
+                    /> */}
+                    <ImageWithFallback
+                      src={currentPlaying.image}
+                      alt={currentPlaying.title}
+                      // width={256}
+                      // height={256}
+                      className="object-cover rounded-lg shadow-[1px_10px_49px_21px_rgba(255,255,255,0.05)]"
+                      fill
+                    />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white text-center">
+                    {currentPlaying.title}
+                  </h2>
+                  <p className="text-gray-400 text-center mb-6">
+                    {currentPlaying.artists?.[0]?.name}
+                  </p>
+                  {/* <p className="text-gray-white text-center mb-8">
+                    prix : {currentPlaying?.price}
+                    <sup className="font-normal ml-1">{"€"}</sup>
+                  </p> */}
+                </div>
+              </div>
+
+              {!hasSong && (
+                <div className="relative flex items-center justify-center gap-5 z-20 max-w-full">
+                  {/* <p className="text-white text-center">
+                    Profiter du titre en entier :
+                  </p> */}
+                  <ButtonCheckout
+                    songId={currentPlaying?.id}
+                    profileId={userProfile?.id}
+                    onSuccess={handlePurchaseSuccess}
+                    label={
+                      <span className="text-center">
+                        <span className="font-bold pt-2">
+                          {/* Acheter le titre pour */}
+                          {currentPlaying?.price}
+                          <sup className="font-normal ml-1">{"€"}</sup>
+                        </span>
+                      </span>
+                    }
+                    // priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
+                  />
+                </div>
+              )}
+              <div className="absolute inset-0 overflow-hidden z-0">
+                <Image
+                  src={currentPlaying.image}
+                  alt={currentPlaying.title}
+                  fill
+                  className="object-cover blur-xl opacity-50"
+                  priority
+                />
+                <div className="absolute inset-0 bg-black/40" />
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-3 p-4 border-t  border-white/20 ">
+              <div className="relative h-12 w-12 rounded-md overflow-hidden">
+                {/* <Image
+                    className="object-cover"
+                    alt="jaquette musique"
+                    src={currentPlaying.image}
+                  fill
+                /> */}
+                <ImageWithFallback
+                  src={currentPlaying.image}
+                  alt={currentPlaying.title}
+                  fill
+                />
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-white">
+                  {currentPlaying.title}
+                </h4>
+                <span className="text-sm opacity-70">
+                  {currentPlaying.artists?.[0]?.name}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`relative z-20 ${
+            isExpanded
+              ? hasSong
+                ? "player-expanded"
+                : "player-expanded-no-song"
+              : "player-minimized bg-base!"
+          }`}
         >
-          <Image
-            layout="fill"
-            className="text-white object-contain"
-            alt="Icon next song"
-            src={
-              currentList?.[0]?.name
-                ? require("@/public/assets/images/icons/shuffle.svg")
-                : require("@/public/assets/images/icons/unshuffle.svg")
-            }
+          <AudioPlayer
+            layout={isExpanded ? "stacked-reverse" : "stacked-reverse"}
+            {...commonAudioProps}
           />
-        </Button>
-
-        <Button
-          className="!text-white border-none rounded-full min-h-0 w-10 h-10 relative !bg-[transparent]"
-          onClick={() => {
-            const songIndex = currentList?.indexOf(currentPlaying);
-            setCurrentPlaying(
-              currentList[songIndex ? songIndex - 1 : currentList?.length - 1]
-            );
-          }}
-        >
-          <Image
-            layout="fill"
-            className="text-white object-contain"
-            alt="Icon previous song"
-            src={require("@/public/assets/images/icons/previoussong.svg")}
-          />
-        </Button>
-
-        <Button
-          className="!text-white !border-white border-2 rounded-full p-2 min-h-0 w-10 h-10 relative !bg-[transparent]"
-          onClick={() => {
-            setPaused((p) => !p);
-          }}
-        >
-          <Image
-            layout="fill"
-            className={`text-white object-contain max-w-[30px] m-auto rounded-full ${paused ? "ml-[6px]" : ""}`}
-            alt={`Icon ${paused ? "play" : "pause"} song`}
-            src={
-              paused
-                ? require("@/public/assets/images/icons/play.svg")
-                : require("@/public/assets/images/icons/pause.svg")
-            }
-          />
-        </Button>
-
-        <Button
-          className="!text-white border-none rounded-full min-h-0 w-10 h-10  relative !bg-[transparent]"
-          onClick={() => {
-            const songIndex = currentList?.indexOf(currentPlaying);
-            setCurrentPlaying(
-              currentList[
-                songIndex < currentList?.length - 1 ? songIndex + 1 : 0
-              ]
-            );
-          }}
-        >
-          <Image
-            layout="fill"
-            className="text-white object-contain"
-            alt="Icon next song"
-            src={require("@/public/assets/images/icons/nextsong.svg")}
-          />
-        </Button>
-
-        <Button
-          className="!text-white border-none rounded-full min-h-0 w-10 h-10  relative !bg-[transparent]"
-          onClick={() => {
-            try {
-              const newList = [...currentList];
-              newList[currentList.indexOf(currentPlaying)].liked =
-                !currentList[currentList.indexOf(currentPlaying)].liked;
-
-              if (newList[currentList.indexOf(currentPlaying)].liked)
-                likeSong(data?.user?.id, currentPlaying.id);
-              else unlikeSong(currentPlaying.id);
-
-              setCurrentList(newList);
-            } catch (error) {
-              console.error("Error in Player.tsx", error);
-            }
-          }}
-        >
-          <Image
-            layout="fill"
-            className="text-white object-contain"
-            alt="Icon next song"
-            src={
-              currentPlaying?.liked
-                ? require("@/public/assets/images/icons/unlike.svg")
-                : require("@/public/assets/images/icons/like.svg")
-            }
-          />
-        </Button>
-      </div>
+        </div>
+      </motion.div>
     </>
   );
 }

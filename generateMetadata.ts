@@ -25,7 +25,8 @@ export async function getMetadataConfig({
     return {
       title: seo?.title || defaultSeo?.title,
       description: seo?.description || defaultSeo?.description,
-      canonicalUrlRelative: seo?.url || defaultSeo?.canonicalUrlRelative
+      canonicalUrlRelative: seo?.url || defaultSeo?.canonicalUrlRelative,
+      themeColor: "#FFFFFF"
     };
   } catch (e) {
     console.log(e);

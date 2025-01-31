@@ -7,12 +7,15 @@ import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/layout/LayoutClient";
 import config from "@/config";
 import "./globals.css";
+import Provider from "@/context/Provider";
+import Player from "@/components/Player/Player";
+import Navbar from "@/components/ui/Navigation/Navbar";
 
 const font = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
   // Will use the primary color of your theme to show a nice theme color in the URL bar of supported browsers
-  themeColor: config.colors.main,
+  themeColor: "#131313",
   width: "device-width",
   initialScale: 1
 };
@@ -45,10 +48,14 @@ export default function RootLayout({
         </head>
       )}
       <NextIntlClientProvider locale={locale} messages={messages}>
-        
-        <body>
-          {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
-          <ClientLayout>{children}</ClientLayout>
+        <body className="relative h-dvh">
+          <Provider>
+            <ClientLayout>
+              {children}
+              <Player />
+              <Navbar />
+            </ClientLayout>
+          </Provider>
         </body>
       </NextIntlClientProvider>
     </html>

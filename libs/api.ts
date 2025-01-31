@@ -22,8 +22,13 @@ apiClient.interceptors.response.use(
       // automatically redirect to /dashboard page after login
       return signIn(undefined, { callbackUrl: config.auth.callbackUrl });
     } else if (error.response?.status === 403) {
-      // User not authorized, must subscribe/purchase/pick a plan
-      message = "Pick a plan to use this feature";
+      // On vérifie si l'erreur vient de la vérification du code
+      console.log("error.config.url", error.config.url);
+      if (error.config.url?.includes("/auth/callback/nodemailer")) {
+        message = "Code invalide, veuillez réessayer";
+      } else {
+        message = "Pick a plan to use this feature";
+      }
     } else {
       message =
         error?.response?.data?.error || error.message || error.toString();

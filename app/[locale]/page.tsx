@@ -1,25 +1,15 @@
 import { getGenerateMetadata } from "@/generateMetadata";
-import CategoryFilter from "@/components/ui/CategoryFilter";
-import Image from "next/image";
-import { Link, redirect } from "@/navigation";
-import prisma from "@/libs/prisma";
-import { Artist, Profile } from "@prisma/client";
-import { getServerSession } from "@/libs/next-auth";
-import ClientComponent from "@/components/client/ClientComponent";
-import LibraryFilter from "@/components/ui/LibraryFilter";
+import { prisma } from "@/libs/prisma";
+import HomeHeader from "@/components/ui/Header/HomeHeader";
+import HomeContent from "@/components/HomeContent";
 
 export const generateMetadata = getGenerateMetadata("home");
 
-
-
-export default async function Page({ params }: any) {
-  const session = await getServerSession();
-
-  if (!session) return redirect("/me/signin");
-
+export default async function Page() {
   const songs = await prisma.song.findMany({
+    take: 10,
     include: {
-      genres:true,
+      genres: true,
       artists: {
         include: {
           profile: {
@@ -37,6 +27,7 @@ export default async function Page({ params }: any) {
 
   const artists = (
     await prisma.artist.findMany({
+      take: 10,
       include: {
         profile: {
           include: {
@@ -47,48 +38,14 @@ export default async function Page({ params }: any) {
     })
   ).map((a) => ({
     ...a,
-    image: a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
+    image:
+      a?.profile?.[0]?.user?.image || "/assets/images/logos/meduse-icon.png"
   }));
 
-  
-
   return (
-    <>
-      <main
-        className="flex flex-col h-screen w-screen items-center pb-10 md:p-10 "
-        style={{
-          paddingTop: "env(safe-area-inset-top)",
-          paddingBottom: "env(safe-area-inset-bottom)",
-          paddingLeft: "env(safe-area-inset-left)",
-          paddingRight: "env(safe-area-inset-right)"
-        }}
-      >
-        <section className="flex justify-between absolute w-full right-0 px-8 py-4 pt-8 max-lg:bg-base z-50 items-center">
-          <Link href={"/"}>
-            <Image
-              alt="Logo"
-              src={"/assets/images/logos/Logo_num4_V2_blanc.png"}
-              width={120}
-              height={40}
-              className="object-contain"
-              layout="fixed"
-            />
-          </Link>
-
-          <Link className="z-50" href={"/dashboard"}>
-            <Image
-              alt="Settings icon"
-              src={"/assets/images/icons/settings.svg"}
-              width={40}
-              height={40}
-              className="object-contain max-w-10"
-              layout="responsive"
-            />
-          </Link>
-        </section>
-
-        <ClientComponent initialSongs={songs} initialArtists={artists} />
-      </main>
-    </>
+    <main className="flex flex-col flex-1  w-screen items-center pb-10 md:p-10">
+      <HomeHeader />
+      <HomeContent songs={songs} artists={artists} />
+    </main>
   );
 }

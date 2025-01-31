@@ -1,7 +1,7 @@
 "use server";
-import prisma from "@/libs/prisma"
-export async function handleSignUp({ artist, id }: any) {
+import { prisma } from "@/libs/prisma";
 
+export async function handleSignUp({ artist, id }: any) {
   let artistId = undefined;
 
   if (artist) {
@@ -52,60 +52,62 @@ export async function setCurrentMode({
 }
 
 export async function likeSong(userId: string, songId: string) {
-  const profile = await prisma.profile.findFirst({ where: { user: { id: userId } } });
+  const profile = await prisma.profile.findFirst({
+    where: { user: { id: userId } }
+  });
 
   return await prisma.favorite.create({
-    data: { 
+    data: {
       song: {
         connect: {
           id: songId
-        },
+        }
       },
       profil: {
         connect: {
           id: profile.id
         }
       }
-    },
+    }
   });
-  // 
+  //
 }
- 
+
 export async function unlikeSong(favoriteId: string) {
   return await prisma.favorite.delete({
     where: { id: favoriteId }
   });
-  // 
- }
+  //
+}
 
 export async function followArtist(userId: string, artistId: string) {
-  const profile = await prisma.profile.findFirst({ where: { user: { id: userId } } });
+  const profile = await prisma.profile.findFirst({
+    where: { user: { id: userId } }
+  });
 
   return await prisma.follow.create({
-    data: { 
+    data: {
       artist: {
         connect: {
           id: artistId
-        },
+        }
       },
       profil: {
         connect: {
           id: profile.id
         }
       }
-    },
+    }
   });
-  // 
+  //
 }
- 
+
 export async function unfollowArtist(followId: string) {
   return await prisma.follow.delete({
     where: { id: followId }
   });
-  // 
- }
-
-
+  //
+}
 
 export async function getProfile(userId: string) {
   return await prisma.profile.findFirst({
@@ -117,27 +119,21 @@ export async function getProfile(userId: string) {
     include: {
       artist: true,
       user: true,
-      orders: true,
-      
-    },
-
-  })
- }
- export async function getArtistProfile(artistId: string) {
+      orders: true
+    }
+  });
+}
+export async function getArtistProfile(artistId: string) {
   return await prisma.artist.findUnique({
     where: {
-      
-        id: artistId
-      
-    },include: {
-
+      id: artistId
+    },
+    include: {
       profile: {
         include: {
-          user: true,
-
+          user: true
+        }
       }
-      
-    },
-
- }})
- }
+    }
+  });
+}

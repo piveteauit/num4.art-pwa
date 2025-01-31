@@ -2,7 +2,16 @@
 
 import { getAllSongs } from "@/libs/server/song.action";
 import { useSession } from "next-auth/react";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef
+} from "react";
+import type H5AudioPlayer from "react-h5-audio-player";
+import { getProfile } from "@/libs/server/user.action";
+import { Song } from "@/types/song";
 
 interface PlayerContextProps {
   currentPlaying?: string | null | any;
@@ -15,95 +24,135 @@ interface PlayerContextProps {
   setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
   currentList?: any[];
   setCurrentList: React.Dispatch<React.SetStateAction<any[]>>;
-  fetchSongs: any;
+  fetchSongs: () => Promise<void>;
+  audioRef: React.RefObject<H5AudioPlayer>;
+  ownedSongs: Song[];
+  setOwnedSongs: React.Dispatch<React.SetStateAction<Song[]>>;
+  isExpanded: boolean;
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  loadOwnedSongs: (userId: string) => Promise<any>;
+  currentQueue: Song[];
+  setCurrentQueue: React.Dispatch<React.SetStateAction<Song[]>>;
+  currentQueuePosition: number;
+  setCurrentQueuePosition: React.Dispatch<React.SetStateAction<number>>;
+  isQueueReady: boolean;
+  // initializeQueue: (userId: string) => Promise<any>;
 }
 
 const defaultProps: Partial<PlayerContextProps> = {
   currentPlaying: null,
   paused: true,
   volume: 1,
-  currentTime: 0
+  currentTime: 0,
+  ownedSongs: [],
+  isExpanded: false,
+  currentQueue: [],
+  currentQueuePosition: 0
 };
+
 const PlayerContext = createContext<PlayerContextProps>(undefined);
 
-const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
-  const [currentTime, setCurrentTime] = useState(defaultProps.currentTime);
-  const [paused, setPaused] = useState(defaultProps.paused);
-  const [volume, setVolume] = useState(defaultProps.volume);
+export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentPlaying, setCurrentPlaying] = useState(
     defaultProps.currentPlaying
   );
-  const { data } = useSession();
+  const [paused, setPaused] = useState(defaultProps.paused);
+  const [volume, setVolume] = useState(defaultProps.volume);
+  const [currentTime, setCurrentTime] = useState(defaultProps.currentTime);
   const [currentList, setCurrentList] = useState([]);
-  const [ready, setReady] = useState(false);
+  const [ownedSongs, setOwnedSongs] = useState(defaultProps.ownedSongs);
+  const [isExpanded, setIsExpanded] = useState(defaultProps.isExpanded);
+  const [currentQueue, setCurrentQueue] = useState<Song[]>(
+    defaultProps.currentQueue || []
+  );
+  const [currentQueuePosition, setCurrentQueuePosition] = useState(
+    defaultProps.currentQueuePosition
+  );
+  const audioRef = useRef<H5AudioPlayer>(null);
+  const { data: session } = useSession();
+  const [isQueueReady, setIsQueueReady] = useState(false);
 
-  const fetchSongs = () => {
-    getAllSongs()
-      .then((s) => {
-        setCurrentList(
-          s.map((song) => {
-            return {
-              ...song,
-              liked: song.favorites.some(
-                (f) => f.profil.userId === data?.user?.id
-              )
-            };
-          })
-        );
-      })
-      .catch(console.error);
-  };
-
-  useEffect(() => {
-    if (!data?.user?.id || !currentList.length || ready) return;
-
-    setCurrentList(
-      currentList.map((song) => {
-        return {
-          ...song,
-          liked: song.favorites.some(
-            (f: any) => f.profil.userId === data?.user?.id
-          )
-        };
-      })
-    );
-
-    setReady(true);
-  }, [data, currentList, ready]);
-
-  useEffect(() => {
-    if (!currentList.length || currentPlaying) return;
-    setCurrentPlaying(
-      currentList.find((s) => s.id === localStorage.getItem("songId")) ||
-        currentList[0]
-    );
-  }, [currentList]);
-
-  useEffect(() => {
+  const loadOwnedSongs = async (userId: string) => {
     try {
-      if (currentPlaying?.id)
-        localStorage.setItem("songId", currentPlaying?.id);
-    } catch (e) {
-      console.error(e);
+      const profile = await getProfile(userId);
+      const allSongs = await getAllSongs();
+
+      const purchasedSongIds =
+        profile?.orders?.map((order: any) => order.songId) || [];
+      const userOwnedSongs = allSongs.filter((song) =>
+        purchasedSongIds.includes(song.id)
+      );
+
+      setOwnedSongs(userOwnedSongs);
+      setIsQueueReady(true);
+      return profile;
+    } catch (error) {
+      console.error("Error loading owned songs:", error);
+      return null;
     }
-  }, [currentPlaying]);
+  };
+  // Fonction pour initialiser/mettre à jour la queue
+  // const initializeQueue = async (userId: string) => {
+  //   console.log("initializeQueue");
+  //   try {
+  //     const profile = await getProfile(userId);
+  //     const purchasedSongIds =
+  //       profile?.orders?.map((order: any) => order.songId) || [];
+  //     // On stocke les chansons possédées dans ownedSongs, mais pas dans la queue
+  //     const purchasedSongs = ownedSongs.filter((song) =>
+  //       purchasedSongIds.includes(song.id)
+  //     );
+  //     setOwnedSongs(purchasedSongs);
+  //     setIsQueueReady(true);
+  //     return profile;
+  //   } catch (error) {
+  //     console.error("Error initializing queue:", error);
+  //     return null;
+  //   }
+  // };
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      loadOwnedSongs(session.user.id);
+      // initializeQueue(session.user.id);
+    }
+  }, [session?.user?.id]);
+
+  const fetchSongs = async () => {
+    try {
+      const songs = await getAllSongs();
+      setCurrentList(songs);
+    } catch (error) {
+      console.error("Error fetching songs:", error);
+    }
+  };
 
   return (
     <PlayerContext.Provider
       value={{
-        currentTime,
-        setCurrentTime,
+        currentPlaying,
+        setCurrentPlaying,
         paused,
         setPaused,
         volume,
         setVolume,
-        currentPlaying,
-        setCurrentPlaying,
+        currentTime,
+        setCurrentTime,
         currentList,
         setCurrentList,
-        fetchSongs
+        fetchSongs,
+        audioRef,
+        ownedSongs,
+        setOwnedSongs,
+        isExpanded,
+        setIsExpanded,
+        loadOwnedSongs,
+        currentQueue,
+        setCurrentQueue,
+        currentQueuePosition,
+        setCurrentQueuePosition,
+        isQueueReady
+        // initializeQueue
       }}
     >
       {children}
@@ -111,12 +160,10 @@ const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const usePlayer: () => PlayerContextProps = (): PlayerContextProps => {
+export const usePlayer = () => {
   const context = useContext(PlayerContext);
-  if (!context) {
-    throw new Error("usePlayer must be used in a context");
+  if (context === undefined) {
+    throw new Error("usePlayer must be used within a PlayerProvider");
   }
   return context;
 };
-
-export default PlayerProvider;

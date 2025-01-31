@@ -3,8 +3,9 @@ import CategoryFilter from "@/components/ui/CategoryFilter";
 import { Link } from "@/navigation";
 import { PrismaClient } from "@prisma/client";
 import Image from "next/image";
-
-export const dynamic = "force-dynamic";
+import { usePlayMusic } from "@/hooks/usePlayMusic";
+import { Song } from "@/types/song";
+import { useEffect, useState } from "react";
 
 const categories = [
   { name: "Tout", all: true },
@@ -14,14 +15,23 @@ const categories = [
   { name: "Electro" }
 ];
 
-export default async function Artist() {
-  const prisma = new PrismaClient();
+export default function Artist() {
+  const { handlePlay } = usePlayMusic();
+  const [songs, setSongs] = useState<Song[]>([]);
 
-  const songs = await prisma.song.findMany({
-    include: {
-      artists: true
-    }
-  })
+  useEffect(() => {
+    const fetchSongs = async () => {
+      const prisma = new PrismaClient();
+      const songsData = (await prisma.song.findMany({
+        include: {
+          artists: true
+        }
+      })) as Song[];
+      setSongs(songsData);
+    };
+
+    fetchSongs();
+  }, []);
 
   return (
     <main className="w-screen h-screen overflow-hidden p-8 pb-24 absolute top-0 left-0">
@@ -36,7 +46,6 @@ export default async function Artist() {
             width={40}
             height={40}
             className="object-contain max-w-10 "
-            layout="responsive"
           />
         </Link>
       </section>
@@ -47,34 +56,36 @@ export default async function Artist() {
       </section>
 
       <section className="flex flex-col gap-1 px-2 py-5">
-        {songs.map(({ artists, title, image, id }, k: number) => {
+        {songs.map((song: Song) => {
           return (
-            <Link
-              key={`${id}--1`}
-              href={{ pathname: "/player", query: { song: k } }}
-              className="flex w-full p-1 gap-8"
+            <button
+              key={`${song.id}--1`}
+              onClick={() => handlePlay(song)}
+              className="w-full"
             >
-              <span className="relative w-[50px] h-[50px]]">
-                <Image
-                  className="max-h-[50px] object-cover"
-                  layout={"fill"}
-                  alt={`Jaquette ${title}`}
-                  src={image}
-                />
-              </span>
-              <div className="flex flex-col">
-                <h4 className="font-semibold text-xl">{title}</h4>
-                <Link
-                  href={{
-                    pathname: "/artist/[artist]",
-                    params: { artist: artists?.[0]?.name }
-                  }}
-                  className="opacity-60"
-                >
-                  {artists?.[0]?.name}
-                </Link>
+              <div className="flex w-full p-1 gap-8">
+                <span className="relative w-[50px] h-[50px]]">
+                  <Image
+                    className="max-h-[50px] object-cover"
+                    fill
+                    alt={`Jaquette ${song.title}`}
+                    src={song.image}
+                  />
+                </span>
+                <div className="flex flex-col">
+                  <h4 className="font-semibold text-xl">{song.title}</h4>
+                  <Link
+                    href={{
+                      pathname: "/artist/[artist]",
+                      params: { artist: song.artists?.[0]?.name }
+                    }}
+                    className="opacity-60"
+                  >
+                    {song.artists?.[0]?.name}
+                  </Link>
+                </div>
               </div>
-            </Link>
+            </button>
           );
         })}
       </section>

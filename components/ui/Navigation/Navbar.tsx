@@ -1,52 +1,58 @@
+"use client";
 import { Link, usePathname } from "@/navigation";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useUserMode } from "@/context/UserModeContext";
+import { IconHome } from "@/components/icons/IconHome";
+import { IconLibrary } from "@/components/icons/IconLibrary";
+import { IconPublish } from "@/components/icons/IconPublish";
 
 function Navbar() {
-  const session = useSession();
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const { isArtistMode } = useUserMode();
 
-
-  if (session?.status !== "authenticated") return null;
+  if (!session) {
+    return null;
+  }
 
   return (
-    <div className="btm-nav text-white bg-base h-[60px] py-3 z-[9999] lg:hidden">
+    <div className="btm-nav sticky bottom-0 h-auto py-2 border-t border-white border-opacity-10 bg-opacity-80 backdrop-blur-sm text-white bg-base z-[9999] lg:hidden">
       <Link href={"/"}>
-        <Image
-          layout="fill"
-          className="text-white object-contain"
-          alt="Icon Home"
-          src={require(
-            pathname === "/"
-              ? "@/public/assets/images/icons/home.active.svg"
-              : "@/public/assets/images/icons/home.svg"
-          )}
-        />
+        <div
+          className={`flex flex-col justify-center items-center ${pathname === "/" ? "opacity-100" : "opacity-70"}`}
+        >
+          <IconHome className=" relative w-8 h-8" isActive={pathname === "/"} />
+          <p className="font-light text-sm">Accueil</p>
+        </div>
       </Link>
-      <Link href={"/player"}>
-        <Image
-          layout="fill"
-          className="text-white object-contain"
-          alt="Icon Home"
-          src={require(
-            pathname === "/player" 
-              ? "@/public/assets/images/icons/bouton-jouer-active.svg"
-              : "@/public/assets/images/icons/bouton-jouer-_2_.svg"
-          )}
-        />
-      </Link>
+      {isArtistMode && (
+        <Link href={"/publish"}>
+          <div
+            className={`flex flex-col justify-center items-center ${
+              pathname === "/publish" ? "opacity-100" : "opacity-70"
+            }`}
+          >
+            <IconPublish
+              className="relative w-8 h-8 bg-base"
+              isActive={pathname === "/publish"}
+            />
+            <p className="font-light text-sm">Publier</p>
+          </div>
+        </Link>
+      )}
       <Link href={"/library"}>
-        <Image
-          layout="fill"
-          className="text-white object-contain"
-          alt="Icon library"
-          src={require(
-            pathname === "/library"
-              ? "@/public/assets/images/icons/bibliotheque-numerique.svg"
-              : "@/public/assets/images/icons/bibliotheque-numerique.svg"
-          )}
-        />
+        <div
+          className={`flex flex-col justify-center items-center ${pathname === "/library" ? "opacity-100" : "opacity-70"}`}
+        >
+          <IconLibrary
+            className="relative w-8 h-8"
+            isActive={pathname === "/library"}
+          />
+
+          <p className="font-light text-sm">
+            {isArtistMode ? "Mes produits" : "Collection"}
+          </p>
+        </div>
       </Link>
     </div>
   );
