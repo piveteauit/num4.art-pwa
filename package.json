@@ -7,7 +7,7 @@
     "prisma": "./node_modules/prisma/build/index.js",
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "npm install --platform=linux --arch=x64 sharp && prisma generate && prisma migrate deploy && next build",
     "postinstall": "prisma generate",
     "postbuild": "next-sitemap",
     "start": "next start -p 80",
@@ -86,6 +86,7 @@
     "prettier": "^3.1.1",
     "prisma": "^5.12.1",
     "tailwindcss": "^3.3.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "@types/sharp": "^0.31.1"
   }
 }
