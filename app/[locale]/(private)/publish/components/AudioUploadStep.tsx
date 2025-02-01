@@ -30,7 +30,6 @@ export default function AudioUploadStep({
   return (
     <LayoutPublishStep
       title="Importer votre musique"
-      //   description="Importer votre musique"
       onNext={onNext}
       canProgress={!!formData.audio}
     >

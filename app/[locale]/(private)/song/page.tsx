@@ -8,41 +8,6 @@ import SongPageClient from "./SongPageClient";
 import AddToQueueButton from "@/components/ui/Button/AddToQueueButton";
 import ScrollableSongsCards from "@/components/ui/ScrollableSongsCards";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
-// const RelatedSongs = ({
-//   songs,
-//   artistId,
-//   artistName,
-//   title
-// }: {
-//   songs: Song[];
-//   artistId: string;
-//   artistName: string;
-//   title?: string;
-// }) => {
-//   if (songs.length === 0) return null;
-
-//   return (
-//     <div className="mt-10">
-//       <CategoryTitle
-//         title={title || `Plus de titres de ${artistName}`}
-//         href={{
-//           pathname: "/artist/[artist]",
-//           params: { artist: artistId }
-//         }}
-//       />
-//       <div className="flex gap-2 overflow-x-scroll scrollbar-hide max-lg:pr-4 lg:flex-nowrap lg:justify-start lg:mx-auto">
-//         {songs.map((song, i) => (
-//           <SongCard
-//             key={`song-${song.id}-${i}`}
-//             song={song}
-//             index={i}
-//             totalLength={songs.length}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
 
 export default async function SongPage({
   searchParams

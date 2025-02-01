@@ -1,67 +1,99 @@
 import { s3Config, uploadToS3 } from "@/libs/s3";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import sharp from "sharp";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const maxDuration = 60;
-export const runtime = "nodejs"
+export const runtime = "nodejs";
 
-export async function POST(
-  req: NextRequest & { file: any },
-  res: NextResponse
-) {
+type UploadedFile = {
+  name: string;
+  type: string;
+  songId: string;
+  arrayBuffer: () => Promise<ArrayBuffer>;
+};
+
+async function convertToWebP(buffer: Buffer): Promise<Buffer> {
+  return sharp(buffer).webp({ quality: 80 }).toBuffer();
+}
+
+export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-
     if (!session) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
     const formData = await req.formData();
-    const audio: any = formData.get("audio");
-    const image: any = formData.get("image");
-    const prefix = formData.get("prefix");
+    const audio = formData.get("audio") as unknown as UploadedFile;
+    const image = formData.get("image") as unknown as UploadedFile;
+    const preview = formData.get("preview") as unknown as UploadedFile;
+    const prefix = formData.get("prefix") as string;
+    const songId = formData.get("songId") as string;
+    const previewStartTime = formData.get("previewStartTime") as string;
 
-    if (!audio || !image || !prefix) {
+    if (!audio || !image || !preview || !prefix) {
       return NextResponse.json(
-        {
-          error: "Tous les fichiers (audio, image) et le préfixe sont requis"
-        },
+        { error: "Tous les fichiers et le préfixe sont requis" },
         { status: 400 }
       );
     }
 
-    const audioKey = `${prefix}/${audio.name}`;
-    const imageKey = `${prefix}/${image.name}`;
+    // Pour l'audio, on l'envoie tel quel pour l'instant
+    const audioBuffer = Buffer.from(await audio.arrayBuffer());
+    // Conversion de l'image en WebP
+    const imageBuffer = await convertToWebP(
+      Buffer.from(await image.arrayBuffer())
+    );
 
+    // Upload audio
+    const audioKey = `${prefix}/audio_${songId}.mp3`;
     const audioResult = await uploadToS3({
       Bucket: s3Config.id,
       Key: audioKey,
-      Body: Buffer.from(await audio.arrayBuffer()),
-      ACL: "private"
-    });
-
-    const imageResult = await uploadToS3({
-      Bucket: s3Config.id,
-      Key: imageKey,
-      Body: Buffer.from(await image.arrayBuffer()),
+      Body: audioBuffer,
+      ContentType: audio.type,
       ACL: "public-read"
     });
 
+    // Upload preview
+    const previewKey = `${prefix}/preview_${songId}.mp3`;
+    const previewResult = await uploadToS3({
+      Bucket: s3Config.id,
+      Key: previewKey,
+      Body: Buffer.from(await preview.arrayBuffer()),
+      ContentType: "audio/mpeg",
+      ACL: "public-read"
+    });
+
+    // Upload image
+    const imageKey = `${prefix}/cover_${songId}.webp`;
+    const imageResult = await uploadToS3({
+      Bucket: s3Config.id,
+      Key: imageKey,
+      Body: imageBuffer,
+      ContentType: "image/webp",
+      ACL: "public-read"
+    });
+
+    if (
+      !audioResult?.Location ||
+      !previewResult?.Location ||
+      !imageResult?.Location
+    ) {
+      throw new Error("Échec de l'upload sur S3");
+    }
+
     return NextResponse.json({
-      audio: {
-        name: audio.name,
-        url: audioResult?.Location
-      },
-      image: {
-        name: image.name,
-        url: imageResult?.Location
-      }
+      audio: { url: audioResult.Location },
+      preview: { url: previewResult.Location },
+      image: { url: imageResult.Location }
     });
   } catch (error) {
-    console.error("Error uploading file to S3:", error);
+    console.error("Erreur lors de l'upload:", error);
     return NextResponse.json(
-      { error: "Failed to upload file to S3" },
+      { error: "Erreur lors de l'upload des fichiers" },
       { status: 500 }
     );
   }

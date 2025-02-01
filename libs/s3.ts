@@ -28,6 +28,7 @@ export const uploadToS3 = async (params: {
   Key: string;
   Body: Buffer;
   ACL?: ObjectCannedACL;
+  ContentType?: string;
 }) => {
   const command = new PutObjectCommand(params);
   const result = await s3Client.send(command);

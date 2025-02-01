@@ -37,6 +37,16 @@ export async function addSong({
   });
 }
 
+export async function updateSong({
+  songId,
+  data
+}: {
+  songId: string;
+  data: any;
+}) {
+  return await prisma.song.update({ where: { id: songId }, data });
+}
+
 export async function buySong({
   songId,
   profileId

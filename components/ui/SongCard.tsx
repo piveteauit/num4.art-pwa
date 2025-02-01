@@ -9,6 +9,7 @@ interface SongCardProps {
 }
 
 export default function SongCard({ song, index, totalLength }: SongCardProps) {
+  if (!song.image) return null;
   return (
     // song.artists?.[0]?.name && (
     <Link

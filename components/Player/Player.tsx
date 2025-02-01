@@ -468,13 +468,6 @@ function Player(): React.JSX.Element | null {
       const audioElement = audioRef.current?.audio.current;
       if (audioElement && !isNaN(audioElement.currentTime)) {
         setCurrentTime(audioElement.currentTime);
-
-        if (!hasSong && audioElement.currentTime >= 30) {
-          audioElement.pause();
-          audioElement.currentTime = 0;
-          setPaused(true);
-          toast.success("Extrait terminé");
-        }
       }
     },
     onError: handleAudioError
@@ -494,25 +487,6 @@ function Player(): React.JSX.Element | null {
     };
   }, [isExpanded]);
 
-  useEffect(() => {
-    if (!hasSong && audioRef.current?.audio.current) {
-      const audioElement = audioRef.current.audio.current;
-
-      const handleTimeUpdate = () => {
-        if (audioElement.currentTime >= currentPlaying.previewStartTime + 30) {
-          audioElement.pause();
-          audioElement.currentTime = currentPlaying.previewStartTime;
-          setPaused(true);
-          toast.success("Extrait terminé");
-        }
-      };
-
-      audioElement.currentTime = currentPlaying.previewStartTime;
-      audioElement.addEventListener("timeupdate", handleTimeUpdate);
-      return () =>
-        audioElement.removeEventListener("timeupdate", handleTimeUpdate);
-    }
-  }, [hasSong, currentPlaying]);
 
   if (!currentPlaying) return null;
 
