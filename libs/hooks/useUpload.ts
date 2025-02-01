@@ -39,5 +39,26 @@ export function useUpload() {
     }
   };
 
-  return { uploadSong, isUploading, progress };
+  const uploadAvatar = async (image: File, prefix: string, userId: string) => {
+    setIsUploading(true);
+    setProgress(0);
+
+    try {
+      if (!image.type.startsWith("image/")) {
+        throw new Error("Format image non supporté");
+      }
+
+      const response = await UploadService.uploadAvatar(image, prefix, userId);
+      setProgress(100);
+      return response.data;
+    } catch (error) {
+      toast.error(error.message || "Erreur lors de l'upload");
+      throw error;
+    } finally {
+      setIsUploading(false);
+      setProgress(0);
+    }
+  };
+
+  return { uploadSong, uploadAvatar, isUploading, progress };
 }

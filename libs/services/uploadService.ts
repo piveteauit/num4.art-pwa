@@ -137,4 +137,18 @@ export class UploadService {
       headers: { "Content-Type": "multipart/form-data" }
     });
   }
+
+  static async uploadAvatar(file: File, prefix: string, userId: string) {
+    // Optimiser l'image
+    const optimizedImage = await this.convertImage(file);
+    const formData = new FormData();
+
+    formData.append("avatar", optimizedImage);
+    formData.append("prefix", prefix);
+    formData.append("userId", userId);
+
+    return await apiClient.post("/upload/avatar", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+  }
 }

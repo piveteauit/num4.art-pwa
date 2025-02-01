@@ -1,69 +1,74 @@
 "use client";
 import Input from "@/components/ui/Form/Input/Input";
-import apiClient from "@/libs/api";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
+import { useUpload } from "@/libs/hooks/useUpload";
+import { toast } from "react-hot-toast";
+import { addAvatarToBdd } from "@/libs/server/avatar.action";
 
 export default function Avatar({ user }: any) {
-  const [ld, setLd] = useState(false);
-  const session = useSession();
-  const [avater, setAvater] = useState<any>(session?.data?.user?.image);
-  const updatePdp = async (image: File) => {
-    const formData = new FormData();
-    setLd(true);
+  const { data: sessionData, update: updateSession } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const [avatar, setAvatar] = useState<string>(
+    user?.image || sessionData?.user?.image
+  );
+  const { uploadAvatar } = useUpload();
 
-    formData.append("avatar", image);
+  const updatePdp = async (image: File) => {
+    if (!image) return;
+
+    setIsLoading(true);
+    const loadingToast = toast.loading("Mise à jour de l'avatar...");
 
     try {
-      const { data } = await apiClient.post(
-        `/upload?userId=${user?.id}&prefix=${user?.id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }
-      );
+      const data = await uploadAvatar(image, `${user.profile.id}`, user.id);
 
-      await session.update({
-        data: {
-          user: {
-            ...user,
-            image: data.avatar.url
-          }
+      // Mettre à jour la BDD d'abord
+      await addAvatarToBdd(data.avatar.url, user.id);
+
+      // Mettre à jour la session de manière complète
+      await updateSession({
+        user: {
+          image: data.avatar.url
         }
       });
-      setAvater(data.avatar.url);
+
+      // Mettre à jour l'état local en dernier
+      setAvatar(data.avatar.url);
+
+      toast.success("Avatar mis à jour avec succès", { id: loadingToast });
     } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("Erreur lors de l'upload de l'image. Veuillez réessayer.");
+      console.error("Erreur lors de l'upload de l'image:", error);
+      toast.error("Erreur lors de la mise à jour de l'avatar", {
+        id: loadingToast
+      });
     } finally {
-      setLd(false);
+      setIsLoading(false);
     }
   };
 
-  if (!avater && session?.data?.user?.image) {
-    setAvater(session?.data?.user?.image);
-  }
-
+  // if (!avatar && session?.data?.user?.image) {
+  //   setAvatar(session?.data?.user?.image);
+  // }
+  // console.log(avatar);
+  // console.log(session?.data?.user);
   return (
     <label className="avatar hover:cursor-pointer rounded-full border-2 border-white p-5 overflow-hidden w-[100px] h-[100px] hover:bg-black/60 transition-all duration-300">
-      {ld ? (
+      {isLoading ? (
         <span className="loading loading-spinner loading-md" />
       ) : (
-        // <div className="w-50 h-50 bg-red-500"></div>
         <Image
           alt={`Avatar ${user?.name || user?.email?.split("@")[0]}`}
           fill
-          src={avater || "/assets/images/logos/logo.png"}
+          src={avatar || "/assets/images/logos/logo.png"}
         />
       )}
       <Input
         label=""
         type="file"
         className="hidden"
-        accept="image/png, image/jpeg, image/jpg"
+        accept="image/png, image/jpeg, image/jpg, image/webp"
         onChange={(evt) => updatePdp(evt.target.files[0])}
       />
     </label>

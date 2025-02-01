@@ -44,6 +44,18 @@ export default async function Dashboard() {
   } catch (e) {
     redirect("/me/welcome");
   }
+
+  const getUserDisplayName = (user: any) => {
+    const artistName = user?.profile?.artist?.name;
+    const userName = user?.profile?.user?.name;
+    const email = user?.profile?.user?.email;
+
+    if (artistName) return artistName;
+    if (userName) return userName;
+    if (email) return email.split("@")[0];
+    return "error";
+  };
+
   return (
     <main className=" flex-1">
       <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center bg-custom-black">
@@ -59,7 +71,7 @@ export default async function Dashboard() {
         </div>
 
         <div className="text-center">
-          <h4 className="font-medium text-xl">{`@${user?.profile?.artist?.name || user?.name || user?.email?.split("@")[0]}`}</h4>
+          <h4 className="font-medium text-xl">@{getUserDisplayName(user)}</h4>
           <span className="opacity-60">
             Mode {!user?.profile?.artistMode ? "auditeur" : "artiste"}
           </span>

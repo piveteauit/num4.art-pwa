@@ -42,12 +42,14 @@ export const config = {
         token.id = user.id;
         token.isNewUser = user.isNewUser;
         token.profile = user.profile;
+        token.image = user.image;
       }
 
       if (trigger === "update" && session) {
         token.profile = session.user?.profile;
         token.isNewUser = session.user?.isNewUser;
         token.email = session.user?.email;
+        token.image = session.user?.image;
       }
 
       return token;
@@ -59,6 +61,8 @@ export const config = {
 
         user.id = token.sub as string;
         user.isNewUser = Boolean(token.isNewUser);
+        user.image = token.image as string;
+        user.name = token.name as string;
 
         const userProfile = await prisma.profile.findFirst({
           where: {
@@ -66,7 +70,6 @@ export const config = {
           },
           include: {
             artist: true || false,
-
             user: true,
             orders: true
           }
