@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
     const preview = formData.get("preview") as unknown as UploadedFile;
     const prefix = formData.get("prefix") as string;
     const songId = formData.get("songId") as string;
-    const previewStartTime = formData.get("previewStartTime") as string;
 
     if (!audio || !image || !preview || !prefix) {
       return NextResponse.json(
