@@ -487,7 +487,6 @@ function Player(): React.JSX.Element | null {
     };
   }, [isExpanded]);
 
-
   if (!currentPlaying) return null;
 
   return (
@@ -604,12 +603,6 @@ function Player(): React.JSX.Element | null {
           ) : (
             <div className="flex items-center gap-3 p-4 border-t  border-white/20 ">
               <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                {/* <Image
-                    className="object-cover"
-                    alt="jaquette musique"
-                    src={currentPlaying.image}
-                  fill
-                /> */}
                 <ImageWithFallback
                   src={currentPlaying.image}
                   alt={currentPlaying.title}

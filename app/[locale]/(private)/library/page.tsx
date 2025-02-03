@@ -4,7 +4,6 @@ import { prisma } from "@/libs/prisma";
 import { auth } from "@/auth";
 import HeaderBorder from "@/components/ui/HeaderBorder";
 import LibraryContent from "@/components/Library/LibraryContent";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 export const dynamic = "force-dynamic";
 

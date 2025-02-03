@@ -64,6 +64,8 @@ export default async function SongPage({
 
   if (!song) return null;
 
+  console.log("songBySameArtist", songBySameArtist.length);
+
   return (
     <SongPageClient>
       {!hasSong && (
@@ -99,7 +101,6 @@ export default async function SongPage({
             alt={song.title}
             fill
             className="object-cover rounded-lg shadow-[1px_10px_49px_21px_rgba(255,255,255,0.05)]"
-            classNameError="rounded-lg"
           />
         </div>
 
@@ -148,16 +149,18 @@ export default async function SongPage({
           />
         )}
       </div>
-      <ScrollableSongsCards
-        title={`Plus de titres de ${song.artists[0]?.name}`}
-        className="mt-10"
-        songs={songBySameArtist}
-        artistName={song.artists[0]?.name}
-        href={{
-          pathname: "/artist/[artist]",
-          params: { artist: song.artists[0]?.id }
-        }}
-      />
+      {songBySameArtist.length > 0 && (
+        <ScrollableSongsCards
+          title={`Plus de titres de ${song.artists[0]?.name}`}
+          className="mt-12"
+          songs={songBySameArtist}
+          artistName={song.artists[0]?.name}
+          href={{
+            pathname: "/artist/[artist]",
+            params: { artist: song.artists[0]?.id }
+          }}
+        />
+      )}
 
       {/* Description */}
       {song.description && (

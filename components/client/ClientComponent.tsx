@@ -99,7 +99,6 @@ const ArtistCard: React.FC<{
         src={artist?.image}
         alt={`Avatar ${artist?.name}`}
         className="avatar !rounded-full !w-[100px] !h-[100px] aspect-square"
-        classNameError="rounded-full !h-[100px] aspect-square inset-0 bg-gray-500/30 relative"
         width={100}
         height={100}
       />
