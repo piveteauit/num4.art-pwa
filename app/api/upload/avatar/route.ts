@@ -1,4 +1,4 @@
-import { s3Config, uploadToS3 } from "@/libs/s3";
+import { s3Config, uploadToS3, deleteFromS3 } from "@/libs/s3";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import sharp from "sharp";
@@ -22,12 +22,31 @@ export async function POST(req: NextRequest) {
     const avatar = formData.get("avatar") as File;
     const prefix = formData.get("prefix") as string;
     const userId = formData.get("userId") as string;
+    const previousAvatar = formData.get("previousAvatar") as string;
 
     if (!avatar || !prefix || !userId) {
       return NextResponse.json(
         { error: "L'image et les informations sont requises" },
         { status: 400 }
       );
+    }
+    if (previousAvatar) {
+      const url = new URL(previousAvatar);
+      const previousKey = url.pathname.substring(1); // Enlève le premier '/' du pathname
+
+      try {
+        await deleteFromS3({
+          Bucket: s3Config.id,
+          Key: previousKey
+        });
+        console.log("Ancien avatar supprimé avec succès");
+      } catch (deleteError) {
+        console.error(
+          "Erreur lors de la suppression de l'ancien avatar:",
+          deleteError
+        );
+        // On continue le processus même si la suppression échoue
+      }
     }
 
     // Conversion de l'image en WebP
@@ -36,7 +55,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Upload de l'avatar
-    const avatarKey = `${prefix}/profile_picture.webp`;
+    const avatarKey = `${prefix}/profile_picture${Date.now()}.webp`;
     const avatarResult = await uploadToS3({
       Bucket: s3Config.id,
       Key: avatarKey,

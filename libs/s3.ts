@@ -1,7 +1,8 @@
 import {
   S3Client,
   PutObjectCommand,
-  ObjectCannedACL
+  ObjectCannedACL,
+  DeleteObjectCommand
 } from "@aws-sdk/client-s3";
 
 export const s3Config = {
@@ -36,4 +37,12 @@ export const uploadToS3 = async (params: {
     ...result,
     Location: `${s3Config.publicUrl}/${params.Key}`
   };
+};
+
+export const deleteFromS3 = async (params: {
+  Bucket: string;
+  Key: string;
+}) => {
+  const command = new DeleteObjectCommand(params);
+  await s3Client.send(command);
 };

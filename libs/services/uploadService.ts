@@ -138,7 +138,12 @@ export class UploadService {
     });
   }
 
-  static async uploadAvatar(file: File, prefix: string, userId: string) {
+  static async uploadAvatar(
+    file: File,
+    prefix: string,
+    userId: string,
+    previousAvatar?: string
+  ) {
     // Optimiser l'image
     const optimizedImage = await this.convertImage(file);
     const formData = new FormData();
@@ -146,6 +151,9 @@ export class UploadService {
     formData.append("avatar", optimizedImage);
     formData.append("prefix", prefix);
     formData.append("userId", userId);
+    if (previousAvatar) {
+      formData.append("previousAvatar", previousAvatar);
+    }
 
     return await apiClient.post("/upload/avatar", formData, {
       headers: { "Content-Type": "multipart/form-data" }

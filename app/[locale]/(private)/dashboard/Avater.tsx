@@ -16,30 +16,39 @@ export default function Avatar({ user }: any) {
   const { uploadAvatar } = useUpload();
 
   const updatePdp = async (image: File) => {
+    console.log("avatar", sessionData);
     if (!image) return;
 
     setIsLoading(true);
     const loadingToast = toast.loading("Mise à jour de l'avatar...");
 
     try {
-      const data = await uploadAvatar(image, `${user.profile.id}`, user.id);
+      const data = await uploadAvatar(
+        image,
+        `${user.profile.id}`,
+        user.id,
+        user?.image
+      );
+      const newAvatarUrl = data.avatar.url;
 
-      // Mettre à jour la BDD d'abord
-      await addAvatarToBdd(data.avatar.url, user.id);
+      // Mettre à jour la BDD
+      await addAvatarToBdd(newAvatarUrl, user.id);
 
-      // Mettre à jour la session de manière complète
+      // Mettre à jour la session
       await updateSession({
         user: {
-          image: data.avatar.url
+          image: newAvatarUrl
         }
       });
-
-      // Mettre à jour l'état local en dernier
-      setAvatar(data.avatar.url);
+      setAvatar(newAvatarUrl);
+      // Mettre à jour l'état local avec la même URL utilisée précédemment
 
       toast.success("Avatar mis à jour avec succès", { id: loadingToast });
+      console.log("avatar3333", sessionData);
     } catch (error) {
       console.error("Erreur lors de l'upload de l'image:", error);
+      // Réinitialiser l'avatar à sa valeur précédente en cas d'erreur
+      setAvatar(user?.image || sessionData?.user?.image);
       toast.error("Erreur lors de la mise à jour de l'avatar", {
         id: loadingToast
       });
@@ -48,11 +57,6 @@ export default function Avatar({ user }: any) {
     }
   };
 
-  // if (!avatar && session?.data?.user?.image) {
-  //   setAvatar(session?.data?.user?.image);
-  // }
-  // console.log(avatar);
-  // console.log(session?.data?.user);
   return (
     <label className="avatar hover:cursor-pointer rounded-full border-2 border-white p-5 overflow-hidden w-[100px] h-[100px] hover:bg-black/60 transition-all duration-300">
       {isLoading ? (

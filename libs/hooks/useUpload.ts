@@ -39,7 +39,12 @@ export function useUpload() {
     }
   };
 
-  const uploadAvatar = async (image: File, prefix: string, userId: string) => {
+  const uploadAvatar = async (
+    image: File,
+    prefix: string,
+    userId: string,
+    previousAvatar?: string
+  ) => {
     setIsUploading(true);
     setProgress(0);
 
@@ -48,7 +53,12 @@ export function useUpload() {
         throw new Error("Format image non supporté");
       }
 
-      const response = await UploadService.uploadAvatar(image, prefix, userId);
+      const response = await UploadService.uploadAvatar(
+        image,
+        prefix,
+        userId,
+        previousAvatar
+      );
       setProgress(100);
       return response.data;
     } catch (error) {
