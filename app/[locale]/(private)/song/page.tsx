@@ -64,8 +64,6 @@ export default async function SongPage({
 
   if (!song) return null;
 
-  console.log("songBySameArtist", songBySameArtist.length);
-
   return (
     <SongPageClient>
       {!hasSong && (

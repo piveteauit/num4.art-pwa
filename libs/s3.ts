@@ -8,7 +8,7 @@ import {
 export const s3Config = {
   id: process.env.OVH_STORAGE_BUCKET!,
   endPoint: process.env.OVH_STORAGE_ENDPOINT!,
-  region: "sbg",
+  region: process.env.OVH_STORAGE_REGION,
   publicUrl: process.env.OVH_PUBLIC_URL!,
   credentials: {
     accessKeyId: process.env.OVH_ACCESS_KEY!,
@@ -39,10 +39,7 @@ export const uploadToS3 = async (params: {
   };
 };
 
-export const deleteFromS3 = async (params: {
-  Bucket: string;
-  Key: string;
-}) => {
+export const deleteFromS3 = async (params: { Bucket: string; Key: string }) => {
   const command = new DeleteObjectCommand(params);
   await s3Client.send(command);
 };
