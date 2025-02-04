@@ -16,7 +16,6 @@ export default function Avatar({ user }: any) {
   const { uploadAvatar } = useUpload();
 
   const updatePdp = async (image: File) => {
-    console.log("avatar", sessionData);
     if (!image) return;
 
     setIsLoading(true);
@@ -44,7 +43,6 @@ export default function Avatar({ user }: any) {
       // Mettre à jour l'état local avec la même URL utilisée précédemment
 
       toast.success("Avatar mis à jour avec succès", { id: loadingToast });
-      console.log("avatar3333", sessionData);
     } catch (error) {
       console.error("Erreur lors de l'upload de l'image:", error);
       // Réinitialiser l'avatar à sa valeur précédente en cas d'erreur

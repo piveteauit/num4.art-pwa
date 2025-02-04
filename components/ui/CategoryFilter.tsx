@@ -8,7 +8,6 @@ function CategoryFilter({ categories, songs }: { categories: any[]; songs: any[]
   const { setCurrentList } = usePlayer();
 
   useEffect(() => {
-    console.log("----", songs)
     setCurrentList(songs)
   }, [songs])
 

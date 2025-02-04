@@ -111,7 +111,6 @@ export default function VerifyModal({
       const sessionUpdate = await update();
       onSuccess();
       toast.success("Connexion réussie");
-      console.log("session udpate", sessionUpdate);
       if (sessionUpdate?.user?.isNewUser) {
         router.push("/me/welcome");
       }

@@ -29,7 +29,7 @@ export async function getMetadataConfig({
       themeColor: "#FFFFFF"
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return defaultSeo;
   }
 }

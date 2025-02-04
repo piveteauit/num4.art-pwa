@@ -9,7 +9,6 @@ const UserModeContext = createContext<{
 
 export function UserModeProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
-  console.log(session?.user?.profile?.artistMode, "session");
 
   return (
     <UserModeContext.Provider
