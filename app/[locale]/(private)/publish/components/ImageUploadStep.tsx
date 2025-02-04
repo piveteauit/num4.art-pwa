@@ -45,7 +45,7 @@ export default function ImageUploadStep({
       >
         <input
           type="file"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/png, image/jpeg, image/jpg, image/webp"
           onChange={(e) => {
             if (e.target.files?.[0]) {
               setFormData((prev: any) => ({
