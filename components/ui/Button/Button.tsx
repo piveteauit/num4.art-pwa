@@ -41,7 +41,7 @@ export const ButtonChangeMode = ({
         setIsLoading(true);
         await setCurrentMode({ id, artistMode });
         await update();
-        router.push({ pathname: "/dashboard", query: { artistMode } });
+        router.push({ pathname: "/account", query: { artistMode } });
         setIsLoading(false);
       }}
     >

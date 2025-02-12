@@ -140,7 +140,7 @@ export default function PublishPage() {
 
       await fetchSongs();
       toast.success("Publication réussie !", { id: loadingToast });
-      router.push("/dashboard");
+      router.push("/account");
     } catch (error) {
       toast.error("Erreur lors de la publication", { id: loadingToast });
       console.error("Erreur détaillée lors de la publication:", error);

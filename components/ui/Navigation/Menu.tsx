@@ -14,7 +14,7 @@ const Menu = () => {
 
   if (
     session?.status !== "authenticated" ||
-    pathname === "/dashboard" ||
+    pathname === "/account" ||
     pathname === "/player" ||
     pathname === "/artist/[artist]"
   )

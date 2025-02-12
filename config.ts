@@ -101,10 +101,10 @@ const config = {
       themes?.light?.primary //[`[data-theme=light]`]["primary"],
   },
   auth: {
-    // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
+    // REQUIRED — the path to log in users. It's use to protect private routes (like /account). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/me/signin",
-    // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/dashboard"
+    // REQUIRED — the path you want to redirect users after successfull login (i.e. /account, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
+    callbackUrl: "/account"
   }
 } as ConfigProps;
 

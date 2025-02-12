@@ -35,7 +35,7 @@ export default async function Page() {
               className="object-contain"
             />
           </Link>
-          <Link className="z-50" href={"/dashboard"}>
+          <Link className="z-50" href={"/account"}>
             <Image
               alt="Settings icon"
               src={"/assets/images/icons/settings.svg"}

@@ -23,7 +23,7 @@ function Welcome() {
         artist: isArtistMode ? artistName : null,
         id: user?.id
       });
-      document.location.href = "/dashboard";
+      document.location.href = "/account";
     } catch (error) {
       if (error.message.includes("Unique constraint failed")) {
         toast.error("Ce nom d&apos;artiste est déjà pris");

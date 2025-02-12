@@ -62,7 +62,7 @@ export default async function Artist({ params: { artist } }: any) {
         <h1 className="text-xl md:text-4xl font-medium ml-[-960px]">
           {artistFromDb?.name}
         </h1>
-        <Link href={"/dashboard"}>
+        <Link href={"/account"}>
           <Image
             alt="Settings icon"
             src={"/assets/images/icons/settings.svg"}

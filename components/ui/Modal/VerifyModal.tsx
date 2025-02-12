@@ -79,7 +79,7 @@ export default function VerifyModal({
       const result = await signIn("nodemailer", {
         email: decodedEmail,
         redirect: false,
-        callbackUrl: "/dashboard"
+        callbackUrl: "/account"
       });
 
       if (result?.error) {
@@ -87,7 +87,7 @@ export default function VerifyModal({
       }
 
       localStorage.setItem("email", email);
-      localStorage.setItem("callbackUrl", "/dashboard");
+      localStorage.setItem("callbackUrl", "/account");
 
       toast.success("Un nouveau code a été envoyé");
       setTimer(30);

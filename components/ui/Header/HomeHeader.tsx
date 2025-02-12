@@ -42,7 +42,7 @@ export default function HomeHeader() {
 
         {session && (
           <div className="flex gap-4 items-center">
-            <Link href={"/dashboard"}>
+            <Link href={"/account"}>
               <Image
                 alt="Settings icon"
                 src={"/assets/images/icons/settings.svg"}

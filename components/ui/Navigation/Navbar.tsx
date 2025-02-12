@@ -5,6 +5,7 @@ import { useUserMode } from "@/context/UserModeContext";
 import { IconHome } from "@/components/icons/IconHome";
 import { IconLibrary } from "@/components/icons/IconLibrary";
 import { IconPublish } from "@/components/icons/IconPublish";
+import { IconDashboard } from "@/components/icons/IconDashboard";
 
 function Navbar() {
   const pathname = usePathname();
@@ -22,11 +23,10 @@ function Navbar() {
           className={`flex flex-col justify-center items-center ${pathname === "/" ? "opacity-100" : "opacity-70"}`}
         >
           <IconHome className=" relative w-8 h-8" isActive={pathname === "/"} />
-          <p className="font-light text-sm">
-            {isArtistMode ? "Dashboard" : "Accueil"}
-          </p>
+          <p className="font-light text-sm">Accueil</p>
         </div>
       </Link>
+
       {isArtistMode && (
         <Link href={"/publish"}>
           <div
@@ -53,6 +53,19 @@ function Navbar() {
             />
 
             <p className="font-light text-sm">Collection</p>
+          </div>
+        </Link>
+      )}
+      {isArtistMode && (
+        <Link href={"/dashboard"}>
+          <div
+            className={`flex flex-col justify-center items-center ${pathname === "/dashboard" ? "opacity-100" : "opacity-70"}`}
+          >
+            <IconDashboard
+              className=" relative w-8 h-8"
+              isActive={pathname === "/dashboard"}
+            />
+            <p className="font-light text-sm">Dashboard</p>
           </div>
         </Link>
       )}

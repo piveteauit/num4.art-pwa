@@ -59,7 +59,7 @@ export default async function Library() {
         <h1 className="text-3xl md:text-4xl font-medium text-left ml-0">
           Collection
         </h1>
-        <Link href={"/dashboard"}>
+        <Link href={"/account"}>
           <Image
             alt="Settings icon"
             src={"/assets/images/icons/settings.svg"}

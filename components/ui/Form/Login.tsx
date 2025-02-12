@@ -29,7 +29,6 @@ function Login({
   const [email, setEmail] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -46,7 +45,7 @@ function Login({
         const result = await signIn("nodemailer", {
           email,
           redirect: false,
-          callbackUrl: "/dashboard"
+          callbackUrl: "/account"
         });
 
         if (result?.error) {
@@ -54,12 +53,12 @@ function Login({
         }
 
         localStorage.setItem("email", email);
-        localStorage.setItem("callbackUrl", "/dashboard");
+        localStorage.setItem("callbackUrl", "/account");
         onSuccess?.(email);
       } else {
         const result = await signIn(id, {
           redirect: false,
-          callbackUrl: "/dashboard"
+          callbackUrl: "/account"
         });
         if (result?.ok) {
           onSuccess?.(email);

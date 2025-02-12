@@ -17,12 +17,17 @@ export const pathnames = {
   "/me/signout": "/me/signout",
   "/me/signup": "/me/signup",
 
+  "/dashboard": {
+    en: "/dashboard",
+    fr: "/tableau-de-bord"
+  },
+
   "/song": {
     en: "/song",
     fr: "/chanson"
   },
 
-  "/dashboard": {
+  "/account": {
     en: "/my-account",
     fr: "/mon-compte"
   },

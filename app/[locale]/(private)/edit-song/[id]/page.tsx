@@ -100,7 +100,7 @@ export default function EditSongPage({ params }: { params: { id: string } }) {
   const handleSubmit = async () => {
     if (!hasChanges()) {
       toast.error("Aucune modification détectée");
-      router.push("/dashboard");
+      router.push("/account");
       return;
     }
 
