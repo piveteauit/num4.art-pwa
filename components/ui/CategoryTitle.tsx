@@ -17,7 +17,7 @@ const CategoryTitle: React.FC<CategoryTitleProps> = ({ title, href }) =>
   href ? (
     <Link href={href} className="text-white-500 hover:underline">
       <div className="flex justify-between gap-4 items-end mb-4 mx-6">
-        <h3 className="font-semibold text-xl">{title}</h3>
+        <h3 className="font-semibold flex-1 text-xl">{title}</h3>
         <span>Voir tout</span>
       </div>
     </Link>
