@@ -35,12 +35,15 @@ export default async function SongPage({
   const userProfile = session?.user?.id
     ? await prisma.profile.findFirst({
         where: { userId: session.user.id },
-        include: { orders: true }
+        include: { orders: true, artist: { include: { songs: true } } }
       })
     : null;
 
-  const hasSong = userProfile?.orders?.find((o) => o.songId === song?.id);
-
+  const hisSong = userProfile?.artist?.songs.some((song) => song.id === songId);
+  const hasSong =
+    userProfile?.orders?.some((order) => order.songId === songId) ||
+    hisSong ||
+    false;
   const songBySameArtist = await prisma.song.findMany({
     where: {
       AND: [
