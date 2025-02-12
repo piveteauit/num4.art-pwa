@@ -20,25 +20,47 @@ export class UploadService {
   }
 
   static async convertAudio(file: File): Promise<File> {
-    await this.loadFFmpeg();
+    try {
+      await this.loadFFmpeg();
 
-    const inputData = new Uint8Array(await file.arrayBuffer());
-    await this.ffmpeg.writeFile("input", inputData);
+      // Nettoyer les fichiers existants
+      try {
+        await this.ffmpeg.deleteFile("input");
+        await this.ffmpeg.deleteFile("output.mp3");
+      } catch (e) {
+        // Ignorer les erreurs si les fichiers n'existent pas
+      }
 
-    await this.ffmpeg.exec([
-      "-i",
-      "input",
-      "-c:a",
-      "libmp3lame",
-      "-b:a",
-      "320k",
-      "output.mp3"
-    ]);
+      const inputData = new Uint8Array(await file.arrayBuffer());
+      await this.ffmpeg.writeFile("input", inputData);
 
-    const data = await this.ffmpeg.readFile("output.mp3");
-    return new File([data], file.name.replace(/\.[^/.]+$/, ".mp3"), {
-      type: "audio/mpeg"
-    });
+      await this.ffmpeg.exec([
+        "-i",
+        "input",
+        "-c:a",
+        "libmp3lame",
+        "-b:a",
+        "320k",
+        "output.mp3"
+      ]);
+
+      const data = await this.ffmpeg.readFile("output.mp3");
+
+      // Nettoyer après utilisation
+      try {
+        await this.ffmpeg.deleteFile("input");
+        await this.ffmpeg.deleteFile("output.mp3");
+      } catch (e) {
+        console.warn("Erreur lors du nettoyage des fichiers FFmpeg:", e);
+      }
+
+      return new File([data], file.name.replace(/\.[^/.]+$/, ".mp3"), {
+        type: "audio/mpeg"
+      });
+    } catch (error) {
+      console.error("Erreur lors de la conversion audio:", error);
+      throw new Error("Impossible de convertir le fichier audio");
+    }
   }
 
   static async convertImage(file: File): Promise<File> {
@@ -77,30 +99,71 @@ export class UploadService {
     file: File,
     previewStartTime: number
   ): Promise<File> {
-    await this.loadFFmpeg();
+    if (!this.ffmpeg) {
+      await this.loadFFmpeg();
+    }
 
-    const inputData = new Uint8Array(await file.arrayBuffer());
-    await this.ffmpeg.writeFile("input", inputData);
+    const inputFileName = `input_${Date.now()}.mp3`;
+    const outputFileName = `preview_${Date.now()}.mp3`;
 
-    // Extraire 30 secondes à partir de previewStartTime
-    await this.ffmpeg.exec([
-      "-i",
-      "input",
-      "-ss",
-      previewStartTime.toString(),
-      "-t",
-      "30",
-      "-c:a",
-      "libmp3lame",
-      "-b:a",
-      "192k",
-      "preview.mp3"
-    ]);
+    try {
+      // Nettoyer les fichiers existants avant de commencer
+      try {
+        await this.ffmpeg.deleteFile(inputFileName);
+        await this.ffmpeg.deleteFile(outputFileName);
+      } catch (e) {
+        // Ignorer les erreurs si les fichiers n'existent pas
+      }
 
-    const data = await this.ffmpeg.readFile("preview.mp3");
-    return new File([data], "preview.mp3", {
-      type: "audio/mpeg"
-    });
+      // Écrire le fichier d'entrée
+      const inputData = new Uint8Array(await file.arrayBuffer());
+      await this.ffmpeg.writeFile(inputFileName, inputData);
+
+      // Extraire 30 secondes à partir de previewStartTime
+      await this.ffmpeg.exec([
+        "-i",
+        inputFileName,
+        "-ss",
+        previewStartTime.toString(),
+        "-t",
+        "30",
+        "-c:a",
+        "libmp3lame",
+        "-b:a",
+        "192k",
+        outputFileName
+      ]);
+
+      // Lire le fichier de sortie
+      const data = await this.ffmpeg.readFile(outputFileName);
+
+      // Nettoyer les fichiers
+      try {
+        await this.ffmpeg.deleteFile(inputFileName);
+        await this.ffmpeg.deleteFile(outputFileName);
+      } catch (e) {
+        console.warn("Erreur lors du nettoyage des fichiers FFmpeg:", e);
+      }
+
+      return new File([data], "preview.mp3", {
+        type: "audio/mpeg"
+      });
+    } catch (error) {
+      console.error(
+        "Erreur détaillée lors de la génération de la preview:",
+        error
+      );
+
+      // Tentative de nettoyage en cas d'erreur
+      try {
+        await this.ffmpeg.deleteFile(inputFileName);
+        await this.ffmpeg.deleteFile(outputFileName);
+      } catch (e) {
+        // Ignorer les erreurs de nettoyage
+      }
+
+      throw new Error("Impossible de générer la preview audio");
+    }
   }
 
   static async uploadSong(
@@ -114,28 +177,32 @@ export class UploadService {
   ) {
     const formData = new FormData();
 
-    // Convertir l'audio en MP3
-    const convertedAudio = await this.convertAudio(files.audio);
-    formData.append("audio", convertedAudio);
+    if (files.audio) {
+      // Convertir l'audio en MP3
+      const convertedAudio = await this.convertAudio(files.audio);
+      formData.append("audio", convertedAudio);
 
-    // Générer la preview
-    const previewAudio = await this.generatePreview(
-      convertedAudio,
-      files.previewStartTime
-    );
-    formData.append("preview", previewAudio);
+      // Générer la preview
+      const previewAudio = await this.generatePreview(
+        convertedAudio,
+        files.previewStartTime
+      );
+      formData.append("preview", previewAudio);
+    }
 
-    // Optimiser l'image
-    const optimizedImage = await this.convertImage(files.image);
-    formData.append("image", optimizedImage);
+    if (files.image) {
+      // Optimiser l'image
+      const optimizedImage = await this.convertImage(files.image);
+      formData.append("image", optimizedImage);
 
-    formData.append("previewStartTime", files.previewStartTime.toString());
-    formData.append("prefix", prefix);
-    formData.append("songId", songId);
+      formData.append("previewStartTime", files.previewStartTime.toString());
+      formData.append("prefix", prefix);
+      formData.append("songId", songId);
 
-    return await apiClient.post("/upload/song", formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
+      return await apiClient.post("/upload/song", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+    }
   }
 
   static async uploadAvatar(

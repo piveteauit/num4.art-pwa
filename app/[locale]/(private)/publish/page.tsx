@@ -2,7 +2,7 @@
 import { useUserMode } from "@/context/UserModeContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { addSong, updateSong } from "@/libs/server/song.action";
+import { addSong, updateSongBdd } from "@/libs/server/song.action";
 import { usePlayer } from "@/context/PlayerContext";
 import { useSession } from "next-auth/react";
 import ProgressBar from "./components/ProgressBar";
@@ -129,7 +129,7 @@ export default function PublishPage() {
         songBdd.id
       );
 
-      await updateSong({
+      await updateSongBdd({
         songId: songBdd.id,
         data: {
           image: uploadedFiles.image.url,

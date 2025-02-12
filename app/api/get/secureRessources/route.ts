@@ -1,14 +1,6 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
-
-const s3 = new S3Client({
-  region: process.env.OVH_STORAGE_REGION,
-  endpoint: process.env.OVH_STORAGE_ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.OVH_ACCESS_KEY,
-    secretAccessKey: process.env.OVH_SECRET_KEY
-  }
-});
+import { s3Client } from "@/libs/s3";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -24,7 +16,7 @@ export async function GET(request: Request) {
       Key: key
     });
 
-    const response = await s3.send(command);
+    const response = await s3Client.send(command);
     const headers = new Headers();
 
     headers.set("Content-Type", "image/png");

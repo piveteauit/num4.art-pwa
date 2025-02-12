@@ -37,7 +37,7 @@ export async function addSong({
   });
 }
 
-export async function updateSong({
+export async function updateSongBdd({
   songId,
   data
 }: {

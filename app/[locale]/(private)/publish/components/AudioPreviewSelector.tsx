@@ -6,88 +6,22 @@ import LayoutPublishStep from "./LayoutPublishStep";
 
 interface AudioPreviewSelectorProps {
   audioFile: File | null;
+  existingAudioUrl?: string;
   onPreviewGenerated: (previewStartTime: number) => void;
-  onNext: () => void;
-  onPrevious: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isEditMode?: boolean;
+  initialPreviewTime?: number;
 }
-
-// const Submit = ({
-//   onPrevious,
-//   onNext
-// }: {
-//   onPrevious: () => void;
-//   onNext: () => void;
-// }) => {
-//   return (
-//     <div className="flex justify-between gap-4 absolute max-lg:bottom-[75px] max-lg:left-6 max-lg:right-6">
-//       <Button color="base" className="flex-1 opacity-60" onClick={onPrevious}>
-//         Précédent
-//       </Button>
-//       <Button color="primary" className="flex-1" onClick={onNext}>
-//         Suivant
-//       </Button>
-//     </div>
-//   );
-// };
-
-// Initialiser FFmpeg
-// const ffmpeg = new FFmpeg();
-// let ffmpegLoaded = false;
-
-// Fonction utilitaire pour convertir AudioBuffer en WAV
-const audioBufferToWav = (buffer: AudioBuffer): Blob => {
-  const numOfChan = buffer.numberOfChannels;
-  const length = buffer.length * numOfChan * 2;
-  const buffer1 = new ArrayBuffer(44 + length);
-  const view = new DataView(buffer1);
-  const channels = [];
-  let pos = 0;
-
-  // Écrire l'en-tête WAV
-  writeString("RIFF"); // RIFF identifier
-  view.setUint32(4, 36 + length, true); // file length
-  writeString("WAVE"); // RIFF type
-  writeString("fmt "); // format chunk identifier
-  view.setUint32(16, 16, true); // format chunk length
-  view.setUint16(20, 1, true); // sample format (raw)
-  view.setUint16(22, numOfChan, true); // channel count
-  view.setUint32(24, buffer.sampleRate, true); // sample rate
-  view.setUint32(28, buffer.sampleRate * 2 * numOfChan, true); // byte rate
-  view.setUint16(32, numOfChan * 2, true); // block align
-  view.setUint16(34, 16, true); // bits per sample
-  writeString("data"); // data chunk identifier
-  view.setUint32(40, length, true); // data chunk length
-
-  // Écrire les données audio
-  for (let i = 0; i < buffer.numberOfChannels; i++) {
-    channels.push(buffer.getChannelData(i));
-  }
-
-  pos = 44;
-  for (let i = 0; i < buffer.length; i++) {
-    for (let channel = 0; channel < numOfChan; channel++) {
-      const sample = Math.max(-1, Math.min(1, channels[channel][i]));
-      const int = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-      view.setInt16(pos, int, true);
-      pos += 2;
-    }
-  }
-
-  function writeString(str: string) {
-    for (let i = 0; i < str.length; i++) {
-      view.setUint8(pos + i, str.charCodeAt(i));
-    }
-    pos += str.length;
-  }
-
-  return new Blob([buffer1], { type: "audio/wav" });
-};
 
 export default function AudioPreviewSelector({
   audioFile,
+  existingAudioUrl,
   onPreviewGenerated,
   onNext,
-  onPrevious
+  onPrevious,
+  isEditMode,
+  initialPreviewTime = 0
 }: AudioPreviewSelectorProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,9 +30,24 @@ export default function AudioPreviewSelector({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [previewStartTime, setPreviewStartTime] = useState(0);
+  const [previewStartTime, setPreviewStartTime] = useState(initialPreviewTime);
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Mettre à jour previewStartTime quand initialPreviewTime change
+  useEffect(() => {
+    setPreviewStartTime(initialPreviewTime);
+  }, [initialPreviewTime]);
+
+  // Mettre à jour la position du scroll quand previewStartTime change
+  useEffect(() => {
+    if (containerRef.current && duration) {
+      const container = containerRef.current;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const scrollPosition = (previewStartTime / (duration - 30)) * maxScroll;
+      container.scrollLeft = scrollPosition;
+    }
+  }, [previewStartTime, duration]);
 
   // On garde uniquement la mesure du viewport
   useEffect(() => {
@@ -114,13 +63,16 @@ export default function AudioPreviewSelector({
   }, []);
 
   useEffect(() => {
-    if (!audioFile) return;
-    const audioUrl = URL.createObjectURL(audioFile);
-    if (audioRef.current) {
-      audioRef.current.src = audioUrl;
+    if (audioFile) {
+      const audioUrl = URL.createObjectURL(audioFile);
+      if (audioRef.current) {
+        audioRef.current.src = audioUrl;
+      }
+      return () => URL.revokeObjectURL(audioUrl);
+    } else if (existingAudioUrl && audioRef.current) {
+      audioRef.current.src = existingAudioUrl;
     }
-    return () => URL.revokeObjectURL(audioUrl);
-  }, [audioFile]);
+  }, [audioFile, existingAudioUrl]);
 
   const handlePlayPause = () => {
     if (!audioRef.current) return;
@@ -181,7 +133,11 @@ export default function AudioPreviewSelector({
 
     // Calculer le temps proportionnellement à la position du scroll
     const newStartTime = (scrollPosition / maxScroll) * (duration - 30);
-    setPreviewStartTime(Math.max(0, Math.min(newStartTime, duration - 30)));
+    const finalStartTime = Math.max(0, Math.min(newStartTime, duration - 30));
+    setPreviewStartTime(finalStartTime);
+
+    // Appeler onPreviewGenerated lors du scroll
+    onPreviewGenerated(finalStartTime);
 
     // Réinitialiser le temps courant
     setCurrentTime(0);
@@ -206,221 +162,165 @@ export default function AudioPreviewSelector({
     // return `${seconds} s`;
   };
 
-  // Fonction utilitaire pour extraire un segment audio
-  // const extractAudioSegment = (
-  //   buffer: AudioBuffer,
-  //   startTime: number,
-  //   duration: number
-  // ) => {
-  //   const sampleRate = buffer.sampleRate;
-  //   const startSample = Math.floor(startTime * sampleRate);
-  //   const length = Math.floor(duration * sampleRate);
-
-  //   // Créer un nouveau buffer pour notre extrait
-  //   const audioContext = new AudioContext();
-  //   const segmentBuffer = audioContext.createBuffer(
-  //     buffer.numberOfChannels,
-  //     length,
-  //     sampleRate
-  //   );
-
-  //   // Copier les données pour chaque canal
-  //   for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-  //     const channelData = buffer.getChannelData(channel);
-  //     const segmentData = segmentBuffer.getChannelData(channel);
-
-  //     for (let i = 0; i < length; i++) {
-  //       if (startSample + i < channelData.length) {
-  //         segmentData[i] = channelData[startSample + i];
-  //       }
-  //     }
-  //   }
-
-  //   return segmentBuffer;
-  // };
-
-  // Fonction pour encoder l'AudioBuffer dans le format souhaité
-  // const encodeAudioBuffer = async (
-  //   audioBuffer: AudioBuffer,
-  //   mimeType: string
-  // ): Promise<Blob> => {
-  //   // Créer un AudioContext standard au lieu d'un OfflineAudioContext
-  //   const audioContext = new AudioContext();
-
-  //   // Créer un MediaStream à partir de notre AudioBuffer
-  //   const mediaStreamDestination = audioContext.createMediaStreamDestination();
-  //   const source = audioContext.createBufferSource();
-  //   source.buffer = audioBuffer;
-  //   source.connect(mediaStreamDestination);
-  //   source.start();
-
-  //   // Utiliser MediaRecorder pour encoder dans le bon format
-  //   return new Promise((resolve, reject) => {
-  //     const chunks: Blob[] = [];
-  //     const mediaRecorder = new MediaRecorder(mediaStreamDestination.stream, {
-  //       mimeType: MediaRecorder.isTypeSupported("audio/webm")
-  //         ? "audio/webm"
-  //         : "audio/mp4"
-  //     });
-
-  //     mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-  //     mediaRecorder.onstop = async () => {
-  //       const blob = new Blob(chunks, { type: mimeType });
-  //       resolve(blob);
-  //     };
-  //     mediaRecorder.onerror = (e) => reject(e);
-
-  //     mediaRecorder.start();
-  //     setTimeout(() => mediaRecorder.stop(), 100); // Arrêter après avoir tout enregistré
-  //   });
-  // };
-
   // La fonction principale de génération de preview
   const generatePreview = () => {
     if (!audioFile) return;
     onPreviewGenerated(previewStartTime);
-    onNext();
   };
 
   return (
-    <LayoutPublishStep
-      title="Choisis ton extrait"
-      description="Il pourra être écouté par les utilsateurs gratuitement"
-      onPrevious={onPrevious}
-      onNext={generatePreview}
-    >
-      <audio
-        ref={audioRef}
-        onLoadedMetadata={() => {
-          if (audioRef.current) {
-            setDuration(audioRef.current.duration);
+    <div className={isEditMode ? "w-full" : undefined}>
+      {!isEditMode ? (
+        <LayoutPublishStep
+          title="Choisis ton extrait"
+          description="Il pourra être écouté par les utilisateurs gratuitement"
+          onPrevious={onPrevious}
+          onNext={
+            onNext
+              ? () => {
+                  generatePreview();
+                  onNext();
+                }
+              : undefined
           }
-        }}
-      />
-      <div className="flex flex-col flex-1 w-full items-center justify-center">
-        <div className="rounded-xl shadow-lg w-full">
-          <div className="px-6 lg:pt-6">
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-10 h-10">&nbsp;</div>
-              <div className="w-1/2 relative h-1 bg-white/40 rounded-full">
-                <motion.div
-                  initial={{ width: "0%" }}
-                  animate={{ width: `${(30 / duration) * 100}%` }}
-                  transition={{
-                    duration: 0.016, // ~60fps
-                    ease: "linear",
-                    type: "tween"
-                  }}
-                  className="absolute top-1/2 -translate-y-1/2 h-1.5 bg-primary rounded-full transition-all duration-100"
-                  style={{
-                    left: `${(previewStartTime / duration) * 100}%`
-                  }}
-                />
+        >
+          {renderContent()}
+        </LayoutPublishStep>
+      ) : (
+        renderContent()
+      )}
+    </div>
+  );
+
+  function renderContent() {
+    return (
+      <>
+        <audio
+          ref={audioRef}
+          onLoadedMetadata={() => {
+            if (audioRef.current) {
+              setDuration(audioRef.current.duration);
+            }
+          }}
+        />
+        <div className="flex flex-col flex-1 w-full items-center justify-center">
+          <div className="rounded-xl shadow-lg w-full">
+            <div className="px-6 lg:pt-6">
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-10 h-10">&nbsp;</div>
+                <div className="w-1/2 relative h-1 bg-white/40 rounded-full">
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: `${(30 / duration) * 100}%` }}
+                    transition={{
+                      duration: 0.016, // ~60fps
+                      ease: "linear",
+                      type: "tween"
+                    }}
+                    className="absolute top-1/2 -translate-y-1/2 h-1.5 bg-primary rounded-full transition-all duration-100"
+                    style={{
+                      left: `${(previewStartTime / duration) * 100}%`
+                    }}
+                  />
+                </div>
+                <button
+                  onClick={handlePlayPause}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-primary hover:bg-primary/90 transition-colors"
+                >
+                  {isPlaying ? (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
+                      <rect x="6" y="4" width="4" height="16" />
+                      <rect x="14" y="4" width="4" height="16" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </button>
               </div>
-              <button
-                onClick={handlePlayPause}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-primary hover:bg-primary/90 transition-colors"
-              >
-                {isPlaying ? (
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
-                    <rect x="6" y="4" width="4" height="16" />
-                    <rect x="14" y="4" width="4" height="16" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
-              </button>
             </div>
 
-            {/* <div className="flex items-center gap-4">
-            <div className="text-sm font-medium">
-              {formatTime(previewStartTime)} -{" "}
-              {formatTime(Math.min(previewStartTime + 30, duration))}
-            </div>
-          </div> */}
-          </div>
-
-          <motion.div
-            className="mx-auto mb-6 bg-white w-10 h-6 flex items-center justify-center rounded-full text-black text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isScrolling ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {formatTime(previewStartTime)}
-          </motion.div>
-
-          <div className="relative h-20">
-            <div
-              ref={containerRef}
-              className="absolute inset-0 overflow-x-auto scrollbar-hide overflow-y-hidden rounded-b-lg"
-              onScroll={handleScroll}
+            <motion.div
+              className="mx-auto mb-6 bg-white w-10 h-6 flex items-center justify-center rounded-full text-black text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isScrolling ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
             >
+              {formatTime(previewStartTime)}
+            </motion.div>
+
+            <div className="relative h-20">
               <div
-                ref={viewportRef}
-                className="sticky overflow-hidden rounded-lg left-1/2 transform -translate-x-1/2 h-full w-32"
+                ref={containerRef}
+                className="absolute inset-0 overflow-x-auto scrollbar-hide overflow-y-hidden rounded-b-lg"
+                onScroll={handleScroll}
               >
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-primary"
-                  animate={{ width: `${(currentTime / 30) * 100}%` }}
-                  transition={{
-                    duration: 0.016, // ~60fps
-                    ease: "linear",
-                    type: "tween"
+                <div
+                  ref={viewportRef}
+                  className="sticky overflow-hidden rounded-lg left-1/2 transform -translate-x-1/2 h-full w-32"
+                >
+                  <motion.div
+                    className="absolute inset-y-0 left-0 bg-primary"
+                    animate={{ width: `${(currentTime / 30) * 100}%` }}
+                    transition={{
+                      duration: 0.016, // ~60fps
+                      ease: "linear",
+                      type: "tween"
+                    }}
+                    initial={{ width: "0%" }}
+                  />
+                  <div className="absolute inset-0 border-4 rounded-lg border-primary z-[3]" />
+                </div>
+
+                <div
+                  className="absolute inset-y-0"
+                  style={{
+                    paddingLeft: `calc(50% - ${viewportWidth / 2}px)`,
+                    paddingRight: `calc(50% - ${viewportWidth / 2}px)`
                   }}
-                  initial={{ width: "0%" }}
-                />
-                <div className="absolute inset-0 border-4 rounded-lg border-primary z-[3]" />
-              </div>
+                >
+                  <div className="flex h-full items-center justify-start gap-[6px] relative z-[1]">
+                    {Array(Math.ceil(duration * 4))
+                      .fill(0)
+                      .map((_, i) => {
+                        // Calculer si la barre est dans le viewport
+                        const barPosition = i * (6 + 6); // largeur + gap
+                        const viewportStart =
+                          containerRef.current?.scrollLeft || 0;
+                        const viewportEnd = viewportStart + viewportWidth;
+                        const isInViewport =
+                          barPosition >= viewportStart &&
+                          barPosition <= viewportEnd;
 
-              <div
-                className="absolute inset-y-0"
-                style={{
-                  paddingLeft: `calc(50% - ${viewportWidth / 2}px)`,
-                  paddingRight: `calc(50% - ${viewportWidth / 2}px)`
-                }}
-              >
-                <div className="flex h-full items-center justify-start gap-[6px] relative z-[1]">
-                  {Array(Math.ceil(duration * 4))
-                    .fill(0)
-                    .map((_, i) => {
-                      // Calculer si la barre est dans le viewport
-                      const barPosition = i * (6 + 6); // largeur + gap
-                      const viewportStart =
-                        containerRef.current?.scrollLeft || 0;
-                      const viewportEnd = viewportStart + viewportWidth;
-                      const isInViewport =
-                        barPosition >= viewportStart &&
-                        barPosition <= viewportEnd;
-
-                      return (
-                        <div
-                          key={i}
-                          className="flex-none w-[6px] bg-white rounded-full transition-all duration-75"
-                          style={{
-                            height: isInViewport
-                              ? i % 2 === 0
-                                ? "32px"
-                                : "20px" // Plus grand dans le viewport
-                              : i % 2 === 0
-                                ? "28px"
-                                : "16px", // Taille normale hors viewport
-                            opacity: isPlaying
-                              ? isInViewport
-                                ? 0.7
-                                : 0.55
-                              : 0.7
-                          }}
-                        />
-                      );
-                    })}
+                        return (
+                          <div
+                            key={i}
+                            className="flex-none w-[6px] bg-white rounded-full transition-all duration-75"
+                            style={{
+                              height: isInViewport
+                                ? i % 2 === 0
+                                  ? "32px"
+                                  : "20px" // Plus grand dans le viewport
+                                : i % 2 === 0
+                                  ? "28px"
+                                  : "16px", // Taille normale hors viewport
+                              opacity: isPlaying
+                                ? isInViewport
+                                  ? 0.7
+                                  : 0.55
+                                : 0.7
+                            }}
+                          />
+                        );
+                      })}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </LayoutPublishStep>
-  );
+      </>
+    );
+  }
 }

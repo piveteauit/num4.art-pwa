@@ -17,7 +17,7 @@ export default function SongCard({ song, index, totalLength }: SongCardProps) {
         pathname: "/song",
         query: { id: song.id }
       }}
-      className={`flex-shrink-0 w-[180px]`}
+      className={`flex-shrink-0 w-[180px] flex-1`}
     >
       <div className="relative w-[180px] h-[180px] rounded-lg overflow-hidden">
         <ImageWithFallback

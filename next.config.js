@@ -34,7 +34,8 @@ const nextConfig = {
       "picsum.photos",
       "s3.fr-par.scw.cloud",
       "cloud.ovh.net",
-      "numero.s3.sbg.io.cloud.ovh.net"
+      "numero.s3.sbg.io.cloud.ovh.net",
+      "loremflickr.com"
     ],
     remotePatterns: [
       {

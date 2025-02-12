@@ -56,15 +56,8 @@ export const SongsList = ({
           >
             <div className="flex w-full gap-8">
               <span className="relative w-[52px] h-[52px]">
-                {/* <Image
-                  className="max-h-[52px] object-cover rounded-sm"
-                  fill
-                  alt={`Jaquette ${song.title}`}
-                  src={song.image}
-                /> */}
                 <ImageWithFallback
-                  // src={song.image}
-                  src={"/assets/images/PHOTO-2024-01-22-17-14-05.jpg"}
+                  src={song.image}
                   alt={`Jaquette ${song.title}`}
                   fill
                 />

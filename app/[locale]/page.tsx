@@ -7,7 +7,7 @@ export const generateMetadata = getGenerateMetadata("home");
 
 export default async function Page() {
   const songs = await prisma.song.findMany({
-    take: 10,
+    // take: 10,
     include: {
       genres: true,
       artists: {
@@ -27,7 +27,7 @@ export default async function Page() {
 
   const artists = (
     await prisma.artist.findMany({
-      take: 10,
+      // take: 10,
       include: {
         profile: {
           include: {

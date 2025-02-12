@@ -8,7 +8,7 @@ interface EmptyStateProps {
   description: string;
   actionLabel?: string;
   actionLink?: {
-    pathname: "/";
+    pathname: "/" | "/publish";
   };
 }
 

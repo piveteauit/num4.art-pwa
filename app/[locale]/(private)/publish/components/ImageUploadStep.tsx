@@ -5,16 +5,20 @@ interface ImageUploadStepProps {
   formData: {
     image: File | null;
   };
+  existingImageUrl?: string;
   setFormData: (data: any) => void;
-  onNext: () => void;
-  onPrevious: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isEditMode?: boolean;
 }
 
 export default function ImageUploadStep({
   formData,
+  existingImageUrl,
   setFormData,
   onNext,
-  onPrevious
+  onPrevious,
+  isEditMode
 }: ImageUploadStepProps) {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -31,13 +35,11 @@ export default function ImageUploadStep({
     if (formData.image) {
       return URL.createObjectURL(formData.image);
     }
-    return null;
+    return existingImageUrl || null;
   };
 
-  return (
-    <div className="space-y-6 px-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold">Ajouter une pochette</h2>
-
+  const content = (
+    <div className="space-y-4">
       <div
         className="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center"
         onDrop={handleDrop}
@@ -61,13 +63,12 @@ export default function ImageUploadStep({
           htmlFor="image-upload"
           className="cursor-pointer hover:text-primary transition-colors"
         >
-          {formData.image ? (
+          {formData.image || existingImageUrl ? (
             <div className="space-y-4">
               <Image
-                src={handleImagePreview()}
+                src={handleImagePreview() || ""}
                 alt="Preview"
                 className="mx-auto w-[180px] h-[180px] overflow-hidden rounded-lg object-cover"
-                // fill
                 width={180}
                 height={180}
               />
@@ -78,14 +79,24 @@ export default function ImageUploadStep({
           )}
         </label>
       </div>
+    </div>
+  );
 
+  if (isEditMode) {
+    return content;
+  }
+
+  return (
+    <div className="space-y-6 px-6 max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold">Ajouter une pochette</h2>
+      {content}
       <div className="flex justify-between gap-4">
         <button onClick={onPrevious} className="btn btn-outline flex-1">
           Précédent
         </button>
         <button
           onClick={onNext}
-          disabled={!formData.image}
+          disabled={!formData.image && !existingImageUrl}
           className="btn btn-primary flex-1"
         >
           Suivant

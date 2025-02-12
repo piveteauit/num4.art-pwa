@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { prisma } from "@/libs/prisma";
 import { Link } from "@/navigation";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 export default async function Page() {
   const artists = (
@@ -22,7 +23,7 @@ export default async function Page() {
 
   return (
     <>
-      <main className="w-screen h-screen overflow-y-auto md:p-8 pb-12 md:pb-24">
+      <main className="w-screen h-screen overflow-y-auto md:p-8 ">
         <section className="fixed w-full top-0 px-8 py-2 bg-base z-50 flex justify-between items-center">
           <Link href={"/"}>
             <Image
@@ -31,7 +32,6 @@ export default async function Page() {
               width={150}
               height={50}
               className="object-contain"
-              fill
             />
           </Link>
           <Link className="z-50" href={"/dashboard"}>
@@ -59,11 +59,12 @@ export default async function Page() {
                 className="flex flex-col items-center"
               >
                 <div className="relative h-[180px] w-[180px] m-auto rounded-full overflow-hidden">
-                  <Image
-                    className="object-cover rounded-2xl"
-                    alt="jaquette musique"
-                    src={artist?.profile?.[0]?.user?.image || ""}
-                    layout="fill"
+                  <ImageWithFallback
+                    src={artist?.image}
+                    alt={`Avatar ${artist?.name}`}
+                    className="avatar !rounded-full !w-[180px] !h-[180px] aspect-square"
+                    width={180}
+                    height={180}
                   />
                 </div>
                 <div className="flex flex-col items-center text-white mt-2">

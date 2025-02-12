@@ -22,7 +22,9 @@ function Navbar() {
           className={`flex flex-col justify-center items-center ${pathname === "/" ? "opacity-100" : "opacity-70"}`}
         >
           <IconHome className=" relative w-8 h-8" isActive={pathname === "/"} />
-          <p className="font-light text-sm">Accueil</p>
+          <p className="font-light text-sm">
+            {isArtistMode ? "Dashboard" : "Accueil"}
+          </p>
         </div>
       </Link>
       {isArtistMode && (
@@ -40,20 +42,20 @@ function Navbar() {
           </div>
         </Link>
       )}
-      <Link href={"/library"}>
-        <div
-          className={`flex flex-col justify-center items-center ${pathname === "/library" ? "opacity-100" : "opacity-70"}`}
-        >
-          <IconLibrary
-            className="relative w-8 h-8"
-            isActive={pathname === "/library"}
-          />
+      {!isArtistMode && (
+        <Link href={"/library"}>
+          <div
+            className={`flex flex-col justify-center items-center ${pathname === "/library" ? "opacity-100" : "opacity-70"}`}
+          >
+            <IconLibrary
+              className="relative w-8 h-8"
+              isActive={pathname === "/library"}
+            />
 
-          <p className="font-light text-sm">
-            {isArtistMode ? "Mes produits" : "Collection"}
-          </p>
-        </div>
-      </Link>
+            <p className="font-light text-sm">Collection</p>
+          </div>
+        </Link>
+      )}
     </div>
   );
 }
