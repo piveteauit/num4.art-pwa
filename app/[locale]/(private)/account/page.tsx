@@ -1,4 +1,3 @@
-import { ButtonChangeMode } from "@/components/ui/Button/Button";
 import LocalePicker from "@/components/ui/LocalePicker";
 import { auth } from "@/auth";
 import { redirect } from "@/navigation";
@@ -73,7 +72,7 @@ export default async function Dashboard() {
         <div className="text-center">
           <h4 className="font-medium text-xl">@{getUserDisplayName(user)}</h4>
           <span className="opacity-60">
-            {!user?.profile?.artistMode ? "Auditeur" : "Artiste"}
+            {!user?.profile?.artist ? "Auditeur" : "Artiste"}
           </span>
         </div>
       </section>

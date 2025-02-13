@@ -92,7 +92,8 @@ function Login({
               onClick={() => handleSignin(provider)}
               style={{ backgroundColor: "#191919", color: "#FFFFFF" }}
             >
-              <span className="text-white ">Sign in with: {provider.name}</span>
+              {/* <span className="text-white ">Sign in with: {provider.name}</span> */}
+              <span className="text-white ">Sign in</span>
               <img src={provider?.style?.logo} />
             </Button>
 

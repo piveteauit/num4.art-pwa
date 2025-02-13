@@ -1,5 +1,4 @@
 "use client";
-import { useUserMode } from "@/context/UserModeContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { addSong, updateSongBdd } from "@/libs/server/song.action";
@@ -18,7 +17,6 @@ import { useUpload } from "@/libs/hooks/useUpload";
 const steps = ["Audio", "Preview", "Informations", "Image", "Finalisation"];
 
 export default function PublishPage() {
-  const { isArtistMode } = useUserMode();
   const router = useRouter();
   const { data: session } = useSession();
   const { fetchSongs } = usePlayer();
@@ -80,10 +78,10 @@ export default function PublishPage() {
   }, [isPublishing, router, handleNavigation]);
 
   useEffect(() => {
-    if (!isArtistMode) {
+    if (!session?.user?.profile?.artist) {
       router.push("/");
     }
-  }, [isArtistMode, router]);
+  }, [session?.user?.profile?.artist, router]);
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));

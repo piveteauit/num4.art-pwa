@@ -1,13 +1,13 @@
 "use server";
 import { prisma } from "@/libs/prisma";
 
-export async function handleSignUp({ artist, id }: any) {
+export async function handleSignUp({ artistName, id, source }: any) {
   let artistId = undefined;
 
-  if (artist) {
+  if (artistName) {
     const profileArtist = await prisma.artist.create({
       data: {
-        name: artist
+        name: artistName
       }
     });
     artistId = profileArtist.id;
@@ -18,6 +18,8 @@ export async function handleSignUp({ artist, id }: any) {
       userId: id,
       artistId,
       artistMode: !!artistId
+      //TODO : add source
+      // source
     }
   });
 

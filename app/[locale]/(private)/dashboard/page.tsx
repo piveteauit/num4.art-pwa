@@ -1,30 +1,25 @@
 "use client";
 
-import { useUserMode } from "@/context/UserModeContext";
 import { ArtistDashboard } from "@/components/artist/ArtistDashboard";
 import { useArtistData } from "@/libs/hooks/useArtistData";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import router from "next/router";
+import { useRouter } from "@/navigation";
 import HomeHeader from "@/components/ui/Header/HomeHeader";
-interface DashboardProps {
-  songs: any[];
-  artists: any[];
-}
 
-export default function Dashboard({ songs, artists }: DashboardProps) {
-  const { isArtistMode } = useUserMode();
+export default function Dashboard() {
   const { data: session } = useSession();
+  const router = useRouter();
   const { artistSongs, stats, isLoading, fetchArtistData } = useArtistData();
 
   useEffect(() => {
-    if (!isArtistMode) {
+    if (!session?.user?.profile?.artist) {
       router.push("/");
     }
-    if (isArtistMode && session?.user?.profile?.artist) {
+    if (session?.user?.profile?.artist) {
       fetchArtistData(session.user.profile.artist.id);
     }
-  }, [isArtistMode, session?.user?.profile?.artist?.id]);
+  }, [session?.user?.profile?.artist?.id, router]);
 
   return (
     <main className="flex flex-col flex-1  w-screen items-center pb-10 md:p-10">

@@ -1,7 +1,6 @@
 "use client";
 import { Link, usePathname } from "@/navigation";
 import { useSession } from "next-auth/react";
-import { useUserMode } from "@/context/UserModeContext";
 import { IconHome } from "@/components/icons/IconHome";
 import { IconLibrary } from "@/components/icons/IconLibrary";
 import { IconPublish } from "@/components/icons/IconPublish";
@@ -10,7 +9,6 @@ import { IconDashboard } from "@/components/icons/IconDashboard";
 function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { isArtistMode } = useUserMode();
 
   if (!session) {
     return null;
@@ -27,7 +25,7 @@ function Navbar() {
         </div>
       </Link>
 
-      {isArtistMode && (
+      {session?.user?.profile?.artistMode && (
         <Link href={"/publish"}>
           <div
             className={`flex flex-col justify-center items-center ${
@@ -42,7 +40,7 @@ function Navbar() {
           </div>
         </Link>
       )}
-      {!isArtistMode && (
+      {!session?.user?.profile?.artist && (
         <Link href={"/library"}>
           <div
             className={`flex flex-col justify-center items-center ${pathname === "/library" ? "opacity-100" : "opacity-70"}`}
@@ -56,7 +54,7 @@ function Navbar() {
           </div>
         </Link>
       )}
-      {isArtistMode && (
+      {session?.user?.profile?.artist && (
         <Link href={"/dashboard"}>
           <div
             className={`flex flex-col justify-center items-center ${pathname === "/dashboard" ? "opacity-100" : "opacity-70"}`}

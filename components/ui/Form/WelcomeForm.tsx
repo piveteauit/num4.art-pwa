@@ -10,7 +10,15 @@ function Welcome() {
   const [artistName, setArtistName] = useState("");
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isArtistMode, setIsArtistMode] = useState(false);
+  const [isArtist, setIsArtist] = useState(false);
+  const [selectedSource, setSelectedSource] = useState("");
+
+  const sources = [
+    { id: "instagram", label: "Instagram" },
+    { id: "facebook", label: "Facebook" },
+    { id: "friend", label: "Un ami" },
+    { id: "other", label: "Autre" }
+  ];
 
   useEffect(() => {
     getSession().then(({ user }) => setUser(user));
@@ -20,7 +28,8 @@ function Welcome() {
     setIsLoading(true);
     try {
       await handleSignUp({
-        artist: isArtistMode ? artistName : null,
+        artistName: isArtist ? artistName : null,
+        source: !isArtist ? selectedSource : null,
         id: user?.id
       });
       document.location.href = "/account";
@@ -43,21 +52,21 @@ function Welcome() {
           <div
             className="absolute h-[90%] top-[5%] w-[50%] bg-white rounded-md transition-transform duration-300 ease-in-out"
             style={{
-              transform: `translateX(${isArtistMode ? "100%" : "0%"})`
+              transform: `translateX(${isArtist ? "100%" : "0%"})`
             }}
           />
           <button
-            onClick={() => setIsArtistMode(false)}
+            onClick={() => setIsArtist(false)}
             className={`flex-1 z-10 py-2 px-4 rounded-md transition-colors duration-300 ${
-              !isArtistMode ? "text-black" : "text-white"
+              !isArtist ? "text-black" : "text-white"
             }`}
           >
             Auditeur
           </button>
           <button
-            onClick={() => setIsArtistMode(true)}
+            onClick={() => setIsArtist(true)}
             className={`flex-1 z-10 py-2 px-4 rounded-md transition-colors duration-300 ${
-              isArtistMode ? "text-black" : "text-white"
+              isArtist ? "text-black" : "text-white"
             }`}
           >
             Artiste
@@ -67,7 +76,7 @@ function Welcome() {
         <div className="flex flex-col gap-4">
           <div
             className={`transition-all duration-300 ease-in-out transform ${
-              !isArtistMode
+              !isArtist
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 translate-x-[-100%] absolute"
             }`}
@@ -76,11 +85,31 @@ function Welcome() {
               En tant qu&apos;auditeur, vous pourrez écouter et acheter de la
               musique sur la plateforme.
             </p>
+            <div className="mt-6 flex flex-col gap-4">
+              <h3 className="text-white text-center">
+                Où as-tu entendu parler de Num4 ?
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {sources.map((source) => (
+                  <button
+                    key={source.id}
+                    onClick={() => setSelectedSource(source.id)}
+                    className={`p-3 rounded-lg border transition-all duration-200 ${
+                      selectedSource === source.id
+                        ? "bg-white text-black border-white"
+                        : "bg-transparent text-white border-gray-600 hover:border-white"
+                    }`}
+                  >
+                    {source.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div
             className={`transition-all duration-300 ease-in-out transform ${
-              isArtistMode
+              isArtist
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 translate-x-[100%] absolute"
             }`}
@@ -103,7 +132,11 @@ function Welcome() {
 
       <Button
         onClick={handleSubmit}
-        disabled={isLoading || (isArtistMode && !artistName)}
+        disabled={
+          isLoading ||
+          (isArtist && !artistName) ||
+          (!isArtist && !selectedSource)
+        }
         className="bg-custom-black border border-white p-2 rounded-lg text-white hover:text-black w-full"
         style={{ backgroundColor: "#191919", color: "#FFFFFF" }}
       >

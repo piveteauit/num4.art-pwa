@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 
 import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
-import { UserModeProvider } from "./UserModeContext";
 
 export default async function Provider({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -17,9 +16,5 @@ export default async function Provider({ children }: { children: ReactNode }) {
       profile: session.user.profile
     };
   }
-  return (
-    <SessionProvider session={session}>
-      <UserModeProvider>{children}</UserModeProvider>
-    </SessionProvider>
-  );
+  return <SessionProvider session={session}>{children}</SessionProvider>;
 }

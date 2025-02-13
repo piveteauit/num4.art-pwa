@@ -1,6 +1,5 @@
 "use client";
 
-import { useUserMode } from "@/context/UserModeContext";
 import ClientComponent from "@/components/client/ClientComponent";
 import { ArtistDashboard } from "@/components/artist/ArtistDashboard";
 import { useArtistData } from "@/libs/hooks/useArtistData";
