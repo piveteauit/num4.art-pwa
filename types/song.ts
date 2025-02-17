@@ -22,5 +22,6 @@ export interface Song {
   artists: Artist[];
   genres?: Genre[];
   playlists?: Playlist[];
+  stripeProductId?: string | null;
 }
 
