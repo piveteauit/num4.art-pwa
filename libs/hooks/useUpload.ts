@@ -14,7 +14,8 @@ export function useUpload() {
     },
     prefix: string,
     songId: string,
-    price: number
+    price: number,
+    songName: string
   ) => {
     setIsUploading(true);
     setProgress(0);
@@ -32,7 +33,8 @@ export function useUpload() {
         files,
         prefix,
         songId,
-        price
+        price,
+        songName
       );
       setProgress(100);
       return response.data;

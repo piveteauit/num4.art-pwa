@@ -125,7 +125,8 @@ export default function PublishPage() {
         },
         `${session.user.profile?.id}/songs`,
         songBdd.id,
-        formData.price
+        formData.price,
+        formData.title
       );
 
       await updateSongBdd({

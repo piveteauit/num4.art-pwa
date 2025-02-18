@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
     const prefix = formData.get("prefix") as string;
     const songId = formData.get("songId") as string;
     const price = formData.get("price") as string;
-
-    if (!audio || !image || !preview || !prefix || !price) {
+    const songName = formData.get("songName") as string;
+    if (!audio || !image || !preview || !prefix || !price || !songName) {
       return NextResponse.json(
         { error: "Tous les fichiers, le préfixe et le prix sont requis" },
         { status: 400 }
@@ -90,10 +90,17 @@ export async function POST(req: NextRequest) {
       throw new Error("Échec de l'upload sur S3");
     }
 
+    const artistName = session.user.profile?.artist?.name;
     // Créer un produit et un prix Stripe
     const product = await stripe.products.create({
-      name: `Song_${songId}`,
-      type: "service"
+      name: `${songName} - ${artistName}`,
+      type: "service",
+      images: [imageResult.Location],
+      metadata: {
+        song_id: songId,
+        song_name: songName,
+        artist_name: artistName
+      }
     });
 
     const stripePrice = await stripe.prices.create({
