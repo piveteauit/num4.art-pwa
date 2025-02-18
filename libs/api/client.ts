@@ -14,7 +14,15 @@ apiClient.interceptors.response.use(
   (error) => {
     let message = "";
 
-    if (error.response?.status === 401) {
+    // Ajout de logs pour les erreurs réseau
+    if (error.message === "Network Error") {
+      console.error("Erreur réseau détectée:", {
+        message: error.message,
+        stack: error.stack,
+        config: error.config
+      });
+      message = "Erreur de connexion au serveur";
+    } else if (error.response?.status === 401) {
       toast.error("Veuillez vous connecter");
       return signIn(undefined, { callbackUrl: config.auth.callbackUrl });
     } else if (error.response?.status === 403) {
@@ -32,7 +40,17 @@ apiClient.interceptors.response.use(
     error.message =
       typeof message === "string" ? message : JSON.stringify(message);
 
-    console.error(error.message);
+    // Amélioration des logs d'erreur
+    console.error("Détails de l'erreur:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers
+      }
+    });
 
     if (error.message) {
       console.log(
