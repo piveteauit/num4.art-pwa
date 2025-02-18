@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useSession, signOut } from "next-auth/react";
-import apiClient from "@/libs/api";
+import apiClient from "@/libs/api/client";
 import LocalePicker from "../LocalePicker";
 
 // A button to show user some account actions

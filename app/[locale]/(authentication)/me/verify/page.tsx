@@ -1,7 +1,7 @@
 "use client";
 import Button from "@/components/ui/Button/Button";
 import Input from "@/components/ui/Form/Input/Input";
-import apiClient from "@/libs/api";
+import apiClient from "@/libs/api/client";
 import { useEffect, useState } from "react";
 
 function VerifyPage() {
@@ -61,7 +61,6 @@ function VerifyPage() {
           maxLength={6}
           required
           name="token"
-          
         />
 
         {!error ? null : (
@@ -70,7 +69,10 @@ function VerifyPage() {
           </>
         )}
 
-        <Button    className="bg-custom-black border border-white text-white p-2 rounded"> <span style={{ color: '#FFFFFF' }}>Valider</span> </Button>
+        <Button className="bg-custom-black border border-white text-white p-2 rounded">
+          {" "}
+          <span style={{ color: "#FFFFFF" }}>Valider</span>{" "}
+        </Button>
       </section>
     </div>
   );

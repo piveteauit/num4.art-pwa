@@ -35,6 +35,7 @@ apiClient.interceptors.response.use(
     console.error(error.message);
 
     if (error.message) {
+      console.log("error.message", error.message);
       toast.error(error.message);
     } else {
       toast.error("Une erreur est survenue");

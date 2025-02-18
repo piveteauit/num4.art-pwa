@@ -5,7 +5,7 @@ import Button from "../Button/Button";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
-import apiClient from "@/libs/api";
+import apiClient from "@/libs/api/client";
 import { useRouter } from "next/navigation";
 
 export default function VerifyModal({

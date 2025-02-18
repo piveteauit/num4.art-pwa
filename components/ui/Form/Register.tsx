@@ -3,7 +3,7 @@ import Button from "../Button/Button";
 import Input from "./Input/Input";
 import { useState } from "react";
 import { Link } from "@/navigation";
-import apiClient from "@/libs/api";
+import apiClient from "@/libs/api/client";
 import { signIn } from "next-auth/react";
 
 function Register() {
