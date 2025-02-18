@@ -35,7 +35,7 @@ function Welcome() {
       document.location.href = "/account";
     } catch (error) {
       if (error.message.includes("Unique constraint failed")) {
-        toast.error("Ce nom d&apos;artiste est déjà pris");
+        toast.error("Ce nom d'artiste est déjà pris");
       } else {
         toast.error("Une erreur est survenue");
         console.log(error);

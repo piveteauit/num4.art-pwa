@@ -30,7 +30,7 @@ export const createCheckout = async ({
 }: CreateCheckoutParams): Promise<string> => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2023-08-16", // TODO: update this when Stripe updates their API
+      apiVersion: "2024-04-10" as Stripe.StripeConfig["apiVersion"], // TODO: update this when Stripe updates their API
       typescript: true
     });
 
@@ -92,7 +92,7 @@ export const createCustomerPortal = async ({
   returnUrl
 }: CreateCustomerPortalParams): Promise<string> => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2023-08-16", // TODO: update this when Stripe updates their API
+    apiVersion: "2024-04-10" as Stripe.StripeConfig["apiVersion"], // TODO: update this when Stripe updates their API
     typescript: true
   });
 
@@ -108,7 +108,7 @@ export const createCustomerPortal = async ({
 export const findCheckoutSession = async (sessionId: string) => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2023-08-16", // TODO: update this when Stripe updates their API
+      apiVersion: "2024-04-10" as Stripe.StripeConfig["apiVersion"], // TODO: update this when Stripe updates their API
       typescript: true
     });
 

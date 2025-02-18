@@ -1,9 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { createCheckout } from "@/libs/stripe";
-import connectMongo from "@/libs/mongoose";
-import User from "@/models/User";
-
+import { prisma } from "@/libs/prisma";
 // This function is used to create a Stripe Checkout Session (one-time payment or subscription)
 // It's called by the <ButtonCheckout /> component
 // By default, it doesn't force users to be authenticated. But if they are, it will prefill the Checkout data with their email and/or credit card
@@ -20,24 +18,19 @@ export async function POST(req: NextRequest) {
       { error: "Success and cancel URLs are required" },
       { status: 400 }
     );
-  } else if (!body.mode) {
-    return NextResponse.json(
-      {
-        error:
-          "Mode is required (either 'payment' for one-time payments or 'subscription' for recurring subscription)"
-      },
-      { status: 400 }
-    );
   }
+
+  // Mode is now always 'payment' for songs, so we can remove that check
+  const mode = "payment";
 
   try {
     const session = await auth();
-
-    await connectMongo();
-
-    const user = await User.findById(session?.user?.id);
-
-    const { priceId, mode, successUrl, cancelUrl } = body;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session?.user?.id
+      }
+    });
+    const { priceId, successUrl, cancelUrl } = body;
 
     const stripeSessionURL = await createCheckout({
       priceId,
@@ -45,7 +38,7 @@ export async function POST(req: NextRequest) {
       successUrl,
       cancelUrl,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
-      clientReferenceId: user?._id?.toString(),
+      clientReferenceId: user?.id,
       // If user is logged in, this will automatically prefill Checkout data like email and/or credit card for faster checkout
       user
       // If you send coupons from the frontend, you can pass it here

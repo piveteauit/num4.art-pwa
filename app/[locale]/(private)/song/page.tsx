@@ -138,15 +138,14 @@ export default async function SongPage({
         {hasSong && <AddToQueueButton song={song} />}
         {!hasSong && (
           <ButtonCheckout
-            songId={song.id}
-            profileId={userProfile?.id}
+            isArtist={userProfile?.artist ? true : false}
             label={
               <span className="flex items-center gap-2">
                 <span>Acheter</span>
                 <span className="font-bold">{song.price}€</span>
               </span>
             }
-            // priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
+            song={song}
           />
         )}
       </div>

@@ -573,19 +573,14 @@ function Player(): React.JSX.Element | null {
                     Profiter du titre en entier :
                   </p> */}
                   <ButtonCheckout
-                    songId={currentPlaying?.id}
-                    profileId={userProfile?.id}
-                    onSuccess={handlePurchaseSuccess}
+                    isArtist={userProfile?.artist ? true : false}
                     label={
-                      <span className="text-center">
-                        <span className="font-bold pt-2">
-                          {/* Acheter le titre pour */}
-                          {currentPlaying?.price}
-                          <sup className="font-normal ml-1">{"€"}</sup>
-                        </span>
+                      <span className="flex items-center gap-2">
+                        <span>Acheter</span>
+                        <span className="font-bold">{currentPlaying?.price}€</span>
                       </span>
                     }
-                    // priceId="price_1JZ6ZyJ9zvZ2Xzvz1Z6ZyJ9z"
+                    song={currentPlaying}
                   />
                 </div>
               )}

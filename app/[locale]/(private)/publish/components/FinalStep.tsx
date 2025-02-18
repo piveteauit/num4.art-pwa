@@ -80,7 +80,9 @@ export default function FinalStep({
           disabled={isUploading}
           className="btn btn-primary flex-1"
         >
-          {isUploading ? "Publication en cours..." : "Publier"}
+          {isUploading
+            ? "Publication en cours... Cela peut prendre jusqu'à 5 minutes"
+            : "Publier"}
         </button>
       </div>
     </div>
