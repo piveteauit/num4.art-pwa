@@ -10,8 +10,12 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   workboxOptions: {
     disableDevLogs: true
   }
-  // ... other options you like
 });
+
+const isDev = process.env.NODE_ENV === "development";
+const domain = isDev
+  ? "http://localhost:3000"
+  : process.env?.NEXTAUTH_URL;
 
 const nextConfig = {
   reactStrictMode: true,
@@ -50,11 +54,33 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
 
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,DELETE,PATCH,POST,PUT"
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+          }
+        ]
+      }
+    ];
+  },
+
   publicRuntimeConfig: {
-    NEXTAUTH_URL: process.env?.NEXTAUTH_URL,
-    APP_URL: process.env?.APP_URL,
-    API_URL: process.env?.API_URL,
-    SITE_URL: process.env?.SITE_URL
+    NEXTAUTH_URL: domain,
+    APP_URL: domain,
+    API_URL: `${domain}/api`,
+    SITE_URL: domain,
+    API_BASE_URL: domain
   }
 };
 
