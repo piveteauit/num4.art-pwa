@@ -124,15 +124,18 @@ export default function PublishPage() {
           previewStartTime: formData.previewStartTime
         },
         `${session.user.profile?.id}/songs`,
-        songBdd.id
+        songBdd.id,
+        formData.price
       );
 
       await updateSongBdd({
         songId: songBdd.id,
         data: {
-          image: uploadedFiles.image.url,
-          audio: uploadedFiles.audio.url,
-          preview: uploadedFiles.preview.url
+          image: uploadedFiles.image.url as string,
+          audio: uploadedFiles.audio.url as string,
+          preview: uploadedFiles.preview.url as string,
+          stripeProductId: uploadedFiles.productId as string,
+          stripePriceId: uploadedFiles.priceId as string
         }
       });
 

@@ -173,7 +173,8 @@ export class UploadService {
       previewStartTime: number;
     },
     prefix: string,
-    songId: string
+    songId: string,
+    price: number
   ) {
     const formData = new FormData();
 
@@ -198,6 +199,7 @@ export class UploadService {
       formData.append("previewStartTime", files.previewStartTime.toString());
       formData.append("prefix", prefix);
       formData.append("songId", songId);
+      formData.append("price", price.toString());
 
       return await apiClient.post("/upload/song", formData, {
         headers: { "Content-Type": "multipart/form-data" }

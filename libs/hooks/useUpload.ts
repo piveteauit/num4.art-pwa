@@ -13,7 +13,8 @@ export function useUpload() {
       previewStartTime: number;
     },
     prefix: string,
-    songId: string
+    songId: string,
+    price: number
   ) => {
     setIsUploading(true);
     setProgress(0);
@@ -27,7 +28,12 @@ export function useUpload() {
         throw new Error("Format image non supporté");
       }
 
-      const response = await UploadService.uploadSong(files, prefix, songId);
+      const response = await UploadService.uploadSong(
+        files,
+        prefix,
+        songId,
+        price
+      );
       setProgress(100);
       return response.data;
     } catch (error) {
