@@ -25,15 +25,18 @@ const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch("/api/stripe/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          priceId: song.stripePriceId,
-          successUrl: `${window.location.origin}/payment/success`,
-          cancelUrl: `${window.location.origin}${window.location.pathname}`
-        })
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/stripe/create-checkout`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            priceId: song.stripePriceId,
+            successUrl: `${window.location.origin}/payment/success`,
+            cancelUrl: `${window.location.origin}${window.location.pathname}`
+          })
+        }
+      );
 
       const data = await response.json();
       if (data.url) {
