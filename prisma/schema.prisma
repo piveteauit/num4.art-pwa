@@ -77,6 +77,7 @@ model Artist {
   albums    Album[]   @relation("AlbumToArtist")
   genres    Genre[]   @relation("ArtistToGenre")
   songs     Song[]    @relation("ArtistToSong")
+  bankAccount BankAccount?
 }
 
 model Genre {
@@ -178,4 +179,16 @@ model VerificationToken {
 enum UserPlan {
   FREE
   PREMIUM
+}
+
+model BankAccount {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  iban      String
+  bic       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  artistId  String   @unique
+  artist    Artist   @relation(fields: [artistId], references: [id])
 }

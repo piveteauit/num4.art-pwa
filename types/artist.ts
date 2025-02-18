@@ -3,6 +3,7 @@ import { Profile } from "./profile";
 import { Album } from "./album";
 import { Genre } from "./genre";
 import { Song } from "./song";
+import { BankAccount } from "./bankAccount";
 
 export interface Artist {
   id: string;
@@ -15,6 +16,7 @@ export interface Artist {
   albums?: Album[];
   genres?: Genre[];
   songs?: Song[];
+  bankAccount?: BankAccount;
 }
 
 // id: string;
