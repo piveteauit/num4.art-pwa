@@ -1,3 +1,4 @@
+// @ts-nocheck
 const { PrismaClient } = require("@prisma/client");
 const { faker } = require("@faker-js/faker/locale/fr");
 
