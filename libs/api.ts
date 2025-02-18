@@ -42,7 +42,14 @@ apiClient.interceptors.response.use(
     // Automatically display errors to the user
     if (error.message) {
       toast.error(error.message);
-      console.log("error", error);
+      console.log(
+        "error",
+        error,
+        error.message,
+        error.response,
+        error.response?.data,
+        error.response?.status
+      );
     } else {
       toast.error("something went wrong...");
     }
