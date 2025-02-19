@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useBankAccount } from "@/libs/hooks/useBankAccount";
 import Input from "@/components/ui/Form/Input/Input";
 import Button from "@/components/ui/Button/Button";
@@ -45,12 +45,13 @@ export default function BankInfo() {
         return !REGEX.EMAIL.test(value)
           ? "Veuillez entrer une adresse email valide"
           : "";
-      case "iban":
+      case "iban": {
         // Supprime les espaces pour la validation
         const cleanIban = value.replace(/\s/g, "");
         return !REGEX.IBAN.test(cleanIban)
           ? "Veuillez entrer un IBAN français valide"
           : "";
+      }
       case "bic":
         return !REGEX.BIC.test(value)
           ? "Veuillez entrer un code BIC/SWIFT valide"
@@ -60,7 +61,7 @@ export default function BankInfo() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
@@ -91,7 +92,7 @@ export default function BankInfo() {
     loadBankAccount();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!isFormValid()) {
       toast.error("Veuillez corriger les erreurs dans le formulaire");
