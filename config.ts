@@ -9,8 +9,8 @@ export const server = {
   maxConnections: 5,
   maxMessages: 100,
   auth: {
-    user: process?.env?.MAIL_AUTH_USER, // || "piveteauit@gmail.com",
-    pass: process?.env?.MAIL_AUTH_PASS // || "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-NtHvnd6CyKSMsjQE"
+    user: process?.env?.MAIL_AUTH_USER, 
+    pass: process?.env?.MAIL_AUTH_PASS 
   },
   // Timeouts pour éviter les connexions bloquées
   connectionTimeout: 10000, // Timeout pour établir la connexion (10s)

@@ -47,16 +47,50 @@ export async function sendEmail({
   text,
   html,
   subject,
+  priority = "normal",
   attachments
 }: SendEmailParams) {
-  const transporter = nodemailer.createTransport(server);
+  try {
+    console.log("Configuration SMTP:", {
+      host: server.host,
+      port: server.port,
+      secure: server.secure,
+      auth: {
+        user: server.auth.user ? "défini" : "non défini",
+        pass: server.auth.pass ? "défini" : "non défini"
+      }
+    });
 
-  transporter.sendMail({
-    from,
-    to,
-    subject,
-    html: html ? (typeof html === "string" ? html : render(html)) : undefined,
-    text,
-    attachments
-  });
+    const transporter = nodemailer.createTransport(server);
+
+    // Vérifier la connexion SMTP
+    await transporter.verify();
+    console.log("Connexion SMTP vérifiée avec succès");
+
+    const info = await transporter.sendMail({
+      from,
+      to,
+      subject,
+      html: html ? (typeof html === "string" ? html : render(html)) : undefined,
+      text,
+      priority,
+      attachments
+    });
+
+    console.log("Email envoyé avec succès:", {
+      messageId: info.messageId,
+      to,
+      subject
+    });
+
+    return info;
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email:", {
+      error,
+      to,
+      subject,
+      timestamp: new Date().toISOString()
+    });
+    throw error;
+  }
 }
