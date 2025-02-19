@@ -53,17 +53,6 @@ apiClient.interceptors.response.use(
     });
 
     if (error.message) {
-      console.log(
-        "error",
-        error.response?.data,
-        error.response?.status,
-        error.response?.statusText,
-        error.response?.headers,
-        error.response?.config,
-        error.response?.request,
-        error.response?.data?.error,
-        error.response?.data?.message
-      );
       toast.error(error.message);
     } else {
       toast.error("Une erreur est survenue");
