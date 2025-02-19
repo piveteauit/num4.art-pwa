@@ -13,9 +13,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const isDev = process.env.NODE_ENV === "development";
-const domain = isDev
-  ? "http://localhost:3000"
-  : process.env?.NEXTAUTH_URL;
+const domain = isDev ? "http://localhost:3000" : process.env?.NEXTAUTH_URL;
 
 const nextConfig = {
   reactStrictMode: true,
@@ -39,12 +37,23 @@ const nextConfig = {
       "s3.fr-par.scw.cloud",
       "cloud.ovh.net",
       "numero.s3.sbg.io.cloud.ovh.net",
-      "loremflickr.com"
+      "loremflickr.com",
+      "stripe.com",
+      "js.stripe.com",
+      "m.stripe.com",
+      "files.stripe.com",
+      "plausible.io"
     ],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "*.cloud.ovh.net",
+        port: "",
+        pathname: "/**"
+      },
+      {
+        protocol: "https",
+        hostname: "*.stripe.com",
         port: "",
         pathname: "/**"
       }
@@ -69,6 +78,15 @@ const nextConfig = {
             key: "Access-Control-Allow-Headers",
             value:
               "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+          }
+        ]
+      },
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Permissions-Policy",
+            value: "interest-cohort=(), browsing-topics=()"
           }
         ]
       }
