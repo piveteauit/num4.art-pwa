@@ -5,10 +5,17 @@ export const server = {
   host: "smtp-relay.brevo.com", //process?.env?.MAIL_AUTH_HOST || "ssl0.ovh.net",
   port: 587, //Number(process?.env?.MAIL_AUTH_PORT || "465"),
   secure: false, //process?.env?.MAIL_AUTH_SECURE == "true",
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 100,
   auth: {
     user: process?.env?.MAIL_AUTH_USER, // || "piveteauit@gmail.com",
     pass: process?.env?.MAIL_AUTH_PASS // || "xsmtpsib-a7b196bb1049e4d5653379abb74983a24794a555d24394ed01d6b12fea694a7e-NtHvnd6CyKSMsjQE"
-  }
+  },
+  // Timeouts pour éviter les connexions bloquées
+  connectionTimeout: 10000, // Timeout pour établir la connexion (10s)
+  greetingTimeout: 5000, // Timeout pour la réponse initiale du serveur (5s)
+  socketTimeout: 10000 // Timeout global pour les opérations socket (10s)
 };
 const config = {
   // REQUIRED

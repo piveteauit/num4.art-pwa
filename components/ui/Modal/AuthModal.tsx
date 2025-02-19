@@ -38,7 +38,6 @@ export default function AuthModal({
       setTimeout(() => {
         setShowVerify(true);
       }, 300);
-      toast.success("Code envoyé");
     } catch (error: any) {
       toast.error("Une erreur est survenue lors de l'envoi du code");
       console.error(error.message);

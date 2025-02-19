@@ -5,7 +5,8 @@ import EmailProvider from "next-auth/providers/nodemailer";
 import { sendEmail } from "@/libs/sendEmail";
 import type { NextAuthConfig } from "next-auth";
 import { server } from "./config";
-
+import crypto from "crypto";
+import { toast } from "react-hot-toast";
 const adapter = PrismaAdapter(prisma);
 
 export const config = {
@@ -16,21 +17,67 @@ export const config = {
   providers: [
     EmailProvider({
       sendVerificationRequest: async (params) => {
-        await sendEmail({
-          from: "noreply@num4.art",
-          to: params.identifier,
-          subject: "Sign in to Num4",
-          html: `<h1>Sign in</h1><p>Use the code below to sign in:</p><p>${params.token}</p>`
-        });
+        try {
+          // Ajout d'un timeout et gestion d'erreur
+          const emailPromise = sendEmail({
+            from: "noreply@num4.art",
+            to: params.identifier,
+            subject: "Sign in to Num4",
+            html: `<h1>Sign in</h1><p>Use the code below to sign in:</p><p>${params.token}</p>`,
+            priority: "high" // Priorité haute pour les emails d'authentification
+          });
+
+          // Timeout après 30 secondes
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Email sending timeout")), 30000);
+          });
+
+          await Promise.race([emailPromise, timeoutPromise]);
+
+          console.log("Code de vérification envoyé:", {
+            to: params.identifier,
+            timestamp: new Date().toISOString()
+          });
+          toast.success("Code de vérification envoyé");
+        } catch (error) {
+          toast.error("Erreur lors de l'envoi de l'email de vérification");
+          console.error("Erreur envoi email de vérification:", {
+            error,
+            to: params.identifier,
+            timestamp: new Date().toISOString()
+          });
+          throw error;
+        }
       },
       generateVerificationToken: async () => {
-        return new Promise((resolve) => {
-          const token = `${Array(6)
+        try {
+          // Utilisation de crypto pour une génération plus sécurisée
+          const buffer = await new Promise<Buffer>((resolve, reject) => {
+            crypto.randomBytes(3, (err, buf) => {
+              if (err) reject(err);
+              else resolve(buf);
+            });
+          });
+
+          // Génère un nombre à 6 chiffres
+          const token = String(
+            parseInt(buffer.toString("hex"), 16) % 1000000
+          ).padStart(6, "0");
+
+          console.log("Token généré:", {
+            token,
+            timestamp: new Date().toISOString()
+          });
+
+          return token;
+        } catch (error) {
+          console.error("Erreur génération token:", error);
+          // Fallback sur la méthode originale en cas d'erreur
+          return `${Array(6)
             .fill(() => Math.floor(Math.random() * 10))
             .map((f) => f())
             .join("")}`;
-          resolve(token);
-        });
+        }
       },
       server,
       from: "noreply@num4.art"

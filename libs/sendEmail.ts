@@ -1,45 +1,42 @@
 "use server";
-import config, { server }  from "@/config";
+import config, { server } from "@/config";
 import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { JSXElementConstructor, ReactElement } from "react";
 
-
 type SendEmailParams = {
   /**
-   *
    * Default : "noreply@myreklam.fr"
    * @type {?string}
    */
   from?: string;
   /**
-   *
    * Recipient email
    * @type {string}
    */
   to: string;
   /**
-   *
    * Text Subject of email
    * @type {string}
    */
   subject: string;
   /**
-   *
    * Text format of email
    * @type {?string}
    */
   text?: string;
   /**
-   *
    * HTML format of email
    * @type {?string}
    */
   html?: ReactElement<string, string | JSXElementConstructor<any>> | string;
   /**
-   *
-   *  Attachments
-   *
+   * Email priority (high, normal, low)
+   * @type {?string}
+   */
+  priority?: "high" | "normal" | "low";
+  /**
+   * Attachments
    */
   attachments?: { filename: string; path: string }[];
 };
@@ -58,11 +55,7 @@ export async function sendEmail({
     from,
     to,
     subject,
-    html: html
-      ? typeof html === "string"
-        ? html
-        : render(html)
-      : undefined,
+    html: html ? (typeof html === "string" ? html : render(html)) : undefined,
     text,
     attachments
   });
