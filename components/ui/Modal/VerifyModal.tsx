@@ -83,6 +83,7 @@ export default function VerifyModal({
       });
 
       if (result?.error) {
+        toast.error("Erreur lors de l'envoi du code");
         throw new Error(result.error);
       }
 
@@ -95,6 +96,7 @@ export default function VerifyModal({
       inputRef.current?.focus();
     } catch (error) {
       toast.error("Erreur lors de l'envoi du code");
+      console.error("Erreur détaillée:", error);
     } finally {
       setIsResending(false);
     }
@@ -116,6 +118,7 @@ export default function VerifyModal({
       }
     } catch (error) {
       setError("Code invalide");
+      toast.error("Code invalide, veuillez réessayer");
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);

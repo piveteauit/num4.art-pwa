@@ -6,7 +6,7 @@ import { sendEmail } from "@/libs/sendEmail";
 import type { NextAuthConfig } from "next-auth";
 import { server } from "./config";
 import crypto from "crypto";
-import { toast } from "react-hot-toast";
+
 const adapter = PrismaAdapter(prisma);
 
 export const config = {
@@ -18,16 +18,14 @@ export const config = {
     EmailProvider({
       sendVerificationRequest: async (params) => {
         try {
-          // Ajout d'un timeout et gestion d'erreur
           const emailPromise = sendEmail({
             from: "noreply@num4.art",
             to: params.identifier,
             subject: "Sign in to Num4",
             html: `<h1>Sign in</h1><p>Use the code below to sign in:</p><p>${params.token}</p>`,
-            priority: "high" // Priorité haute pour les emails d'authentification
+            priority: "high"
           });
 
-          // Timeout après 30 secondes
           const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error("Email sending timeout")), 30000);
           });
@@ -38,9 +36,7 @@ export const config = {
             to: params.identifier,
             timestamp: new Date().toISOString()
           });
-          toast.success("Code de vérification envoyé");
         } catch (error) {
-          toast.error("Erreur lors de l'envoi de l'email de vérification");
           console.error("Erreur envoi email de vérification:", {
             error,
             to: params.identifier,
