@@ -27,6 +27,7 @@ function Login({
   onSuccess?: (email: string) => void;
 }) {
   const [email, setEmail] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const validateEmail = (email: string) => {
@@ -41,6 +42,8 @@ function Login({
         return;
       }
 
+      setIsSending(true);
+
       if (id === "nodemailer") {
         const result = await signIn("nodemailer", {
           email,
@@ -48,13 +51,17 @@ function Login({
           callbackUrl: "/account"
         });
 
-        if (result?.error) {
-          throw new Error(result.error);
-        }
+        if (result?.ok) {
+          console.log("result", result);
 
-        localStorage.setItem("email", email);
-        localStorage.setItem("callbackUrl", "/account");
-        onSuccess?.(email);
+          localStorage.setItem("email", email);
+          localStorage.setItem("callbackUrl", "/account");
+          toast.success("Code de vérification envoyé à " + email);
+          onSuccess?.(email);
+        } else {
+          console.error("result", result);
+          throw new Error("Erreur lors de l'envoi du code");
+        }
       } else {
         const result = await signIn(id, {
           redirect: false,
@@ -67,6 +74,8 @@ function Login({
     } catch (error: any) {
       toast.error("Une erreur est survenue lors de la connexion");
       console.error(error.message);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -91,10 +100,13 @@ function Login({
               className={`w-full hover:scale-105 ${i ? "bg-secondary border-none" : ""}`}
               onClick={() => handleSignin(provider)}
               style={{ backgroundColor: "#191919", color: "#FFFFFF" }}
+              disabled={isSending}
             >
-              {/* <span className="text-white ">Sign in with: {provider.name}</span> */}
-              <span className="text-white ">Sign in</span>
-              <img src={provider?.style?.logo} />
+              {isSending ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Se connecter avec un code"
+              )}
             </Button>
 
             <div
