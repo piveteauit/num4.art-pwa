@@ -64,6 +64,11 @@ export const pathnames = {
   "/see-all-artists": {
     en: "/see-all-artists",
     fr: "/voir-tout-les-artistes"
+  },
+
+  "/bank-info": {
+    en: "/bank-info",
+    fr: "/informations-bancaires"
   }
 
   // // Dynamic params are supported via square brackets

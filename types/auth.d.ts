@@ -7,7 +7,9 @@ declare module "next-auth" {
     user: {
       id: string
       profile?: Profile & {
-        artist?: Artist
+        artist?: Artist & {
+          bankAccount?: BankAccount
+        }
       }
       isNewUser?: boolean
     } & User &

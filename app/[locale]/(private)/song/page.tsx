@@ -8,6 +8,7 @@ import SongPageClient from "./SongPageClient";
 import AddToQueueButton from "@/components/ui/Button/AddToQueueButton";
 import ScrollableSongsCards from "@/components/ui/ScrollableSongsCards";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import BackButton from "@/components/ui/Button/BackButton";
 
 export default async function SongPage({
   searchParams
@@ -76,23 +77,7 @@ export default async function SongPage({
       )}
       {/* <div className="relative pt-20"> */}
       {/* Header avec bouton retour */}
-      <div className="absolute top-0 left-0 right-0 p-4 flex items-center z-10">
-        <Link href="/" className="text-white/60 hover:text-white">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </Link>
-      </div>
+      <BackButton />
 
       {/* Image et informations principales */}
       <div className="flex flex-col gap-4 items-center">

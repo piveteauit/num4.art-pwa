@@ -6,6 +6,8 @@ import Avatar from "./Avater";
 import SignOutButton from "@/components/ui/Button/SignOutButton";
 import Image from "next/image";
 export const dynamic = "force-dynamic";
+import Button from "@/components/ui/Button/Button";
+import BankInfoButton from "./BankInfoButton";
 
 // This is a private page: It's protected by the layout.js component which ensures the user is authenticated.
 // It's a server compoment which means you can fetch data (like the user profile) before the page is rendered.
@@ -55,6 +57,12 @@ export default async function Dashboard() {
     return "error";
   };
 
+  const getBankButtonText = (user: any) => {
+    return user?.profile?.artist?.bankAccount
+      ? "Modifier mes informations bancaires"
+      : "Remplir mes informations bancaires";
+  };
+
   return (
     <main className=" flex-1">
       <section className="flex flex-col fixed top-0 left-0 w-full h-[40%] mx-auto space-y-8 justify-center items-center bg-custom-black">
@@ -78,6 +86,14 @@ export default async function Dashboard() {
       </section>
 
       <section className="z-2 bg-custom-black p-5 fixed h-[60%] pb-[60px] top-[40%] flex flex-col w-full items-center">
+        <div className="text-lg font-medium  w-full max-w-[300px] flex justify-between">
+          {user?.profile?.artist && (
+            <BankInfoButton
+              hasBankAccount={Boolean(user?.profile?.artist?.bankAccount)}
+            />
+          )}
+        </div>
+
         {/* <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
           <span>Profil</span>
           <ButtonChangeMode
@@ -96,11 +112,10 @@ export default async function Dashboard() {
           <span>Portefeuilles</span>
         </div> */}
 
-        {/* <hr className="w-full max-w-[300px] my-2 border-secondary" /> */}
+        <hr className="w-full max-w-[300px]  border-secondary" />
 
         <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
           <span>Langues</span>
-          <LocalePicker {...user?.profile} />
         </div>
 
         {/* <hr className="w-full max-w-[300px] my-2 border-secondary" /> */}

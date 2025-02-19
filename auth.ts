@@ -112,7 +112,11 @@ export const config = {
             userId: user.id
           },
           include: {
-            artist: true || false,
+            artist: {
+              include: {
+                bankAccount: true
+              }
+            },
             user: true,
             orders: true
           }
