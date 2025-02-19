@@ -25,6 +25,10 @@ const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
     }
     setIsLoading(true);
     try {
+      console.log(
+        "url",
+        `${process.env.NEXT_PUBLIC_URL}/api/stripe/create-checkout`
+      );
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_URL}/api/stripe/create-checkout`,
         {
@@ -43,7 +47,7 @@ const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
         window.location.href = data.url;
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error creating checkout session", error);
       toast.error("Une erreur est survenue lors de l'achat");
     } finally {
       setIsLoading(false);
