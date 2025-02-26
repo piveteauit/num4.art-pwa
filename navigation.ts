@@ -69,6 +69,21 @@ export const pathnames = {
   "/bank-info": {
     en: "/bank-info",
     fr: "/informations-bancaires"
+  },
+
+  "/earnings": {
+    en: "/earnings",
+    fr: "/gains"
+  },
+
+  "/admin": {
+    en: "/admin",
+    fr: "/administration"
+  },
+
+  "/admin/login": {
+    en: "/admin/login",
+    fr: "/administration/connexion"
   }
 
   // // Dynamic params are supported via square brackets

@@ -25,7 +25,7 @@ apiClient.interceptors.response.use(
       // On vérifie si l'erreur vient de la vérification du code
       console.log("error.config.url", error.config.url);
       if (error.config.url?.includes("/auth/callback/nodemailer")) {
-        message = "Code invalide, veuillez réessayer";
+        message = `Code invalide, veuillez réessayer 28 ${error.message}`;
       } else {
         message = "Pick a plan to use this feature";
       }

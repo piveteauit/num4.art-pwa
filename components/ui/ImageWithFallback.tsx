@@ -15,36 +15,35 @@ type ImageWithFallbackProps = {
   srcError?: string;
 };
 
-const ImageWithFallback = memo(function ImageWithFallback({
+const ImageWithFallback = ({
   src,
   alt,
   width,
   height,
-  fill = false,
+  fill,
   className,
   // classNameError,
-  srcError = "/assets/images/logos/logo.png"
-}: ImageWithFallbackProps) {
+  srcError = "/assets/images/logos/meduse-icon.png"
+}: ImageWithFallbackProps) => {
+  const [imgSrc, setImgSrc] = useState(src || srcError);
   const [hasError, setHasError] = useState(false);
-  const handleError = useCallback(() => {
-    setHasError(true);
-  }, []);
 
-  // if (hasError) {
-  //   return (
-  //     <div
-  //       className={`absolute inset-0 bg-gray-500/30 flex items-center justify-center ${classNameError}`}
-  //     >
-  //       {/* <p className="text-white">Image indisponible</p> */}
-  //     </div>
-  //   );
-  // }
+  const handleError = useCallback(() => {
+    if (!hasError) {
+      setImgSrc(srcError);
+      setHasError(true);
+    }
+  }, [hasError, srcError]);
+
+  if (!src && !srcError) {
+    return null;
+  }
 
   return (
     <Image
       className={`object-cover rounded-md ${className}`}
       alt={alt}
-      src={hasError ? srcError : src}
+      src={imgSrc}
       width={width}
       height={height}
       fill={fill}
@@ -53,9 +52,9 @@ const ImageWithFallback = memo(function ImageWithFallback({
       onError={handleError}
     />
   );
-});
+};
 
 // Optionnel : ajouter un displayName pour le debugging
 ImageWithFallback.displayName = "ImageWithFallback";
 
-export default ImageWithFallback;
+export default memo(ImageWithFallback);

@@ -16,7 +16,7 @@ export const config = {
   },
   providers: [
     EmailProvider({
-      sendVerificationRequest: async (params) => {
+      async sendVerificationRequest(params) {
         try {
           const emailPromise = sendEmail({
             from: "noreply@num4.art",
@@ -117,7 +117,11 @@ export const config = {
                 bankAccount: true
               }
             },
-            user: true,
+            user: {
+              include: {
+                admin: true
+              }
+            },
             orders: true
           }
         });

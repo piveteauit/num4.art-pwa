@@ -28,7 +28,7 @@ apiClient.interceptors.response.use(
     } else if (error.response?.status === 403) {
       console.log("error.config.url", error.config.url);
       if (error.config.url?.includes("/auth/callback/nodemailer")) {
-        message = "Code invalide, veuillez réessayer";
+        message = `Code invalide, veuillez réessayer 31 ${error.message}`;
       } else {
         message = "Abonnement requis pour cette fonctionnalité";
       }

@@ -12,12 +12,14 @@ export default function VerifyModal({
   isOpen,
   onClose,
   onSuccess,
-  isEmbedded = false
+  isEmbedded = false,
+  isAdmin = false
 }: {
   isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
+  onClose?: () => void;
+  onSuccess?: () => void;
   isEmbedded?: boolean;
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const [{ email, callbackUrl }, setEmailAndUrl] = useState({
@@ -78,8 +80,8 @@ export default function VerifyModal({
       const decodedEmail = decodeURIComponent(email);
       const result = await signIn("nodemailer", {
         email: decodedEmail,
-        redirect: false,
-        callbackUrl: "/account"
+        redirect: isAdmin ? true : false,
+        callbackUrl: isAdmin ? "/admin" : "/account"
       });
 
       if (result?.error) {
@@ -88,7 +90,7 @@ export default function VerifyModal({
       }
 
       localStorage.setItem("email", email);
-      localStorage.setItem("callbackUrl", "/account");
+      localStorage.setItem("callbackUrl", isAdmin ? "/admin" : "/account");
 
       toast.success("Un nouveau code a été envoyé");
       setTimer(30);
@@ -111,14 +113,14 @@ export default function VerifyModal({
       localStorage.removeItem("callbackUrl");
 
       const sessionUpdate = await update();
-      onSuccess();
+      onSuccess?.();
       toast.success("Connexion réussie");
-      if (sessionUpdate?.user?.isNewUser) {
+      if (sessionUpdate?.user?.isNewUser && !isAdmin) {
         router.push("/me/welcome");
       }
     } catch (error) {
       setError("Code invalide");
-      toast.error("Code invalide, veuillez réessayer");
+      toast.error(`Code invalide, veuillez réessayer 123 ${error}`);
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
@@ -128,7 +130,7 @@ export default function VerifyModal({
   };
 
   const handleClose = async () => {
-    onClose();
+    onClose?.();
     if (window.location.pathname !== "/") {
       router.push("/");
     }

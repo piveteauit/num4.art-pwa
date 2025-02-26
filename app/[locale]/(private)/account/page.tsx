@@ -8,7 +8,7 @@ import Image from "next/image";
 export const dynamic = "force-dynamic";
 import Button from "@/components/ui/Button/Button";
 import BankInfoButton from "./BankInfoButton";
-
+import ClameWinningsButton from "./ClameWinnings";
 // This is a private page: It's protected by the layout.js component which ensures the user is authenticated.
 // It's a server compoment which means you can fetch data (like the user profile) before the page is rendered.
 // See https://shipfa.st/docs/tutorials/private-page
@@ -26,25 +26,6 @@ export default async function Dashboard() {
   const { user } = session;
   //console.log("user",user);
 
-  try {
-    const profile = await prisma.profile.findFirst({
-      where: {
-        userId: user?.id
-      },
-      include: {
-        artist: true || false,
-        user: true
-      }
-    });
-
-    if (!profile) {
-      redirect("/me/welcome");
-      return;
-    }
-    user.profile = profile;
-  } catch (e) {
-    redirect("/me/welcome");
-  }
 
   const getUserDisplayName = (user: any) => {
     const artistName = user?.profile?.artist?.name;
@@ -62,6 +43,8 @@ export default async function Dashboard() {
       ? "Modifier mes informations bancaires"
       : "Remplir mes informations bancaires";
   };
+
+  const hasBankAccount = Boolean(user?.profile?.artist?.bankAccount);
 
   return (
     <main className=" flex-1">
@@ -86,48 +69,32 @@ export default async function Dashboard() {
       </section>
 
       <section className="z-2 bg-custom-black p-5 fixed h-[60%] pb-[60px] top-[40%] flex flex-col w-full items-center">
-        <div className="text-lg font-medium  w-full max-w-[300px] flex justify-between">
-          {user?.profile?.artist && (
-            <BankInfoButton
-              hasBankAccount={Boolean(user?.profile?.artist?.bankAccount)}
-            />
-          )}
+        <div className="mb-20">
+          <div className="text-lg font-medium  w-full flex justify-between">
+            {user?.profile?.artist && (
+              <ClameWinningsButton hasBankAccount={hasBankAccount} />
+            )}
+          </div>
+          <Divider />
+          <div className="text-lg font-medium  w-full  flex justify-between">
+            {user?.profile?.artist && (
+              <BankInfoButton hasBankAccount={hasBankAccount} />
+            )}
+          </div>
+
+          <Divider />
+
+          {/* <div className="text-lg font-medium w-full flex justify-between">
+            <span>Langues</span>
+          </div>
+          <Divider /> */}
         </div>
-
-        {/* <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
-          <span>Profil</span>
-          <ButtonChangeMode
-            id={user?.profile?.id}
-            artistMode={!user?.profile?.artistMode}
-            className="btn btn-outline m-0 py-0 h-auto min-h-0"
-            size="xs"
-          >
-            {user?.profile?.artistMode ? "Mode auditeur" : "Mode artiste"}
-          </ButtonChangeMode>
-        </div>
-
-        <hr className="w-full max-w-[300px] my-2 border-secondary" /> */}
-
-        {/* <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
-          <span>Portefeuilles</span>
-        </div> */}
-
-        <hr className="w-full max-w-[300px]  border-secondary" />
-
-        <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
-          <span>Langues</span>
-        </div>
-
-        {/* <hr className="w-full max-w-[300px] my-2 border-secondary" /> */}
-
-        {/* <div className="text-lg font-medium w-full max-w-[300px] flex justify-between">
-          <span>Notifications</span>
-        </div> */}
-
-        <hr className="w-full max-w-[300px] my-2 border-secondary mb-20" />
-
         <SignOutButton />
       </section>
     </main>
   );
 }
+
+const Divider = () => {
+  return <hr className="w-full my-2 border-secondary" />;
+};

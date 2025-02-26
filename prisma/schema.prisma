@@ -43,6 +43,7 @@ model User {
   Feedback         Feedback[]
   Profile          Profile[]
   sessions         sessions[]
+  admin            Admin?
 }
 
 model Song {
@@ -182,13 +183,45 @@ enum UserPlan {
 }
 
 model BankAccount {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  iban      String
-  bic       String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  artistId  String   @unique
-  artist    Artist   @relation(fields: [artistId], references: [id])
+  id              String           @id @default(cuid())
+  name            String
+  email           String
+  iban            String
+  bic             String
+  availableBalance Float           @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  artistId        String           @unique
+  artist          Artist           @relation(fields: [artistId], references: [id])
+  paymentRequests PaymentRequest[]
+}
+
+model PaymentRequest {
+  id          String      @id @default(cuid())
+  amount      Float
+  status      RequestStatus @default(PENDING)
+  requestDate DateTime    @default(now())
+  paymentDate DateTime?
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id])
+  bankAccountId String
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id])
+}
+
+enum RequestStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
 }
