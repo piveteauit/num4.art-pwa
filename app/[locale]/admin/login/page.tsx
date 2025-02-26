@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "@/navigation";
 import { toast } from "react-hot-toast";
@@ -22,7 +22,7 @@ export default function AdminLogin() {
     router.push("/admin");
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!validateEmail(email)) {
