@@ -11,7 +11,7 @@ const Submit = ({
   canProgress?: boolean;
 }) => {
   return (
-    <div className="flex justify-between mb-6 gap-4 w-full px-6">
+    <div className="flex justify-between mt-10 mb-6 gap-4 w-full px-6">
       {onPrevious && (
         <Button color="base" className="flex-1 opacity-60" onClick={onPrevious}>
           Précédent
