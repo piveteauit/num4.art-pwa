@@ -50,7 +50,7 @@ function VerifyPage() {
                   return (document.location.href =
                     callbackUrl || "/fr/me/welcome");
                 })
-                .catch((error) => {
+                .catch(() => {
                   setError("Email or token invalid");
                 });
             }

@@ -154,7 +154,7 @@ export default function MetadataStep({
             <span>{stripeFee.toFixed(2)}€</span>
           </li>
           <li className="flex justify-between font-medium border-t border-gray-700 pt-1 mt-1">
-            <span>Prix final pour l'acheteur:</span>
+            <span>Prix final pour l&apos;acheteur:</span>
             <span>{formData.price.toFixed(2)}€</span>
           </li>
         </ul>
