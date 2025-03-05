@@ -13,9 +13,8 @@ interface ButtonCheckoutProps {
 }
 
 const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
-  const { isLoading, createCheckoutSession } = usePayment();
+  const { isLoading, clientSecret, createPaymentIntent } = usePayment();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [clientSecret, setClientSecret] = useState("");
 
   const handlePaymentClick = async () => {
     if (isArtist) {
@@ -26,7 +25,10 @@ const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
     }
 
     try {
-      await createCheckoutSession(song.stripePriceId);
+      const secret = await createPaymentIntent(song.id);
+      if (secret) {
+        setIsModalOpen(true);
+      }
     } catch (error) {
       // L'erreur est déjà gérée dans le hook
     }
@@ -46,12 +48,14 @@ const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
         )}
       </button>
 
-      <PaymentModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        song={song}
-        clientSecret={clientSecret}
-      />
+      {clientSecret && (
+        <PaymentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          song={song}
+          clientSecret={clientSecret}
+        />
+      )}
     </>
   );
 };

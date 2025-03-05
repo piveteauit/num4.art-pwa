@@ -64,8 +64,6 @@ model Song {
   artists          Artist[]   @relation("ArtistToSong")
   genres           Genre[]    @relation("GenreToSong")
   playlists        Playlist[] @relation("PlaylistToSong")
-  stripeProductId  String?
-  stripePriceId    String?
 }
 
 model Artist {

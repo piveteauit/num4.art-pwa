@@ -27,35 +27,29 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
+  // Traitement des paiements réussis
+  if (event.type === "payment_intent.succeeded") {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
     try {
-      // Récupérer l'utilisateur
+      // Récupérer les métadonnées du paiement
+      const { songId, userId } = paymentIntent.metadata;
+
+      if (!songId || !userId) {
+        throw new Error("Métadonnées de paiement incomplètes");
+      }
+
+      // Récupérer le profil de l'utilisateur
       const user = await prisma.user.findUnique({
-        where: { id: session.client_reference_id! },
+        where: { id: userId },
         include: { Profile: true }
       });
 
-      if (!user?.Profile) {
+      if (!user?.Profile?.length) {
         throw new Error("Profil utilisateur non trouvé");
       }
 
-      // Récupérer le produit pour avoir le song_id
-      const lineItems = await stripe.checkout.sessions.listLineItems(
-        session.id
-      );
-      const priceId = lineItems.data[0].price?.id;
-      const price = await stripe.prices.retrieve(priceId!);
-      const product = await stripe.products.retrieve(price.product as string);
-
-      // Le song_id est dans les metadata du produit
-      const songId = product.metadata.song_id || product.metadata.songId;
-
-      if (!songId) {
-        throw new Error("ID du morceau non trouvé dans les metadata");
-      }
-
+      // Enregistrer l'achat du morceau
       await buySong({
         songId: songId,
         profileId: user.Profile[0].id

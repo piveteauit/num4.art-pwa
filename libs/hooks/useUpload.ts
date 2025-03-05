@@ -13,9 +13,7 @@ export function useUpload() {
       previewStartTime: number;
     },
     prefix: string,
-    songId: string,
-    price: number,
-    songName: string
+    songId: string
   ) => {
     setIsUploading(true);
     setProgress(0);
@@ -29,21 +27,17 @@ export function useUpload() {
         throw new Error("Format image non supporté");
       }
 
-      const response = await UploadService.uploadSong(
-        files,
-        prefix,
-        songId,
-        price,
-        songName
-      );
+      const response = await UploadService.uploadSong(files, prefix, songId);
       setProgress(100);
       return response.data;
     } catch (error) {
-      toast.error(error.message || "Erreur lors de l'upload");
+      console.error("Erreur d'upload:", error);
+      toast.error(
+        error.response?.data?.error || "Erreur lors de l'upload des fichiers"
+      );
       throw error;
     } finally {
       setIsUploading(false);
-      setProgress(0);
     }
   };
 
@@ -70,11 +64,13 @@ export function useUpload() {
       setProgress(100);
       return response.data;
     } catch (error) {
-      toast.error(error.message || "Erreur lors de l'upload");
+      console.error("Erreur d'upload:", error);
+      toast.error(
+        error.response?.data?.error || "Erreur lors de l'upload de l'avatar"
+      );
       throw error;
     } finally {
       setIsUploading(false);
-      setProgress(0);
     }
   };
 
