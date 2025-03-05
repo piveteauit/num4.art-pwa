@@ -12,6 +12,7 @@ import type { Appearance, StripeElementsOptions } from "@stripe/stripe-js";
 import { Song } from "@/types/song";
 import ImageWithFallback from "../ImageWithFallback";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -34,6 +35,7 @@ const PaymentForm = ({
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -41,17 +43,43 @@ const PaymentForm = ({
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/payment/success`
-      }
-    });
+    try {
+      // Afficher un message de traitement
+      toast.success("Traitement de votre paiement...");
 
-    if (error) {
-      toast.error(error.message);
+      // Soumettre le paiement avec redirection automatique
+      // Note: Ne pas fermer le modal avant que Stripe ne redirige
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          // Cette URL sera utilisée par Stripe pour rediriger après le traitement
+          return_url: `${window.location.origin}/payment/success?song_id=${song.id}&song_title=${encodeURIComponent(song.title)}`
+        },
+        redirect: "if_required"
+      });
+
+      // Si nous arrivons ici, c'est que Stripe n'a pas redirigé automatiquement
+      // Ce qui peut arriver dans certains cas (par exemple, paiement accepté immédiatement)
+      if (result.error) {
+        // En cas d'erreur, afficher un message et ne pas fermer le modal
+        toast.error(result.error.message || "Une erreur est survenue");
+        setIsLoading(false);
+      } else if (result.paymentIntent) {
+        // Paiement réussi sans redirection nécessaire
+        // On peut fermer le modal et rediriger manuellement
+        onClose();
+        router.push(
+          `/payment/success?payment_intent=${result.paymentIntent.id}&song_id=${song.id}&song_title=${encodeURIComponent(song.title)}`
+        );
+      } else {
+        // Dans tous les autres cas, fermer le modal
+        onClose();
+      }
+    } catch (error) {
+      console.error("Erreur lors de la confirmation du paiement:", error);
+      toast.error("Une erreur est survenue, veuillez réessayer");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -85,6 +113,13 @@ const PaymentForm = ({
           `Payer ${song.price}€`
         )}
       </button>
+
+      <div className="text-xs text-center mt-4 text-white/60">
+        <p>Paiement sécurisé via Stripe</p>
+        <p className="mt-1">
+          En cas de problème, votre paiement ne sera pas débité
+        </p>
+      </div>
     </form>
   );
 };

@@ -223,3 +223,22 @@ enum AdminRole {
   ADMIN
   SUPER_ADMIN
 }
+
+model PaymentLog {
+  id              String    @id @default(cuid())
+  userId          String
+  songId          String?
+  status          PaymentStatus
+  amount          Float
+  paymentIntentId String?
+  errorMessage    String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  DISPUTED
+}
