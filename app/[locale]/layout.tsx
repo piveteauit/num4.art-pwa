@@ -49,7 +49,7 @@ export default function RootLayout({
       )}
       <NextIntlClientProvider locale={locale} messages={messages}>
         {/* TODO: change to h-dvh */}
-        <body className="relative overflow-hidden">
+        <body className="relative overflow-hidden h-dvh scrollbar-hide">
           <Provider>
             <ClientLayout>
               {children}
