@@ -4,7 +4,7 @@ import { prisma } from "@/libs/prisma";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-04-10" as Stripe.StripeConfig["apiVersion"]
+  apiVersion: "2025-02-24.acacia" as Stripe.StripeConfig["apiVersion"]
 });
 
 export async function GET(
