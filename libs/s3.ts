@@ -4,12 +4,15 @@ import {
   ObjectCannedACL,
   DeleteObjectCommand
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const s3Config = {
   id: process.env.OVH_STORAGE_BUCKET!,
   endPoint: process.env.OVH_STORAGE_ENDPOINT!,
   region: process.env.OVH_STORAGE_REGION,
   publicUrl: process.env.OVH_PUBLIC_URL!,
+  key: process.env.OVH_ACCESS_KEY!,
+  secret: process.env.OVH_SECRET_KEY!,
   credentials: {
     accessKeyId: process.env.OVH_ACCESS_KEY!,
     secretAccessKey: process.env.OVH_SECRET_KEY!
@@ -42,4 +45,28 @@ export const uploadToS3 = async (params: {
 export const deleteFromS3 = async (params: { Bucket: string; Key: string }) => {
   const command = new DeleteObjectCommand(params);
   await s3Client.send(command);
+};
+
+export const generatePresignedUrl = async (params: {
+  Bucket: string;
+  Key: string;
+  ContentType?: string;
+  Expires?: number;
+  ACL?: ObjectCannedACL;
+}) => {
+  const command = new PutObjectCommand({
+    Bucket: params.Bucket,
+    Key: params.Key,
+    ContentType: params.ContentType,
+    ACL: params.ACL || "public-read"
+  });
+
+  const url = await getSignedUrl(s3Client, command, {
+    expiresIn: params.Expires || 900 // 15 minutes par défaut
+  });
+
+  return {
+    uploadUrl: url,
+    publicUrl: `${s3Config.publicUrl}/${params.Key}`
+  };
 };

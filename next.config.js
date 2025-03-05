@@ -17,6 +17,12 @@ const domain = isDev ? "http://localhost:3000" : process.env?.NEXTAUTH_URL;
 
 const nextConfig = {
   reactStrictMode: true,
+  api: {
+    bodyParser: {
+      sizeLimit: "20mb"
+    },
+    responseLimit: "20mb"
+  },
   async rewrites() {
     return [
       {

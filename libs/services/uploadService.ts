@@ -4,6 +4,9 @@ import { toBlobURL } from "@ffmpeg/util";
 
 export class UploadService {
   static ffmpeg: FFmpeg | null = null;
+  // Taille maximale pour les fichiers (en octets) - 3MB pour l'audio, 1MB pour l'image
+  static MAX_AUDIO_SIZE = 3 * 1024 * 1024; // 3MB
+  static MAX_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB
 
   static async loadFFmpeg() {
     if (this.ffmpeg) return;
@@ -40,7 +43,7 @@ export class UploadService {
         "-c:a",
         "libmp3lame",
         "-b:a",
-        "320k",
+        "128k",
         "output.mp3"
       ]);
 
@@ -89,7 +92,7 @@ export class UploadService {
     ctx.drawImage(image, 0, 0, width, height);
 
     const blob = await new Promise<Blob>((resolve) => {
-      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.8);
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.6);
     });
 
     return new File([blob], file.name, { type: "image/jpeg" });
@@ -130,7 +133,7 @@ export class UploadService {
         "-c:a",
         "libmp3lame",
         "-b:a",
-        "192k",
+        "96k",
         outputFileName
       ]);
 
@@ -166,6 +169,49 @@ export class UploadService {
     }
   }
 
+  // Fonction utilitaire pour uploader avec retry
+  static async uploadWithRetry(
+    url: string,
+    file: File,
+    contentType: string,
+    maxRetries = 3
+  ) {
+    let retries = 0;
+
+    while (retries < maxRetries) {
+      try {
+        const response = await fetch(url, {
+          method: "PUT",
+          body: file,
+          headers: { "Content-Type": contentType }
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Upload failed with status ${response.status}: ${await response.text()}`
+          );
+        }
+
+        return response;
+      } catch (error) {
+        retries++;
+        console.warn(
+          `Tentative d'upload échouée (${retries}/${maxRetries})`,
+          error
+        );
+
+        if (retries >= maxRetries) {
+          throw error;
+        }
+
+        // Attente exponentielle avant retry (300ms, 900ms, 2700ms, etc.)
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(3, retries) * 100)
+        );
+      }
+    }
+  }
+
   static async uploadSong(
     files: {
       audio: File;
@@ -175,33 +221,130 @@ export class UploadService {
     prefix: string,
     songId: string
   ) {
-    const formData = new FormData();
-
-    if (files.audio) {
-      // Convertir l'audio en MP3
-      const convertedAudio = await this.convertAudio(files.audio);
-      formData.append("audio", convertedAudio);
-
-      // Générer la preview
-      const previewAudio = await this.generatePreview(
-        convertedAudio,
-        files.previewStartTime
+    // Vérification de la taille des fichiers
+    if (files.audio && files.audio.size > this.MAX_AUDIO_SIZE) {
+      throw new Error(
+        `Le fichier audio est trop volumineux (maximum: ${Math.round(this.MAX_AUDIO_SIZE / (1024 * 1024))}MB)`
       );
-      formData.append("preview", previewAudio);
     }
 
-    if (files.image) {
-      // Optimiser l'image
-      const optimizedImage = await this.convertImage(files.image);
-      formData.append("image", optimizedImage);
+    if (files.image && files.image.size > this.MAX_IMAGE_SIZE) {
+      throw new Error(
+        `L'image est trop volumineuse (maximum: ${Math.round(this.MAX_IMAGE_SIZE / (1024 * 1024))}MB)`
+      );
+    }
 
-      formData.append("previewStartTime", files.previewStartTime.toString());
-      formData.append("prefix", prefix);
-      formData.append("songId", songId);
+    try {
+      // Préparation des fichiers
+      let convertedAudio = null;
+      let previewAudio = null;
+      let optimizedImage = null;
 
-      return await apiClient.post("/upload/song", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      if (files.audio) {
+        // Convertir l'audio en MP3 avec une qualité réduite
+        convertedAudio = await this.convertAudio(files.audio);
+
+        // Générer la preview
+        previewAudio = await this.generatePreview(
+          convertedAudio,
+          files.previewStartTime
+        );
+      }
+
+      if (files.image) {
+        // Optimiser l'image
+        optimizedImage = await this.convertImage(files.image);
+      }
+
+      // Demande des URL pré-signées au serveur
+      const filesConfig = [];
+
+      if (convertedAudio) {
+        filesConfig.push({
+          type: "audio",
+          contentType: "audio/mpeg",
+          size: convertedAudio.size
+        });
+      }
+
+      if (previewAudio) {
+        filesConfig.push({
+          type: "preview",
+          contentType: "audio/mpeg",
+          size: previewAudio.size
+        });
+      }
+
+      if (optimizedImage) {
+        filesConfig.push({
+          type: "image",
+          contentType: "image/webp",
+          size: optimizedImage.size
+        });
+      }
+
+      if (filesConfig.length === 0) {
+        throw new Error("Aucun fichier à uploader");
+      }
+
+      const presignedUrlsResponse = await apiClient.post(
+        "/upload/presigned-url",
+        {
+          prefix,
+          songId,
+          files: filesConfig
+        }
+      );
+
+      const { urls } = presignedUrlsResponse.data;
+
+      // Upload parallèle des fichiers directement vers S3
+      const uploadPromises = [];
+
+      if (urls.audio && convertedAudio) {
+        uploadPromises.push(
+          this.uploadWithRetry(
+            urls.audio.uploadUrl,
+            convertedAudio,
+            "audio/mpeg"
+          )
+        );
+      }
+
+      if (urls.preview && previewAudio) {
+        uploadPromises.push(
+          this.uploadWithRetry(
+            urls.preview.uploadUrl,
+            previewAudio,
+            "audio/mpeg"
+          )
+        );
+      }
+
+      if (urls.image && optimizedImage) {
+        uploadPromises.push(
+          this.uploadWithRetry(
+            urls.image.uploadUrl,
+            optimizedImage,
+            "image/webp"
+          )
+        );
+      }
+
+      // Attendre que tous les uploads soient terminés
+      await Promise.all(uploadPromises);
+
+      // Retourner les URLs publiques pour les fichiers uploadés
+      return {
+        data: {
+          audio: { url: urls.audio.publicUrl },
+          preview: { url: urls.preview.publicUrl },
+          image: { url: urls.image.publicUrl }
+        }
+      };
+    } catch (error) {
+      console.error("Erreur lors de l'upload direct vers S3:", error);
+      throw error;
     }
   }
 
