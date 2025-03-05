@@ -48,7 +48,7 @@ export default function PaymentFailedPage() {
             Paiement échoué
           </h1>
           <p className="text-white/70">
-            Nous n'avons pas pu traiter votre paiement pour {songTitle}.
+            Nous n&apos;avons pas pu traiter votre paiement pour {songTitle}.
           </p>
           {errorMessage && (
             <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-300 text-sm">
@@ -64,7 +64,7 @@ export default function PaymentFailedPage() {
             </Link>
           )}
           <Link href="/explore" className="btn btn-primary">
-            Explorer d'autres titres
+            Explorer d&apos;autres titres
           </Link>
           <button onClick={() => router.back()} className="btn btn-secondary">
             Retour
@@ -72,9 +72,9 @@ export default function PaymentFailedPage() {
         </div>
 
         <div className="mt-8 text-center">
-          <h3 className="text-lg font-medium mb-2">Besoin d'aide ?</h3>
+          <h3 className="text-lg font-medium mb-2">Besoin d&apos;aide ?</h3>
           <p className="text-white/60 text-sm">
-            Si vous continuez à rencontrer des problèmes, n'hésitez pas à
+            Si vous continuez à rencontrer des problèmes, n&apos;hésitez pas à
             <Link
               href="/contact"
               className="text-blue-400 hover:text-blue-300 ml-1"

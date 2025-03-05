@@ -2,6 +2,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/libs/prisma";
 import { NextResponse } from "next/server";
 
+// Forcer le mode dynamique pour cette route
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const session = await auth();

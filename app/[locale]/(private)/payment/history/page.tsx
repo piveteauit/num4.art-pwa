@@ -64,7 +64,7 @@ export default function PaymentHistoryPage() {
           <div className="bg-gray-800 p-8 rounded-xl max-w-lg mx-auto">
             <h2 className="text-xl font-medium mb-3">Aucun paiement trouvé</h2>
             <p className="text-white/60 mb-6">
-              Vous n'avez effectué aucun achat pour le moment.
+              Vous n&apos;avez effectué aucun achat pour le moment.
             </p>
             <Link href="/explore" className="btn btn-primary">
               Explorer les titres

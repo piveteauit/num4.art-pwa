@@ -28,7 +28,7 @@ export default function PaymentSuccessPage() {
       hasProcessedAlready.current = true;
     }
 
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
 
     const handleSuccess = async () => {
       // Seulement si nous sommes toujours en chargement et n'avons pas encore traité
@@ -79,10 +79,10 @@ export default function PaymentSuccessPage() {
 
     // Compte à rebours avant redirection uniquement lorsque le chargement est terminé
     if (!isLoading && !timer) {
-      timer = setInterval(() => {
+      timer = setTimeout(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
-            clearInterval(timer);
+            clearTimeout(timer);
             router.push("/library");
             return 0;
           }
@@ -92,7 +92,7 @@ export default function PaymentSuccessPage() {
     }
 
     return () => {
-      if (timer) clearInterval(timer);
+      if (timer) clearTimeout(timer);
     };
   }, [router, paymentIntentId, songId, songTitle, isLoading, songInfo]);
 
