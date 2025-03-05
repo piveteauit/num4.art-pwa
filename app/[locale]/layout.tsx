@@ -48,7 +48,8 @@ export default function RootLayout({
         </head>
       )}
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <body className="relative h-dvh">
+        {/* TODO: change to h-dvh */}
+        <body className="relative h-screen">
           <Provider>
             <ClientLayout>
               {children}

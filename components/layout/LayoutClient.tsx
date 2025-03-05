@@ -60,7 +60,8 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
       <Menu />
       {/* Show a progress bar at the top when navigating between pages */}
       <NextTopLoader color={config.colors.main} showSpinner={false} />
-      <div className="flex flex-col h-dvh">
+      {/* TODO: change to h-dvh */}
+      <div className="flex flex-col h-screen">
         <PlayerProvider>
           {/* Content inside app/page.js files  */}
           {children}
