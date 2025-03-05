@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
@@ -15,17 +15,24 @@ export default function PaymentSuccessPage() {
   const paymentIntentId = searchParams.get("payment_intent");
   const songId = searchParams.get("song_id");
   const songTitle = searchParams.get("song_title");
+  const redirectStatus = searchParams.get("redirect_status");
 
   const [songInfo, setSongInfo] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const hasProcessedAlready = useRef(false);
 
   useEffect(() => {
+    // Montrer le toast une seule fois
+    if (!hasProcessedAlready.current) {
+      toast.success("Paiement réussi !");
+      hasProcessedAlready.current = true;
+    }
+
     let timer: NodeJS.Timeout;
 
     const handleSuccess = async () => {
-      if (isLoading) {
-        toast.success("Paiement réussi !");
-
+      // Seulement si nous sommes toujours en chargement et n'avons pas encore traité
+      if (isLoading && !songInfo) {
         // Récupérer les informations de l'achat si l'ID du paiement est disponible
         if (paymentIntentId) {
           try {
@@ -65,10 +72,13 @@ export default function PaymentSuccessPage() {
       }
     };
 
-    handleSuccess();
+    // N'exécuter qu'une seule fois
+    if (!songInfo) {
+      handleSuccess();
+    }
 
     // Compte à rebours avant redirection uniquement lorsque le chargement est terminé
-    if (!isLoading) {
+    if (!isLoading && !timer) {
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -84,7 +94,7 @@ export default function PaymentSuccessPage() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [router, paymentIntentId, songId, songTitle, isLoading]);
+  }, [router, paymentIntentId, songId, songTitle, isLoading, songInfo]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">

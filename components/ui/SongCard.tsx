@@ -19,11 +19,12 @@ export default function SongCard({ song, index, totalLength }: SongCardProps) {
       }}
       className={`flex-shrink-0 w-[180px] flex-1`}
     >
-      <div className="relative w-[180px] h-[180px] rounded-lg overflow-hidden">
+      <div className="relative size-[180px] rounded-lg overflow-hidden">
         <ImageWithFallback
           src={song.image}
           alt={`Jaquette ${song.title}`}
           fill
+          sizes="180px"
         />
       </div>
       <div className="mt-2 text-left">

@@ -47,34 +47,16 @@ const PaymentForm = ({
       // Afficher un message de traitement
       toast.success("Traitement de votre paiement...");
 
-      // Soumettre le paiement avec redirection automatique
-      // Note: Ne pas fermer le modal avant que Stripe ne redirige
-      const result = await stripe.confirmPayment({
+      // Soumettre le paiement à Stripe
+      await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // Cette URL sera utilisée par Stripe pour rediriger après le traitement
+          // URL de redirection pour Stripe - directement vers success
           return_url: `${window.location.origin}/payment/success?song_id=${song.id}&song_title=${encodeURIComponent(song.title)}`
-        },
-        redirect: "if_required"
+        }
       });
 
-      // Si nous arrivons ici, c'est que Stripe n'a pas redirigé automatiquement
-      // Ce qui peut arriver dans certains cas (par exemple, paiement accepté immédiatement)
-      if (result.error) {
-        // En cas d'erreur, afficher un message et ne pas fermer le modal
-        toast.error(result.error.message || "Une erreur est survenue");
-        setIsLoading(false);
-      } else if (result.paymentIntent) {
-        // Paiement réussi sans redirection nécessaire
-        // On peut fermer le modal et rediriger manuellement
-        onClose();
-        router.push(
-          `/payment/success?payment_intent=${result.paymentIntent.id}&song_id=${song.id}&song_title=${encodeURIComponent(song.title)}`
-        );
-      } else {
-        // Dans tous les autres cas, fermer le modal
-        onClose();
-      }
+      // Nous n'arrivons jamais ici car Stripe redirige automatiquement l'utilisateur
     } catch (error) {
       console.error("Erreur lors de la confirmation du paiement:", error);
       toast.error("Une erreur est survenue, veuillez réessayer");
