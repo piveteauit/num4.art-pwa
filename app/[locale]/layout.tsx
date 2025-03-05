@@ -49,13 +49,7 @@ export default function RootLayout({
       )}
       <NextIntlClientProvider locale={locale} messages={messages}>
         {/* TODO: change to h-dvh */}
-        <body
-          className="relative h-screen"
-          style={{
-            textSizeAdjust: "100%",
-            WebkitTextSizeAdjust: "100%"
-          }}
-        >
+        <body className="relative overflow-hidden">
           <Provider>
             <ClientLayout>
               {children}
