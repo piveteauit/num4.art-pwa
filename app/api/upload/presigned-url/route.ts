@@ -53,6 +53,11 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({ urls });
 
+    // Ajout des en-têtes CORS à la réponse
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+
     return response;
   } catch (error) {
     console.error("Erreur lors de la génération des URL pré-signées:", error);

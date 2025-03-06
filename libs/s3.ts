@@ -65,8 +65,12 @@ export const generatePresignedUrl = async (params: {
     expiresIn: params.Expires || 900 // 15 minutes par défaut
   });
 
+  const publicUrl = `${s3Config.publicUrl}/${params.Key}`;
+
+  console.log("URL publique générée:", publicUrl);
+
   return {
     uploadUrl: url,
-    publicUrl: `${s3Config.publicUrl}/${params.Key}`
+    publicUrl
   };
 };

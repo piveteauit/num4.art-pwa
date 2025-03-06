@@ -37,6 +37,8 @@ export class UploadService {
       const inputData = new Uint8Array(await file.arrayBuffer());
       await this.ffmpeg.writeFile("input", inputData);
 
+      // Amélioration de la conversion pour s'assurer que le format est compatible
+      // Utilisation de paramètres compatibles avec tous les navigateurs
       await this.ffmpeg.exec([
         "-i",
         "input",
@@ -44,6 +46,12 @@ export class UploadService {
         "libmp3lame",
         "-b:a",
         "128k",
+        "-ar",
+        "44100", // Fréquence d'échantillonnage standard
+        "-ac",
+        "2", // Stéréo (2 canaux)
+        "-f",
+        "mp3", // Format explicite
         "output.mp3"
       ]);
 
@@ -57,11 +65,12 @@ export class UploadService {
         console.warn("Erreur lors du nettoyage des fichiers FFmpeg:", e);
       }
 
+      // Créer un nouveau fichier avec type MIME explicite
       return new File([data], file.name.replace(/\.[^/.]+$/, ".mp3"), {
         type: "audio/mpeg"
       });
     } catch (error) {
-      console.error("Erreur lors de la conversion audio:", error);
+      console.error("Erreur détaillée lors de la conversion audio:", error);
       throw new Error("Impossible de convertir le fichier audio");
     }
   }
@@ -134,6 +143,12 @@ export class UploadService {
         "libmp3lame",
         "-b:a",
         "96k",
+        "-ar",
+        "44100", // Fréquence d'échantillonnage standard
+        "-ac",
+        "2", // Stéréo (2 canaux)
+        "-f",
+        "mp3", // Format explicite
         outputFileName
       ]);
 
@@ -183,7 +198,10 @@ export class UploadService {
         const response = await fetch(url, {
           method: "PUT",
           body: file,
-          headers: { "Content-Type": contentType }
+          headers: {
+            "Content-Type": contentType,
+            "x-amz-acl": "public-read"
+          }
         });
 
         if (!response.ok) {
