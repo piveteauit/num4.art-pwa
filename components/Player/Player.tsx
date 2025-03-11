@@ -8,6 +8,7 @@ import React, {
   ReactElement
 } from "react";
 import { usePlayer } from "@/context/PlayerContext";
+import { isMediaSessionSupported } from "@/context/PlayerContext";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
@@ -298,6 +299,32 @@ function Player(): React.JSX.Element | null {
   const audioRef = useRef<H5AudioPlayer>(null);
   const [repeat, setRepeat] = useState(false);
 
+  // Fonction pour mettre à jour les métadonnées de MediaSession
+  const updateMediaSessionMetadata = useCallback(() => {
+    if (isMediaSessionSupported() && currentPlaying) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: currentPlaying.title,
+          artist: currentPlaying.artists?.[0]?.name || "Artiste inconnu",
+          album: "Num4.art",
+          artwork: [
+            { src: currentPlaying.image, sizes: "96x96", type: "image/webp" },
+            { src: currentPlaying.image, sizes: "128x128", type: "image/webp" },
+            { src: currentPlaying.image, sizes: "192x192", type: "image/webp" },
+            { src: currentPlaying.image, sizes: "256x256", type: "image/webp" },
+            { src: currentPlaying.image, sizes: "384x384", type: "image/webp" },
+            { src: currentPlaying.image, sizes: "512x512", type: "image/webp" }
+          ]
+        });
+      } catch (error) {
+        console.error(
+          "Erreur lors de la mise à jour des métadonnées MediaSession:",
+          error
+        );
+      }
+    }
+  }, [currentPlaying]);
+
   useEffect(() => {
     if (session?.user?.id) {
       loadOwnedSongs(session.user.id).then((profile) => {
@@ -356,6 +383,48 @@ function Player(): React.JSX.Element | null {
       currentQueue[currentQueuePosition].id;
     handleSongChange(previousPosition, isSameTrack);
   };
+
+  // Configurer les actions de MediaSession
+  // const setupMediaSessionActions = useCallback(() => {
+  //   if (isMediaSessionSupported()) {
+  //     try {
+  //       navigator.mediaSession.setActionHandler("play", () => {
+  //         audioRef.current?.audio.current?.play();
+  //         setPaused(false);
+  //       });
+
+  //       navigator.mediaSession.setActionHandler("pause", () => {
+  //         audioRef.current?.audio.current?.pause();
+  //         setPaused(true);
+  //       });
+
+  //       if (hasSong) {
+  //         navigator.mediaSession.setActionHandler(
+  //           "previoustrack",
+  //           handlePrevious
+  //         );
+  //         navigator.mediaSession.setActionHandler("nexttrack", handleNext);
+  //       } else {
+  //         // Désactiver les contrôles précédent/suivant pour les extraits
+  //         navigator.mediaSession.setActionHandler("previoustrack", null);
+  //         navigator.mediaSession.setActionHandler("nexttrack", null);
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Erreur lors de la configuration des actions MediaSession:",
+  //         error
+  //       );
+  //     }
+  //   }
+  // }, [hasSong, handlePrevious, handleNext]);
+
+  // // Mettre à jour les métadonnées et actions MediaSession quand le morceau change
+  // useEffect(() => {
+  //   if (currentPlaying) {
+  //     updateMediaSessionMetadata();
+  //     setupMediaSessionActions();
+  //   }
+  // }, [currentPlaying, updateMediaSessionMetadata, setupMediaSessionActions]);
 
   const handlePurchaseSuccess = useCallback(() => {
     if (session?.user?.id) {
@@ -487,6 +556,17 @@ function Player(): React.JSX.Element | null {
     };
   }, [isExpanded]);
 
+  // // Mise à jour de l'état de lecture pour MediaSession
+  // useEffect(() => {
+  //   if (isMediaSessionSupported()) {
+  //     if (paused) {
+  //       navigator.mediaSession.playbackState = "paused";
+  //     } else {
+  //       navigator.mediaSession.playbackState = "playing";
+  //     }
+  //   }
+  // }, [paused]);
+
   if (!currentPlaying) return null;
 
   return (
@@ -577,7 +657,9 @@ function Player(): React.JSX.Element | null {
                     label={
                       <span className="flex items-center gap-2">
                         <span>Acheter</span>
-                        <span className="font-bold">{currentPlaying?.price}€</span>
+                        <span className="font-bold">
+                          {currentPlaying?.price}€
+                        </span>
                       </span>
                     }
                     song={currentPlaying}

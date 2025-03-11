@@ -13,6 +13,11 @@ import type H5AudioPlayer from "react-h5-audio-player";
 import { getProfile } from "@/libs/server/user.action";
 import { Song } from "@/types/song";
 
+// Fonction utilitaire pour vérifier si MediaSession est supporté
+export const isMediaSessionSupported = (): boolean => {
+  return typeof navigator !== "undefined" && "mediaSession" in navigator;
+};
+
 interface PlayerContextProps {
   currentPlaying?: string | null | any;
   setCurrentPlaying: React.Dispatch<React.SetStateAction<string | null | any>>;

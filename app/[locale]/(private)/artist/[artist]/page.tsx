@@ -123,7 +123,7 @@ export default async function Artist({ params: { artist } }: any) {
       ) : (
         <div className="mt-12 mx-6 p-6 bg-white/5 rounded-xl text-center">
           <p className="text-white/80">
-            Cet artiste n'a pas encore publié de titres.
+            Cet artiste n&apos;a pas encore publié de titres.
           </p>
         </div>
       )}
