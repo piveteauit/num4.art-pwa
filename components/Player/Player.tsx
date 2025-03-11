@@ -22,6 +22,14 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Song } from "@/types/song";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
+// Extension de l'interface HTMLAudioElement pour y inclure nos propriétés personnalisées
+declare global {
+  interface HTMLAudioElement {
+    _lastPositionUpdate?: number;
+    _mediaSessionHandlersSet?: "full" | "limited";
+  }
+}
+
 interface CloseButtonProps {
   onClick: () => void;
   isExpanded: boolean;
@@ -303,19 +311,37 @@ function Player(): React.JSX.Element | null {
   const updateMediaSessionMetadata = useCallback(() => {
     if (isMediaSessionSupported() && currentPlaying) {
       try {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: currentPlaying.title,
-          artist: currentPlaying.artists?.[0]?.name || "Artiste inconnu",
-          album: "Num4.art",
-          artwork: [
-            { src: currentPlaying.image, sizes: "96x96", type: "image/webp" },
-            { src: currentPlaying.image, sizes: "128x128", type: "image/webp" },
-            { src: currentPlaying.image, sizes: "192x192", type: "image/webp" },
-            { src: currentPlaying.image, sizes: "256x256", type: "image/webp" },
-            { src: currentPlaying.image, sizes: "384x384", type: "image/webp" },
-            { src: currentPlaying.image, sizes: "512x512", type: "image/webp" }
-          ]
-        });
+        // On évite de recréer les métadonnées si elles existent déjà pour le même morceau
+        const currentMetadata = navigator.mediaSession.metadata;
+        const currentTitle = currentMetadata?.title;
+
+        // Ne mettre à jour que si les métadonnées changent réellement
+        if (!currentMetadata || currentTitle !== currentPlaying.title) {
+          // Pour iOS, il est préférable d'utiliser un nombre limité d'images avec des tailles appropriées
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: currentPlaying.title,
+            artist: currentPlaying.artists?.[0]?.name || "Artiste inconnu",
+            album: "Num4.art",
+            artwork: [
+              // Utiliser un format plus universel et limiter le nombre de tailles pour iOS
+              {
+                src: currentPlaying.image,
+                sizes: "128x128",
+                type: "image/jpeg"
+              },
+              {
+                src: currentPlaying.image,
+                sizes: "256x256",
+                type: "image/jpeg"
+              },
+              {
+                src: currentPlaying.image,
+                sizes: "512x512",
+                type: "image/jpeg"
+              }
+            ]
+          });
+        }
       } catch (error) {
         console.error(
           "Erreur lors de la mise à jour des métadonnées MediaSession:",
@@ -388,6 +414,7 @@ function Player(): React.JSX.Element | null {
   const setupMediaSessionActions = useCallback(() => {
     if (isMediaSessionSupported()) {
       try {
+        // Actions qui sont toujours disponibles
         navigator.mediaSession.setActionHandler("play", () => {
           audioRef.current?.audio.current?.play();
           setPaused(false);
@@ -398,16 +425,36 @@ function Player(): React.JSX.Element | null {
           setPaused(true);
         });
 
-        if (hasSong) {
-          navigator.mediaSession.setActionHandler(
-            "previoustrack",
-            handlePrevious
-          );
-          navigator.mediaSession.setActionHandler("nexttrack", handleNext);
-        } else {
-          // Désactiver les contrôles précédent/suivant pour les extraits
-          navigator.mediaSession.setActionHandler("previoustrack", null);
-          navigator.mediaSession.setActionHandler("nexttrack", null);
+        // Garder une référence aux actions précédentes
+        const prevHandlersSet =
+          audioRef.current?.audio.current?._mediaSessionHandlersSet;
+        const shouldUpdateHandlers =
+          !prevHandlersSet ||
+          prevHandlersSet !== (hasSong ? "full" : "limited");
+
+        if (shouldUpdateHandlers) {
+          if (hasSong) {
+            navigator.mediaSession.setActionHandler(
+              "previoustrack",
+              handlePrevious
+            );
+            navigator.mediaSession.setActionHandler("nexttrack", handleNext);
+
+            // Marquer que nous avons configuré le jeu complet d'actions
+            if (audioRef.current?.audio.current) {
+              audioRef.current.audio.current._mediaSessionHandlersSet = "full";
+            }
+          } else {
+            // Désactiver les contrôles précédent/suivant pour les extraits
+            navigator.mediaSession.setActionHandler("previoustrack", null);
+            navigator.mediaSession.setActionHandler("nexttrack", null);
+
+            // Marquer que nous avons configuré le jeu limité d'actions
+            if (audioRef.current?.audio.current) {
+              audioRef.current.audio.current._mediaSessionHandlersSet =
+                "limited";
+            }
+          }
         }
       } catch (error) {
         console.error(
@@ -421,10 +468,15 @@ function Player(): React.JSX.Element | null {
   // Mettre à jour les métadonnées et actions MediaSession quand le morceau change
   useEffect(() => {
     if (currentPlaying) {
+      // Mise à jour unique des métadonnées lorsque le morceau change
       updateMediaSessionMetadata();
       setupMediaSessionActions();
     }
-  }, [currentPlaying, updateMediaSessionMetadata, setupMediaSessionActions]);
+  }, [
+    currentPlaying?.id,
+    updateMediaSessionMetadata,
+    setupMediaSessionActions
+  ]); // Changer la dépendance pour ne mettre à jour que lorsque l'ID du morceau change
 
   const handlePurchaseSuccess = useCallback(() => {
     if (session?.user?.id) {
@@ -537,6 +589,34 @@ function Player(): React.JSX.Element | null {
       const audioElement = audioRef.current?.audio.current;
       if (audioElement && !isNaN(audioElement.currentTime)) {
         setCurrentTime(audioElement.currentTime);
+
+        // Mise à jour optimisée pour MediaSession - ne mettre à jour que toutes les 500ms
+        // pour éviter de surcharger l'API et causer des clignotements
+        if (isMediaSessionSupported() && audioElement.duration) {
+          // Utilisation d'une propriété pour gérer la dernière mise à jour
+          if (
+            !audioElement._lastPositionUpdate ||
+            Date.now() - audioElement._lastPositionUpdate > 500
+          ) {
+            try {
+              // Mettre à jour uniquement la position, pas les métadonnées complètes
+              if ("setPositionState" in navigator.mediaSession) {
+                navigator.mediaSession.setPositionState({
+                  duration: audioElement.duration,
+                  position: audioElement.currentTime,
+                  playbackRate: audioElement.playbackRate
+                });
+              }
+              // Mettre à jour le timestamp
+              audioElement._lastPositionUpdate = Date.now();
+            } catch (error) {
+              console.error(
+                "Erreur lors de la mise à jour de la position:",
+                error
+              );
+            }
+          }
+        }
       }
     },
     onError: handleAudioError
@@ -556,12 +636,16 @@ function Player(): React.JSX.Element | null {
     };
   }, [isExpanded]);
 
-  // // Mise à jour de l'état de lecture pour MediaSession
+  // Mise à jour de l'état de lecture pour MediaSession
   useEffect(() => {
     if (isMediaSessionSupported()) {
-      if (paused) {
+      // Vérifier si l'état est déjà à jour pour éviter les mises à jour inutiles
+      if (paused && navigator.mediaSession.playbackState !== "paused") {
         navigator.mediaSession.playbackState = "paused";
-      } else {
+      } else if (
+        !paused &&
+        navigator.mediaSession.playbackState !== "playing"
+      ) {
         navigator.mediaSession.playbackState = "playing";
       }
     }
