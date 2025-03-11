@@ -38,33 +38,39 @@ export default function PublishPage() {
   // Prévenir la fermeture de la page pendant le processus
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isPublishing) {
+      if (isPublishing || isUploading) {
+        // La méthode moderne recommandée (e.preventDefault est suffisant)
         e.preventDefault();
-        e.returnValue =
-          "La publication est en cours. Êtes-vous sûr de vouloir quitter ?";
-        return e.returnValue;
+
+        // Pour la compatibilité avec les navigateurs plus anciens
+        // Utiliser une chaîne vide pour éviter l'avertissement de dépréciation
+        // @ts-ignore - Ignorer l'avertissement de dépréciation
+        e.returnValue = "";
+
+        // Renvoyer une chaîne pour les navigateurs qui supportent encore les messages personnalisés
+        return "Êtes-vous sûr de vouloir annuler la publication ?";
       }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isPublishing]);
+  }, [isPublishing, isUploading]);
 
   // Intercepter la navigation avec un middleware
   const handleNavigation = useCallback(() => {
     if (
-      isPublishing &&
+      (isPublishing || isUploading) &&
       !window.confirm(
-        "La publication est en cours. Êtes-vous sûr de vouloir quitter ?"
+        "L'upload ou la publication est en cours. Êtes-vous sûr de vouloir quitter ?"
       )
     ) {
       return false;
     }
     return true;
-  }, [isPublishing]);
+  }, [isPublishing, isUploading]);
 
   useEffect(() => {
-    if (isPublishing) {
+    if (isPublishing || isUploading) {
       window.onpopstate = () => {
         if (handleNavigation()) {
           router.back();
@@ -75,7 +81,7 @@ export default function PublishPage() {
     return () => {
       window.onpopstate = null;
     };
-  }, [isPublishing, router, handleNavigation]);
+  }, [isPublishing, isUploading, router, handleNavigation]);
 
   useEffect(() => {
     if (!session?.user?.profile?.artist) {
@@ -208,7 +214,12 @@ export default function PublishPage() {
           <div className="bg-base p-6 rounded-lg shadow-xl">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
             <p className="text-center mt-4">
-              Publication en cours... Cela peut prendre quelques minutes
+              {isUploading
+                ? "Upload en cours... Merci de ne pas quitter cette page"
+                : "Publication en cours... Cela peut prendre quelques minutes"}
+            </p>
+            <p className="text-center mt-2 text-yellow-400 text-sm">
+              Ne fermez pas cette fenêtre et ne quittez pas la page
             </p>
           </div>
         </div>

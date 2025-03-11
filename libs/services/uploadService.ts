@@ -5,7 +5,7 @@ import { toBlobURL } from "@ffmpeg/util";
 export class UploadService {
   static ffmpeg: FFmpeg | null = null;
   // Taille maximale pour les fichiers (en octets) - 3MB pour l'audio, 1MB pour l'image
-  static MAX_AUDIO_SIZE = 3 * 1024 * 1024; // 3MB
+  static MAX_AUDIO_SIZE = 10 * 1024 * 1024; // 10MB
   static MAX_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB
 
   static async loadFFmpeg() {
