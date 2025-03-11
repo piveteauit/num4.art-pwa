@@ -385,46 +385,46 @@ function Player(): React.JSX.Element | null {
   };
 
   // Configurer les actions de MediaSession
-  // const setupMediaSessionActions = useCallback(() => {
-  //   if (isMediaSessionSupported()) {
-  //     try {
-  //       navigator.mediaSession.setActionHandler("play", () => {
-  //         audioRef.current?.audio.current?.play();
-  //         setPaused(false);
-  //       });
+  const setupMediaSessionActions = useCallback(() => {
+    if (isMediaSessionSupported()) {
+      try {
+        navigator.mediaSession.setActionHandler("play", () => {
+          audioRef.current?.audio.current?.play();
+          setPaused(false);
+        });
 
-  //       navigator.mediaSession.setActionHandler("pause", () => {
-  //         audioRef.current?.audio.current?.pause();
-  //         setPaused(true);
-  //       });
+        navigator.mediaSession.setActionHandler("pause", () => {
+          audioRef.current?.audio.current?.pause();
+          setPaused(true);
+        });
 
-  //       if (hasSong) {
-  //         navigator.mediaSession.setActionHandler(
-  //           "previoustrack",
-  //           handlePrevious
-  //         );
-  //         navigator.mediaSession.setActionHandler("nexttrack", handleNext);
-  //       } else {
-  //         // Désactiver les contrôles précédent/suivant pour les extraits
-  //         navigator.mediaSession.setActionHandler("previoustrack", null);
-  //         navigator.mediaSession.setActionHandler("nexttrack", null);
-  //       }
-  //     } catch (error) {
-  //       console.error(
-  //         "Erreur lors de la configuration des actions MediaSession:",
-  //         error
-  //       );
-  //     }
-  //   }
-  // }, [hasSong, handlePrevious, handleNext]);
+        if (hasSong) {
+          navigator.mediaSession.setActionHandler(
+            "previoustrack",
+            handlePrevious
+          );
+          navigator.mediaSession.setActionHandler("nexttrack", handleNext);
+        } else {
+          // Désactiver les contrôles précédent/suivant pour les extraits
+          navigator.mediaSession.setActionHandler("previoustrack", null);
+          navigator.mediaSession.setActionHandler("nexttrack", null);
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la configuration des actions MediaSession:",
+          error
+        );
+      }
+    }
+  }, [hasSong, handlePrevious, handleNext]);
 
-  // // Mettre à jour les métadonnées et actions MediaSession quand le morceau change
-  // useEffect(() => {
-  //   if (currentPlaying) {
-  //     updateMediaSessionMetadata();
-  //     setupMediaSessionActions();
-  //   }
-  // }, [currentPlaying, updateMediaSessionMetadata, setupMediaSessionActions]);
+  // Mettre à jour les métadonnées et actions MediaSession quand le morceau change
+  useEffect(() => {
+    if (currentPlaying) {
+      updateMediaSessionMetadata();
+      setupMediaSessionActions();
+    }
+  }, [currentPlaying, updateMediaSessionMetadata, setupMediaSessionActions]);
 
   const handlePurchaseSuccess = useCallback(() => {
     if (session?.user?.id) {
@@ -557,15 +557,15 @@ function Player(): React.JSX.Element | null {
   }, [isExpanded]);
 
   // // Mise à jour de l'état de lecture pour MediaSession
-  // useEffect(() => {
-  //   if (isMediaSessionSupported()) {
-  //     if (paused) {
-  //       navigator.mediaSession.playbackState = "paused";
-  //     } else {
-  //       navigator.mediaSession.playbackState = "playing";
-  //     }
-  //   }
-  // }, [paused]);
+  useEffect(() => {
+    if (isMediaSessionSupported()) {
+      if (paused) {
+        navigator.mediaSession.playbackState = "paused";
+      } else {
+        navigator.mediaSession.playbackState = "playing";
+      }
+    }
+  }, [paused]);
 
   if (!currentPlaying) return null;
 
