@@ -18,7 +18,7 @@ export const prisma =
   });
 
 // Gestion explicite des connexions prisma
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = prisma;
 
 // Si vous avez des problèmes persistants, vous pouvez ajouter cette fonction pour
 // fermer explicitement la connexion avant que l'application ne se termine

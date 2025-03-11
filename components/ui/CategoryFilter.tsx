@@ -3,13 +3,21 @@ import { useEffect, useState } from "react";
 import ButtonFilter from "./Button/ButtonFilter";
 import { usePlayer } from "@/context/PlayerContext";
 
-function CategoryFilter({ categories, songs }: { categories: any[]; songs: any[] }) {
+function CategoryFilter({
+  categories,
+  songs = []
+}: {
+  categories: any[];
+  songs?: any[];
+}) {
   const [activeCategories, setActiveCategory] = useState<any>({});
   const { setCurrentList } = usePlayer();
 
   useEffect(() => {
-    setCurrentList(songs)
-  }, [songs])
+    if (songs.length > 0) {
+      setCurrentList(songs);
+    }
+  }, [songs, setCurrentList]);
 
   const onClick = (name: string) => {
     const allCat = categories?.find((c) => c?.all);
@@ -35,7 +43,7 @@ function CategoryFilter({ categories, songs }: { categories: any[]; songs: any[]
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       {categories.map(({ name }, index) => (
         <ButtonFilter
           active={!!activeCategories?.[name]}
