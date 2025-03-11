@@ -317,26 +317,20 @@ function Player(): React.JSX.Element | null {
 
         // Ne mettre à jour que si les métadonnées changent réellement
         if (!currentMetadata || currentTitle !== currentPlaying.title) {
+          // Pour OVH, nous ne pouvons pas transformer les images à la volée
+          // Nous utilisons donc l'image originale qui devrait déjà être optimisée
+
           // Pour iOS, il est préférable d'utiliser un nombre limité d'images avec des tailles appropriées
           navigator.mediaSession.metadata = new MediaMetadata({
             title: currentPlaying.title,
             artist: currentPlaying.artists?.[0]?.name || "Artiste inconnu",
             album: "Num4.art",
+            // On utilise la même image pour toutes les tailles
+            // iOS choisira la meilleure pour son affichage
             artwork: [
-              // Utiliser un format plus universel et limiter le nombre de tailles pour iOS
               {
                 src: currentPlaying.image,
-                sizes: "128x128",
-                type: "image/jpeg"
-              },
-              {
-                src: currentPlaying.image,
-                sizes: "256x256",
-                type: "image/jpeg"
-              },
-              {
-                src: currentPlaying.image,
-                sizes: "512x512",
+                sizes: "512x512", // On spécifie une taille mais c'est la même image
                 type: "image/jpeg"
               }
             ]
@@ -425,6 +419,63 @@ function Player(): React.JSX.Element | null {
           setPaused(true);
         });
 
+        // Ajouter l'action seekto pour permettre la navigation dans le morceau
+        // Cette action est essentielle pour que la barre de progression soit fonctionnelle
+        navigator.mediaSession.setActionHandler("seekto", (details) => {
+          if (audioRef.current?.audio.current) {
+            const audio = audioRef.current.audio.current;
+
+            // S'assurer que la durée est disponible pour éviter NaN
+            const duration = isNaN(audio.duration) ? 100 : audio.duration;
+
+            if (details.seekTime !== undefined) {
+              // Limiter la valeur de seekTime entre 0 et la durée du morceau
+              const seekTime = Math.max(
+                0,
+                Math.min(details.seekTime, duration)
+              );
+              audio.currentTime = seekTime;
+
+              // Pour iOS, forcer une mise à jour immédiate de la position dans MediaSession
+              if ("setPositionState" in navigator.mediaSession) {
+                try {
+                  navigator.mediaSession.setPositionState({
+                    duration: duration,
+                    position: seekTime,
+                    playbackRate: audio.playbackRate || 1.0
+                  });
+                } catch (error) {
+                  console.error(
+                    "Erreur lors de la mise à jour de la position après seekto:",
+                    error
+                  );
+                }
+              }
+            }
+
+            // Si seekTime est relatif (fastForward ou fastBackward), on ajuste en conséquence
+            if (details.fastSeek && details.seekTime !== undefined) {
+              audio.currentTime = details.seekTime;
+
+              // Mettre à jour la position dans MediaSession immédiatement
+              if ("setPositionState" in navigator.mediaSession) {
+                try {
+                  navigator.mediaSession.setPositionState({
+                    duration: duration,
+                    position: details.seekTime,
+                    playbackRate: audio.playbackRate || 1.0
+                  });
+                } catch (error) {
+                  console.error(
+                    "Erreur lors de la mise à jour de la position après fastSeek:",
+                    error
+                  );
+                }
+              }
+            }
+          }
+        });
+
         // Garder une référence aux actions précédentes
         const prevHandlersSet =
           audioRef.current?.audio.current?._mediaSessionHandlersSet;
@@ -471,12 +522,82 @@ function Player(): React.JSX.Element | null {
       // Mise à jour unique des métadonnées lorsque le morceau change
       updateMediaSessionMetadata();
       setupMediaSessionActions();
+
+      // Ajouter un listener pour les événements de seek/changement de position
+      const audioElement = audioRef.current?.audio.current;
+      if (audioElement) {
+        // Mettre à jour immédiatement les infos de position dès que l'audio est chargé
+        const handleLoadedMetadata = () => {
+          if (
+            isMediaSessionSupported() &&
+            "setPositionState" in navigator.mediaSession
+          ) {
+            try {
+              navigator.mediaSession.setPositionState({
+                duration: audioElement.duration || 0,
+                position: audioElement.currentTime || 0,
+                playbackRate: audioElement.playbackRate || 1.0
+              });
+            } catch (error) {
+              console.error(
+                "Erreur lors de la mise à jour de la position:",
+                error
+              );
+            }
+          }
+        };
+
+        const handleSeeking = () => {
+          if (
+            isMediaSessionSupported() &&
+            "setPositionState" in navigator.mediaSession
+          ) {
+            try {
+              navigator.mediaSession.setPositionState({
+                duration: audioElement.duration,
+                position: audioElement.currentTime,
+                playbackRate: audioElement.playbackRate
+              });
+            } catch (error) {
+              console.error(
+                "Erreur lors de la mise à jour de la position:",
+                error
+              );
+            }
+          }
+        };
+
+        // Écouter les événements de changement de position et de chargement
+        audioElement.addEventListener("seeking", handleSeeking);
+        audioElement.addEventListener("seeked", handleSeeking);
+        audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
+        audioElement.addEventListener("durationchange", handleLoadedMetadata);
+
+        // Force une mise à jour immédiate si l'audio est déjà chargé
+        if (audioElement.readyState >= 2) {
+          handleLoadedMetadata();
+        }
+
+        return () => {
+          // Nettoyer les écouteurs lors du démontage
+          audioElement.removeEventListener("seeking", handleSeeking);
+          audioElement.removeEventListener("seeked", handleSeeking);
+          audioElement.removeEventListener(
+            "loadedmetadata",
+            handleLoadedMetadata
+          );
+          audioElement.removeEventListener(
+            "durationchange",
+            handleLoadedMetadata
+          );
+        };
+      }
     }
   }, [
     currentPlaying?.id,
     updateMediaSessionMetadata,
     setupMediaSessionActions
-  ]); // Changer la dépendance pour ne mettre à jour que lorsque l'ID du morceau change
+  ]);
 
   const handlePurchaseSuccess = useCallback(() => {
     if (session?.user?.id) {
