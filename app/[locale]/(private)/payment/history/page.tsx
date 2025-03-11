@@ -131,7 +131,7 @@ export default function PaymentHistoryPage() {
                     <td className="p-4">
                       {log.song && log.status === "SUCCEEDED" && (
                         <Link
-                          href={`/song/${log.song.id}`}
+                          href={`/song?id=${log.song.id}`}
                           className="text-blue-400 hover:text-blue-300 text-sm"
                         >
                           Voir le titre

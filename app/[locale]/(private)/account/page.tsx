@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 import Button from "@/components/ui/Button/Button";
 import BankInfoButton from "./BankInfoButton";
 import ClameWinningsButton from "./ClameWinnings";
+import Link from "next/link";
 // This is a private page: It's protected by the layout.js component which ensures the user is authenticated.
 // It's a server compoment which means you can fetch data (like the user profile) before the page is rendered.
 // See https://shipfa.st/docs/tutorials/private-page
@@ -25,7 +26,6 @@ export default async function Dashboard() {
 
   const { user } = session;
   //console.log("user",user);
-
 
   const getUserDisplayName = (user: any) => {
     const artistName = user?.profile?.artist?.name;
@@ -45,6 +45,7 @@ export default async function Dashboard() {
   };
 
   const hasBankAccount = Boolean(user?.profile?.artist?.bankAccount);
+  const isArtist = Boolean(user?.profile?.artist);
 
   return (
     <main className=" flex-1">
@@ -63,26 +64,50 @@ export default async function Dashboard() {
         <div className="text-center">
           <h4 className="font-medium text-xl">@{getUserDisplayName(user)}</h4>
           <span className="opacity-60">
-            {!user?.profile?.artist ? "Auditeur" : "Artiste"}
+            {isArtist ? "Artiste" : "Auditeur"}
           </span>
         </div>
       </section>
 
       <section className="z-2 bg-custom-black p-5 fixed h-[60%] pb-[60px] top-[40%] flex flex-col w-full items-center">
         <div className="mb-20">
-          <div className="text-lg font-medium  w-full flex justify-between">
-            {user?.profile?.artist && (
-              <ClameWinningsButton hasBankAccount={hasBankAccount} />
-            )}
-          </div>
           <Divider />
-          <div className="text-lg font-medium  w-full  flex justify-between">
-            {user?.profile?.artist && (
-              <BankInfoButton hasBankAccount={hasBankAccount} />
-            )}
-          </div>
+          {isArtist && (
+            <>
+              <div className="text-lg font-medium  w-full flex justify-between">
+                <ClameWinningsButton hasBankAccount={hasBankAccount} />
+              </div>
+              <Divider />
+            </>
+          )}
+          {isArtist && (
+            <>
+              <div className="text-lg font-medium  w-full  flex justify-between">
+                <BankInfoButton hasBankAccount={hasBankAccount} />
+              </div>
+              <Divider />
+            </>
+          )}
 
-          <Divider />
+          {!isArtist && (
+            <>
+              <div className="text-lg font-medium w-full flex justify-between">
+                <Link
+                  href="/payment/history"
+                  className="text-lg font-medium w-full flex justify-between items-center"
+                >
+                  <span>Historique des paiements</span>
+                  <Image
+                    src="/assets/images/icons/arrow-right.svg"
+                    alt="Voir l'historique des paiements"
+                    width={24}
+                    height={24}
+                  />
+                </Link>
+              </div>
+              <Divider />
+            </>
+          )}
 
           {/* <div className="text-lg font-medium w-full flex justify-between">
             <span>Langues</span>
