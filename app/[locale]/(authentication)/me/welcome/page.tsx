@@ -1,6 +1,13 @@
 import Welcome from "@/components/ui/Form/WelcomeForm";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 async function WelcomePage() {
+  const session = await auth();
+  if (!session?.user?.isNewUser) {
+    redirect("/account");
+  }
+
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-custom-black">
       <section className="mx-auto max-w-xs self-center flex flex-col gap-8 text-center">
@@ -9,7 +16,7 @@ async function WelcomePage() {
         </h1>
       </section>
 
-      <Welcome />
+      <Welcome session={session} />
     </div>
   );
 }

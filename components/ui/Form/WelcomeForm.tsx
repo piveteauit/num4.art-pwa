@@ -1,14 +1,12 @@
 "use client";
-import { getSession } from "next-auth/react";
 import Button from "../Button/Button";
 import Input from "./Input/Input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { handleSignUp } from "@/libs/server/user.action";
 import { toast } from "react-hot-toast";
-
-function Welcome() {
+import { Session } from "next-auth";
+function Welcome({ session }: { session: Session }) {
   const [artistName, setArtistName] = useState("");
-  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isArtist, setIsArtist] = useState(false);
   const [selectedSource, setSelectedSource] = useState("");
@@ -20,17 +18,13 @@ function Welcome() {
     { id: "other", label: "Autre" }
   ];
 
-  useEffect(() => {
-    getSession().then(({ user }) => setUser(user));
-  }, []);
-
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
       await handleSignUp({
         artistName: isArtist ? artistName : null,
         source: !isArtist ? selectedSource : null,
-        id: user?.id
+        id: session?.user?.id
       });
       document.location.href = "/account";
     } catch (error) {
