@@ -31,24 +31,17 @@ const ButtonCheckout = ({ label, song, isArtist }: ButtonCheckoutProps) => {
         setIsModalOpen(true);
 
         // Informer l'utilisateur qu'il peut consulter l'historique des paiements
-        toast(
-          (t) => (
-            <div className="flex flex-col">
-              <span>
-                Astuce: vous pouvez consulter vos paiements dans votre
-                historique
-              </span>
-              <Link
-                href="/payment/history"
-                className="text-blue-400 hover:text-blue-300 text-sm mt-1 underline"
-                onClick={() => toast.dismiss(t.id)}
-              >
-                Voir l&apos;historique des paiements
-              </Link>
-            </div>
-          ),
-          { duration: 6000 }
-        );
+        // toast(
+        //   (t) => (
+        //     <div className="flex flex-col">
+        //       <span>
+        //         Astuce: vous pouvez consulter vos paiements dans votre
+        //         historique
+        //       </span>
+        //     </div>
+        //   ),
+        //   { duration: 2000 }
+        // );
       }
     } catch (error) {
       // L'erreur est déjà gérée dans le hook

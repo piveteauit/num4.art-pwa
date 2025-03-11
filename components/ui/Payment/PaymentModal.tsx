@@ -129,36 +129,34 @@ export default function PaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="min-h-[calc(100vh-2rem)] md:min-h-0 flex items-center justify-center py-8">
-        <div className="bg-gray-900 p-6 rounded-xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6 top-0 bg-gray-900 pt-2 z-10">
-            <h2 className="text-2xl font-bold">Paiement sécurisé</h2>
-            <button
-              onClick={onClose}
-              className="text-white/60 hover:text-white p-2"
-              aria-label="Fermer"
+    <div className="fixed inset-0 z-[9999999] bg-black/80 backdrop-blur-sm flex px-3 items-start justify-center md:items-center md:p-4 overflow-y-auto">
+      <div className="bg-gray-900 max-w-xl p-6 rounded-xl w-full overflow-y-auto my-4">
+        <div className="flex justify-between items-center mb-6  bg-gray-900 pt-2 z-10">
+          <h2 className="text-2xl font-bold">Paiement sécurisé</h2>
+          <button
+            onClick={onClose}
+            className="text-white/60 hover:text-white p-2"
+            aria-label="Fermer"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <Elements stripe={stripePromise} options={options}>
-            <PaymentForm song={song} onClose={onClose} />
-          </Elements>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
+
+        <Elements stripe={stripePromise} options={options}>
+          <PaymentForm song={song} onClose={onClose} />
+        </Elements>
       </div>
     </div>
   );
