@@ -28,10 +28,10 @@ export default function LibraryContent({
       //   maxHeight: `calc(100svh - (${getMargin()} + 69px))`
       // }}
     >
-      <div className="flex flex-col mt-4">
+      {/* <div className="flex flex-col mt-4">
         <h2 className="text-xl mb-2 ml-6">Trier par</h2>
         <LibraryFilter options={options} />
-      </div>
+      </div> */}
 
       {songs.length > 0 ? (
         <div className="mx-6 mt-8 mb-4">
