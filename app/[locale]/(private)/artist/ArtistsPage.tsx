@@ -90,7 +90,7 @@ export default function ArtistsPage({
   return (
     <>
       <BackButton />
-      <main className="w-screen h-screen md:p-8">
+      <main className="flex-1 md:p-8">
         <section className="pt-20 p-2 w-screen lg:max-w-3xl lg:mt-10 pb-20 mx-auto">
           <h3 className="text-xl mb-4">Tous les artistes</h3>
 
