@@ -14,8 +14,8 @@ export default function SongCard({ song, index, totalLength }: SongCardProps) {
     // song.artists?.[0]?.name && (
     <Link
       href={{
-        pathname: "/song",
-        query: { id: song.id }
+        pathname: "/song/[song]",
+        params: { song: song.id }
       }}
       className={`flex-shrink-0 w-[180px] flex-1`}
     >

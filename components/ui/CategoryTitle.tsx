@@ -1,13 +1,6 @@
 import { Link } from "@/navigation";
 import React from "react";
 
-// type AppRoutes =
-//   | "/see-all"
-//   | "/see-all-artists"
-//   | "/player"
-//   | "/artist"
-//   | "/library";
-
 interface CategoryTitleProps {
   title: string;
   href?: any;

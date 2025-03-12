@@ -57,11 +57,11 @@ const ClientComponent: React.FC<ClientComponentProps> = ({
         className="mb-8"
         songs={filteredSongs}
         artistName={filteredSongs[0]?.artists[0]?.name}
-        href="/see-all"
+        href="/song"
       />
 
       <div style={{ marginBottom: getMargin() }}>
-        <CategoryTitle title="Connaissez-vous ?" href="/see-all-artists" />
+        <CategoryTitle title="Connaissez-vous ?" href="/artist" />
         <div className="flex gap-2 overflow-x-scroll scrollbar-hide flex-grow">
           {initialArtists.map((artist, i) => (
             <ArtistCard

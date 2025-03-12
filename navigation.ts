@@ -26,6 +26,10 @@ export const pathnames = {
     en: "/song",
     fr: "/chanson"
   },
+  "/song/[song]": {
+    en: "/song/[song]",
+    fr: "/chanson/[song]"
+  },
 
   "/account": {
     en: "/my-account",
@@ -55,15 +59,6 @@ export const pathnames = {
   "/artist/[artist]": {
     en: "/artist/[artist]",
     fr: "/artiste/[artist]"
-  },
-
-  "/see-all": {
-    en: "/see-all",
-    fr: "/voir-tout"
-  },
-  "/see-all-artists": {
-    en: "/see-all-artists",
-    fr: "/voir-tout-les-artistes"
   },
 
   "/bank-info": {

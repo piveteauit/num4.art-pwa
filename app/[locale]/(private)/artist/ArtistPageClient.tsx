@@ -1,21 +1,65 @@
 "use client";
 
-import React from "react";
-import { usePlayerMargin } from "@/hooks/usePlayerMargin";
+import React, { ReactNode } from "react";
+import { motion } from "framer-motion";
 
-interface ArtistPageClientProps {
-  children: React.ReactNode;
-}
+// Animation variants
+const pageVariants = {
+  hidden: { opacity: 0 },
+  enter: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      staggerChildren: 0.1
+    }
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.2 }
+  }
+};
 
-export default function ArtistPageClient({ children }: ArtistPageClientProps) {
-  const { getMargin } = usePlayerMargin({ fromValue: 32 });
+const childVariants = {
+  hidden: { opacity: 0, y: 20 },
+  enter: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 25
+    }
+  }
+};
 
+export default function ArtistPageClient({
+  children
+}: {
+  children: ReactNode;
+}) {
   return (
-    <main
-      className="flex-1 bg-gradient-to-b from-neutral-900 to-base pt-6 md:px-6"
-      style={{ paddingBottom: getMargin() }}
+    <motion.main
+      variants={pageVariants}
+      initial="hidden"
+      animate="enter"
+      exit="exit"
+      className="flex-1 w-full pt-16 max-w-4xl mx-auto"
     >
-      {children}
-    </main>
+      {React.Children.map(children, (child, i) => (
+        <motion.div
+          key={i}
+          variants={childVariants}
+          // La première section (header) a un délai plus court pour un chargement plus rapide
+          transition={{
+            delay: Math.min(i * 0.1, 0.3),
+            type: "spring",
+            stiffness: 300,
+            damping: 25
+          }}
+        >
+          {child}
+        </motion.div>
+      ))}
+    </motion.main>
   );
 }
