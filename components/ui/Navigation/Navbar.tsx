@@ -33,7 +33,7 @@ function Navbar() {
             }`}
           >
             <IconPublish
-              className="relative w-8 h-8 bg-base"
+              className="relative w-8 h-8"
               isActive={pathname === "/publish"}
             />
             <p className="font-light text-sm">Publier</p>
