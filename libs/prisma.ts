@@ -13,15 +13,45 @@ export const prisma =
     },
     // Configuration du pool de connexions
     log: ["query", "error", "warn"]
-
-    // Augmenter les limites du pool de connexions
   });
 
 // Gestion explicite des connexions prisma
 globalForPrisma.prisma = prisma;
 
-// Si vous avez des problèmes persistants, vous pouvez ajouter cette fonction pour
-// fermer explicitement la connexion avant que l'application ne se termine
+// Mise en place d'une gestion proactive des reconnexions
+let isConnected = false;
+
+// Fonction pour vérifier et rétablir la connexion
+const connectPrisma = async () => {
+  try {
+    if (!isConnected) {
+      await prisma.$connect();
+      isConnected = true;
+      console.log("Connexion Prisma établie avec succès");
+    }
+  } catch (error) {
+    console.error("Erreur de connexion Prisma:", error);
+    isConnected = false;
+    // Tentative de reconnexion après un délai
+    setTimeout(connectPrisma, 5000);
+  }
+};
+
+// Initialiser la connexion
+connectPrisma();
+
+// Événements pour gérer les déconnexions
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+// Pour les déconnexions normales
 process.on("beforeExit", async () => {
   await prisma.$disconnect();
 });
